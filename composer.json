@@ -1,0 +1,34 @@
+{
+    "name": "laravelbook/ardent",
+    "description": "Self-validating smart models for Laravel 4's Eloquent O/RM",
+    "keywords": ["validation", "laravel", "framework", "eloquent", "database", "sql", "orm"],
+    "type": "library",
+    "homepage": "http://laravelbook.com/",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Max Ehsan",
+            "homepage": "http://laravelbook.com/",
+            "email": "contact@laravelbook.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "contact@laravelbook.com"
+    },
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x",
+        "illuminate/database": "4.0.x"
+    },
+    "autoload": {
+        "files": [
+            "src/LaravelBook/Ardent/Ardent.php"
+        ],
+        "psr-0": {
+            "LaravelBook\\Ardent": "src/"
+        }
+    },
+    "target-dir": "LaravelBook/Ardent",
+    "minimum-stability": "dev"
+}
