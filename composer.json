@@ -29,6 +29,5 @@
             "LaravelBook\\Ardent": "src/"
         }
     },
-    "target-dir": "LaravelBook/Ardent",
     "minimum-stability": "dev"
 }
