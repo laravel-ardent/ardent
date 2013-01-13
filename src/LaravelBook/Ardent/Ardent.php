@@ -1,5 +1,15 @@
 <?php namespace LaravelBook\Ardent;
 
+/*
+ * This file is part of the Ardent package.
+ *
+ * (c) Max Ehsan <contact@laravelbook.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+
 use Closure;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Input;
@@ -34,6 +44,13 @@ abstract class Ardent extends \Illuminate\Database\Eloquent\Model
     public $validationErrors;
 
     /**
+     * If set to true, the object will automatically populate model attributes from Input::all()
+     *
+     * @var bool
+     */
+    public $autoHydrateEntityFromInput = false;
+
+    /**
      * Create a new Ardent model instance.
      *
      * @param array   $attributes
@@ -57,11 +74,12 @@ abstract class Ardent extends \Illuminate\Database\Eloquent\Model
 
         $success = true;
 
-        $data = $this->attributes; // the data under validation
-        if (empty($data)) {
-            // just extract the fields that are defined in the validation rule-set
-            $data = array_intersect_key(Input::all(), $rules);
+        if (empty($this->attributes) && $this->autoHydrateEntityFromInput) {
+            // pluck only the fields which are defined in the validation rule-set
+            $this->attributes = array_intersect_key(Input::all(), $rules);
         }
+
+        $data = $this->attributes; // the data under validation
 
         if (!empty($data) && (!empty($rules) || !empty(static::$rules))) {
 
@@ -92,66 +110,150 @@ abstract class Ardent extends \Illuminate\Database\Eloquent\Model
     }
 
     /**
-     * onSave - Invoked before a model is saved. Return false to abort the operation.
+     * Invoked before a model is saved. Return false to abort the operation.
      *
      * @return bool
      */
-    protected function onSave()
+    protected function beforeSave()
     {
         return true;
     }
 
     /**
-     * onForceSave - Invoked before a model is saved forcefully. Return false to abort the operation.
+     * Called after a model is successfully saved.
+     *
+     * @param bool    $success Indicates whether the database save operation succeeded
+     * @return void
+     */
+    public function afterSave($success)
+    {
+        //
+    }
+
+    /**
+     * Invoked before a model is saved forcefully. Return false to abort the operation.
      *
      * @return bool
      */
-    protected function onForceSave()
+    protected function beforeForceSave()
     {
         return true;
     }
+
+    /**
+     * Called after a model is successfully force-saved.
+     *
+     * @param bool    $success Indicates whether the database save operation succeeded
+     * @return void
+     */
+    public function afterForceSave($success)
+    {
+        //
+    }
+
 
     /**
      * Save the model to the database.
      *
      * @param array   $rules:array
      * @param array   $customMessages
-     * @param closure $onSave
+     * @param closure $beforeSave
      * @return bool
      */
-    public function save($rules = array(), $customMessages = array(), Closure $onSave = null)
+    public function save($rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null)
     {
 
         // validate
         $validated = $this->validate($rules, $customMessages);
 
-        // execute onSave callback
-        $proceed = is_null($onSave) ? $this->onSave() : $onSave($this);
+        // execute beforeSave callback
+        $proceed = is_null($beforeSave) ? $this->beforeSave() : $beforeSave($this);
 
-        // save if all conditions are satisfied
-        return ($proceed && $validated) ? parent::save() : false;
+        // attempt to save if all conditions are satisfied
+        $success = ($proceed && $validated) ? $this->performSave() : false;
 
+        is_null($afterSave) ? $this->afterSave($success) : $afterSave($this);
+
+        return $success;
     }
 
     /**
      * Force save the model even if validation fails.
      *
-     * @param array $rules:array
-     * @param array $customMessages:array
+     * @param array   $rules:array
+     * @param array   $customMessages:array
      * @return bool
      */
-    public function force_save($rules = array(), $customMessages = array(), Closure $onForceSave = null)
+    public function forceSave($rules = array(), $customMessages = array(), Closure $beforeForceSave = null, Closure $afterForceSave = null)
     {
 
         // validate the model
         $this->validate($rules, $customMessages);
 
-        // execute onForceSave callback
-        $proceed = is_null($onForceSave) ? $this->onForceSave() : $onForceSave($this);
+        // execute beforeForceSave callback
+        $proceed = is_null($beforeForceSave) ? $this->beforeForceSave() : $beforeForceSave($this);
 
-        // save regardless of the outcome of validation
-        return $proceed ? parent::save() : false;
+        // attempt to save regardless of the outcome of validation
+        $success = $proceed ? $this->performSave() : false;
 
+        is_null($afterForceSave) ? $this->afterForceSave($success) : $afterForceSave($this);
+
+        return $success;
+    }
+
+    /**
+     * Removes *_confirmation fields from array
+     *
+     * @param array   $array Input array
+     * @return array
+     */
+    protected function purgeArray(array $array = array())
+    {
+
+        $result = array();
+        $keys = array_keys($array);
+
+        if (!empty($keys)) {
+            $len = strlen('_confirmation');
+
+            foreach ($keys as $key) {
+                if (strlen($key) > $len) {
+                    if (strcmp(substr($key, -$len), '_confirmation') != 0) {
+                        $result[$key] = $array[$key];
+                    }
+                } else {
+                    $result[$key] = $array[$key];
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Saves the model instance to database. If necessary, it will purge the model attributes
+     * of unnecessary fields.
+     *
+     * @return bool
+     */
+    protected function performSave()
+    {
+
+        if ($this->autoHydrateEntityFromInput) {
+            $this->attributes = $this->purgeArray($this->attributes);
+        }
+
+        return parent::save();
+    }
+
+    /**
+     * Get all validation error messages for the Model
+     *
+     * @return Illuminate\Support\MessageBag
+     */
+    public function getErrors()
+    {
+        return $this->validationErrors;
     }
 
 }
