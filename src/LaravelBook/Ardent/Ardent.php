@@ -14,12 +14,13 @@ use Closure;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Ardent - Self-validating Eloquent model base class
  *
  */
-abstract class Ardent extends \Illuminate\Database\Eloquent\Model
+abstract class Ardent extends Model
 {
 
     /**
