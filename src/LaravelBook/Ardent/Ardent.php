@@ -52,14 +52,28 @@ abstract class Ardent extends Model
     public $autoHydrateEntityFromInput = false;
 
     /**
+     * List of attribute names which should be hashed using the Bcrypt hashing algorithm.
+     *
+     * @var array
+     */
+    public $passwordAttributes = array();
+
+    /**
+     * If set to true, the model will automatically replace all plain-text passwords
+     * attributes (listed in $passwordAttributes) with hash checksums
+     *
+     * @var bool
+     */
+    public $autoHashPasswordAttributes = true;
+
+    /**
      * Create a new Ardent model instance.
      *
      * @param array   $attributes
      * @return void
      */
-    public function __construct(array $attributes = array())
-    {
-        parent::__construct($attributes);
+    public function __construct( array $attributes = array() ) {
+        parent::__construct( $attributes );
         $this->validationErrors = new MessageBag;
     }
 
@@ -70,31 +84,30 @@ abstract class Ardent extends Model
      * @param array   $customMessages Custom error messages
      * @return bool
      */
-    public function validate($rules = array(), $customMessages = array())
-    {
+    public function validate( $rules = array(), $customMessages = array() ) {
 
         $success = true;
 
-        if (empty($this->attributes) && $this->autoHydrateEntityFromInput) {
+        if ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) {
             // pluck only the fields which are defined in the validation rule-set
-            $this->attributes = array_intersect_key(Input::all(), $rules);
+            $this->attributes = array_intersect_key( Input::all(), $rules );
         }
 
         $data = $this->attributes; // the data under validation
 
-        if (!empty($data) && (!empty($rules) || !empty(static::$rules))) {
+        if ( !empty( $data ) && ( !empty( $rules ) || !empty( static::$rules ) ) ) {
 
             // check for overrides
-            $rules = (empty($rules)) ? static::$rules : $rules;
-            $customMessages = (empty($customMessages)) ? static::$customMessages : $customMessages;
+            $rules = ( empty( $rules ) ) ? static::$rules : $rules;
+            $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
 
             // construct the validator
-            $validator = Validator::make($data, $rules, $customMessages);
+            $validator = Validator::make( $data, $rules, $customMessages );
             $success = $validator->passes();
 
-            if ($success) {
+            if ( $success ) {
                 // if the model is valid, unset old errors
-                if ($this->validationErrors->count() > 0) {
+                if ( $this->validationErrors->count() > 0 ) {
                     $this->validationErrors = new MessageBag;
                 }
             } else {
@@ -115,8 +128,7 @@ abstract class Ardent extends Model
      *
      * @return bool
      */
-    protected function beforeSave()
-    {
+    protected function beforeSave() {
         return true;
     }
 
@@ -126,8 +138,7 @@ abstract class Ardent extends Model
      * @param bool    $success Indicates whether the database save operation succeeded
      * @return void
      */
-    public function afterSave($success)
-    {
+    public function afterSave( $success ) {
         //
     }
 
@@ -136,8 +147,7 @@ abstract class Ardent extends Model
      *
      * @return bool
      */
-    protected function beforeForceSave()
-    {
+    protected function beforeForceSave() {
         return true;
     }
 
@@ -147,11 +157,9 @@ abstract class Ardent extends Model
      * @param bool    $success Indicates whether the database save operation succeeded
      * @return void
      */
-    public function afterForceSave($success)
-    {
+    public function afterForceSave( $success ) {
         //
     }
-
 
     /**
      * Save the model to the database.
@@ -161,19 +169,18 @@ abstract class Ardent extends Model
      * @param closure $beforeSave
      * @return bool
      */
-    public function save($rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null)
-    {
+    public function save( $rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
 
         // validate
-        $validated = $this->validate($rules, $customMessages);
+        $validated = $this->validate( $rules, $customMessages );
 
         // execute beforeSave callback
-        $proceed = is_null($beforeSave) ? $this->beforeSave() : $beforeSave($this);
+        $proceed = is_null( $beforeSave ) ? $this->beforeSave() : $beforeSave( $this );
 
         // attempt to save if all conditions are satisfied
-        $success = ($proceed && $validated) ? $this->performSave() : false;
+        $success = ( $proceed && $validated ) ? $this->performSave() : false;
 
-        is_null($afterSave) ? $this->afterSave($success) : $afterSave($this);
+        is_null( $afterSave ) ? $this->afterSave( $success ) : $afterSave( $this );
 
         return $success;
     }
@@ -185,19 +192,18 @@ abstract class Ardent extends Model
      * @param array   $customMessages:array
      * @return bool
      */
-    public function forceSave($rules = array(), $customMessages = array(), Closure $beforeForceSave = null, Closure $afterForceSave = null)
-    {
+    public function forceSave( $rules = array(), $customMessages = array(), Closure $beforeForceSave = null, Closure $afterForceSave = null ) {
 
         // validate the model
-        $this->validate($rules, $customMessages);
+        $this->validate( $rules, $customMessages );
 
         // execute beforeForceSave callback
-        $proceed = is_null($beforeForceSave) ? $this->beforeForceSave() : $beforeForceSave($this);
+        $proceed = is_null( $beforeForceSave ) ? $this->beforeForceSave() : $beforeForceSave( $this );
 
         // attempt to save regardless of the outcome of validation
         $success = $proceed ? $this->performSave() : false;
 
-        is_null($afterForceSave) ? $this->afterForceSave($success) : $afterForceSave($this);
+        is_null( $afterForceSave ) ? $this->afterForceSave( $success ) : $afterForceSave( $this );
 
         return $success;
     }
@@ -208,18 +214,17 @@ abstract class Ardent extends Model
      * @param array   $array Input array
      * @return array
      */
-    protected function purgeArray(array $array = array())
-    {
+    protected function purgeArray( array $array = array() ) {
 
         $result = array();
-        $keys = array_keys($array);
+        $keys = array_keys( $array );
 
-        if (!empty($keys)) {
-            $len = strlen('_confirmation');
+        if ( !empty( $keys ) ) {
+            $len = strlen( '_confirmation' );
 
-            foreach ($keys as $key) {
-                if (strlen($key) > $len) {
-                    if (strcmp(substr($key, -$len), '_confirmation') != 0) {
+            foreach ( $keys as $key ) {
+                if ( strlen( $key ) > $len ) {
+                    if ( strcmp( substr( $key, -$len ), '_confirmation' ) != 0 ) {
                         $result[$key] = $array[$key];
                     }
                 } else {
@@ -233,16 +238,16 @@ abstract class Ardent extends Model
 
     /**
      * Saves the model instance to database. If necessary, it will purge the model attributes
-     * of unnecessary fields.
+     * of unnecessary fields. It will also replace plain-text password fields with their hashes.
      *
      * @return bool
      */
-    protected function performSave()
-    {
-
-        if ($this->autoHydrateEntityFromInput) {
-            $this->attributes = $this->purgeArray($this->attributes);
+    protected function performSave() {
+        if ( $this->autoHydrateEntityFromInput ) {
+            $this->attributes = $this->purgeArray( $this->attributes );
         }
+
+        $this->hashPasswordAttributes();
 
         return parent::save();
     }
@@ -252,9 +257,29 @@ abstract class Ardent extends Model
      *
      * @return Illuminate\Support\MessageBag
      */
-    public function getErrors()
-    {
+    public function getErrors() {
         return $this->validationErrors;
+    }
+
+    /**
+     * Automatically replaces all plain-text password attributes (listed in $passwordAttributes)
+     * with hash checksums.
+     *
+     * @return void
+     */
+    protected function hashPasswordAttributes() {
+
+        if ( !$this->autoHashPasswordAttributes
+            || empty( $this->passwordAttributes )
+            || empty( $this->attributes ) )
+            return;
+
+        $data = $this->attributes;
+        foreach ( $data as $key => $value ) {
+            if ( array_key_exists( $key, $this->passwordAttributes ) && !is_null( $value ) ) {
+                $this->attributes[$key] = Hash::make( $value );
+            }
+        }
     }
 
 }
