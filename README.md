@@ -1,8 +1,8 @@
 #Ardent
 
-Self-validating smart models for Laravel 4's Eloquent O/RM.
+Self-validating smart models for Laravel Framework 4's Eloquent O/RM.
 
-Based on the Ardent bundle by Colby Rabideau.
+Based on the Aware bundle for Laravel 3 by Colby Rabideau.
 
 ##Installation
 
@@ -19,9 +19,9 @@ Add `laravelbook/ardent` as a requirement to `composer.json`:
 
 Update your packages with `composer update` or install with `composer install`.
 
-## Guide
+## Documentation
 
-* [Basic](#basic)
+* [Getting Started](#start)
 * [Effortless Validation with Ardent](#validation)
 * [Retrieving Validation Errors](#errors)
 * [Overriding Validation](#override)
@@ -29,10 +29,10 @@ Update your packages with `composer update` or install with `composer install`.
 * [Custom Validation Error Messages](#messages)
 * [Custom Validation Rules](#rules)
 
-<a name="basic"></a>
-## Basic
+<a name="start"></a>
+## Getting Started
 
-Ardent aims to extend the Eloquent base class without changing its core functionality. All Eloquent models are compatible with Ardent.
+Ardent aims to extend the Eloquent base class without changing its core functionality. All Eloquent models are fully compatible with Ardent.
 
 To create a new Ardent model, simply make your model class descend from the `Ardent` base class:
 
@@ -82,11 +82,9 @@ When an Ardent model fails to validate, a `Illuminate\Support\MessageBag` object
 
 Retrieve the validation errors message collection instance with `Ardent->errors()` method or `Ardent->validationErrors` property.
 
-Retrieve all validation errors with `Ardent->errors()->all()`
+Retrieve all validation errors with `Ardent->errors()->all()`. Retrieve errors for a *specific* attribute using `Ardent->validationErrors->get('attribute')`.
 
-Retrieve errors for a *specific* attribute using `Ardent->validationErrors->get('attribute')`.
-
-> **Note:** Ardent leverages Laravel's MessagesBag object which has an [simple and elegant method](http://doc.laravelbook.com/validation/#working-with-error-messages) of formatting errors.
+> **Note:** Ardent leverages Laravel's MessagesBag object which has a [simple and elegant method](http://doc.laravelbook.com/validation/#working-with-error-messages) of formatting errors.
 
 <a name="overide"></a>
 ## Overriding Validation

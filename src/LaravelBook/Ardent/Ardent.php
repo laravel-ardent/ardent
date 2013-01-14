@@ -13,6 +13,7 @@
 use Closure;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 
@@ -52,11 +53,27 @@ abstract class Ardent extends Model
     public $autoHydrateEntityFromInput = false;
 
     /**
+     * If set to true, the object will automatically remove redundant model
+     * attributes (i.e. confirmation fields).
+     *
+     * @var bool
+     */
+    public $autoPurgeRedundantAttributes = false;
+
+    /**
+     * Array of closure functions which determine if a given attribute is deemed
+     * redundant (and should not be persisted in the database)
+     *
+     * @var array
+     */
+    protected $purgeFilters = array();
+
+    /**
      * List of attribute names which should be hashed using the Bcrypt hashing algorithm.
      *
      * @var array
      */
-    public $passwordAttributes = array();
+    public static $passwordAttributes = array();
 
     /**
      * If set to true, the model will automatically replace all plain-text passwords
@@ -64,7 +81,7 @@ abstract class Ardent extends Model
      *
      * @var bool
      */
-    public $autoHashPasswordAttributes = true;
+    public $autoHashPasswordAttributes = false;
 
     /**
      * Create a new Ardent model instance.
@@ -73,9 +90,21 @@ abstract class Ardent extends Model
      * @return void
      */
     public function __construct( array $attributes = array() ) {
+
         parent::__construct( $attributes );
         $this->validationErrors = new MessageBag;
+
+        $this->purgeFilters[] = function ( $attributeKey ) {
+            $len = strlen( '_confirmation' );
+
+            if ( strlen( $attributeKey ) > $len && strcmp( substr( $attributeKey, -$len ), '_confirmation' ) == 0 ) {
+                return false;
+            }
+
+            return true;
+        };
     }
+
 
     /**
      * Validate the model instance
@@ -209,7 +238,7 @@ abstract class Ardent extends Model
     }
 
     /**
-     * Removes *_confirmation fields from array
+     * Removes redundant attributes from model
      *
      * @param array   $array Input array
      * @return array
@@ -219,15 +248,18 @@ abstract class Ardent extends Model
         $result = array();
         $keys = array_keys( $array );
 
-        if ( !empty( $keys ) ) {
-            $len = strlen( '_confirmation' );
-
+        if ( !empty( $keys ) && !empty( $this->purgeFilters ) ) {
             foreach ( $keys as $key ) {
-                if ( strlen( $key ) > $len ) {
-                    if ( strcmp( substr( $key, -$len ), '_confirmation' ) != 0 ) {
-                        $result[$key] = $array[$key];
-                    }
-                } else {
+                $allowed = true;
+
+                foreach ( $this->purgeFilters as $filter ) {
+                    $allowed = $filter( $key );
+
+                    if ( !$allowed )
+                        break;
+                }
+
+                if ( $allowed ) {
                     $result[$key] = $array[$key];
                 }
             }
@@ -243,17 +275,20 @@ abstract class Ardent extends Model
      * @return bool
      */
     protected function performSave() {
-        if ( $this->autoHydrateEntityFromInput ) {
+
+        if ( $this->autoPurgeRedundantAttributes ) {
             $this->attributes = $this->purgeArray( $this->attributes );
         }
 
-        $this->hashPasswordAttributes();
+        if ( $this->autoHashPasswordAttributes ) {
+            $this->attributes = $this->hashPasswordAttributes( $this->attributes, static::$passwordAttributes );
+        }
 
         return parent::save();
     }
 
     /**
-     * Get all validation error messages for the Model
+     * Get validation error message collection for the Model
      *
      * @return Illuminate\Support\MessageBag
      */
@@ -265,21 +300,27 @@ abstract class Ardent extends Model
      * Automatically replaces all plain-text password attributes (listed in $passwordAttributes)
      * with hash checksums.
      *
+     * @param array   $attributes
+     * @param array   $passwordAttributes
      * @return void
      */
-    protected function hashPasswordAttributes() {
+    protected function hashPasswordAttributes( array $attributes = array(), array $passwordAttributes = array() ) {
 
-        if ( !$this->autoHashPasswordAttributes
-            || empty( $this->passwordAttributes )
-            || empty( $this->attributes ) )
+        if ( empty( $passwordAttributes ) || empty( $attributes ) )
             return;
 
-        $data = $this->attributes;
-        foreach ( $data as $key => $value ) {
-            if ( array_key_exists( $key, $this->passwordAttributes ) && !is_null( $value ) ) {
-                $this->attributes[$key] = Hash::make( $value );
+        $result = array();
+        foreach ( $attributes as $key => $value ) {
+
+            if ( in_array( $key, $passwordAttributes ) && !is_null( $value ) ) {
+                $result[$key] = Hash::make( $value );
+            }
+            else {
+                $result[$key] = $value;
             }
         }
+
+        return $result;
     }
 
 }
