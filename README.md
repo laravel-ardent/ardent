@@ -29,6 +29,9 @@ Update your packages with `composer update` or install with `composer install`.
 * [`beforeSave` and `afterSave` Hooks](#beforesave)
 * [Custom Validation Error Messages](#messages)
 * [Custom Validation Rules](#rules)
+* [Automatically Hydrate Ardent Entities](#hydra)
+* [Automatically Purge Redundant Form Data](#purge)
+* [Automatically Transform Secure-Text Attributes](#secure)
 
 <a name="start"></a>
 ## Introduction
@@ -135,61 +138,6 @@ $user->save(); // returns false if model is invalid
 
 **note:** You also can validate a model at any time using the `Ardent->validate()` method.
 
-<a name="hydra"></a>
-### Automatic Hydration of Ardent Models
-
-Ardent automatically hydrates entity model class from the form input submission for you! Let's invoke the magic of Ardent and rewrite the previous snippet:
-
-```php
-$user = new User;
-$user->save();
-```
-
-The code above performs essentially the same task as its earlier, albeit more verbose cousin. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel `Input::all()` method internally). Did you notice the succinctness?
-
-To enable the auto-hydration, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class:
-
-```php
-class User extends Ardent {
-
-  public $autoHydrateEntityFromInput = true;
-
-}
-```
-
-### Automatically Purge Redundant Form Data
-
-Not only that, Ardent models can *auto-magically* purge redundant input data (such as password confirmation fields) - so that the extra data is never saved to database. Ardent will use the confirmation code to validate the form input, then smartly discard these attributes before saving the model instance to database!
-
-
-To enable the auto-hydration, simply set the `$autoPurgeRedundantAttributes` instance variable to `true` in your model class:
-
-```php
-class User extends Ardent {
-
-  public $autoPurgeRedundantAttributes = true;
-
-}
-```
-
-### Automatically Transform Secure-Text Attributes
-
-Do you have a `password` attribute in your model class, but don't want to store the plain-text version in the database? Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!
-
-To do that, add the attribute name to the `Ardent::$passwordAttributes` static array variable in your model class, and set the `$autoHashPasswordAttributes` instance variable to `true`:
-
-```php
-class User extends Ardent {
-
-  public static $passwordAttributes = array('password');
-
-  public $autoHashPasswordAttributes = true;
-
-}
-```
-
-Ardent will automatically replace the plain-text password field with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.
-
 <a name="errors"></a>
 ## Retrieving Validation Errors
 
@@ -286,3 +234,59 @@ class User extends Ardent {
 ## Custom Validation Rules
 
 You can create custom validation rules the [same way](http://doc.laravelbook.com/validation/#custom-validation-rules) you would for the Laravel Validator.
+
+<a name="hydra"></a>
+## Automatically Hydrate Ardent Entities
+
+Ardent automatically hydrates entity model class from the form input submission for you! Let's invoke the magic of Ardent and rewrite the previous snippet:
+
+```php
+$user = new User;
+$user->save();
+```
+
+The code above performs essentially the same task as its earlier, albeit more verbose cousin. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel `Input::all()` method internally). Did you notice the succinctness?
+
+To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class:
+
+```php
+class User extends Ardent {
+
+  public $autoHydrateEntityFromInput = true;
+
+}
+```
+
+<a name="purge"></a>
+## Automatically Purge Redundant Form Data
+
+Ardent models can *auto-magically* purge redundant input data (such as *password confirmation* fields) - so that the extra data is never saved to database. Ardent will use the confirmation fields to validate form input, then prudently discard these attributes before saving the model instance to database!
+
+To enable this feature, simply set the `$autoPurgeRedundantAttributes` instance variable to `true` in your model class:
+
+```php
+class User extends Ardent {
+
+  public $autoPurgeRedundantAttributes = true;
+
+}
+```
+
+<a name="secure"></a>
+## Automatically Transform Secure-Text Attributes
+
+Do you have a `password` attribute in your model class, but don't want to store the plain-text version in the database? Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!
+
+To do that, add the attribute name to the `Ardent::$passwordAttributes` static array variable in your model class, and set the `$autoHashPasswordAttributes` instance variable to `true`:
+
+```php
+class User extends Ardent {
+
+  public static $passwordAttributes = array('password');
+
+  public $autoHashPasswordAttributes = true;
+
+}
+```
+
+Ardent will automatically replace the plain-text password field with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.
