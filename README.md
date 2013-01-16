@@ -4,8 +4,9 @@ Self-validating smart models for Laravel Framework 4's Eloquent O/RM.
 
 Based on the Aware bundle for Laravel 3 by Colby Rabideau.
 
-##Installation
+Copyright (C) 2013 Max Ehsan <[http://laravelbook.com/](http://laravelbook.com/)>
 
+##Installation
 
 Add `laravelbook/ardent` as a requirement to `composer.json`:
 
