@@ -1,0 +1,374 @@
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>Ardent</title>
+  <meta name="description" content="Self-validating, secure and smart models for Laravel 4's Eloquent O/RM">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Ardent</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">Self-validating, secure and smart models for Laravel 4's Eloquent O/RM</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/laravelbook/ardent/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/laravelbook/ardent/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/laravelbook/ardent" class="code">View Ardent on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h1>Ardent</h1>
+
+<p>Self-validating smart models for Laravel Framework 4's Eloquent O/RM.</p>
+
+<p>Based on the Aware bundle for Laravel 3 by Colby Rabideau.</p>
+
+<p>Copyright (C) 2013 Max Ehsan &lt;<a href="http://laravelbook.com/">http://laravelbook.com/</a>&gt;</p>
+
+<h2>Installation</h2>
+
+<p>Add <code>laravelbook/ardent</code> as a requirement to <code>composer.json</code>:</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">"require"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"laravelbook/ardent"</span><span class="o">:</span> <span class="s2">"1.0.*"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Update your packages with <code>composer update</code> or install with <code>composer install</code>.</p>
+
+<h2>Documentation</h2>
+
+<ul>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#start">Getting Started</a></li>
+<li><a href="#validation">Effortless Validation with Ardent</a></li>
+<li><a href="#errors">Retrieving Validation Errors</a></li>
+<li><a href="#override">Overriding Validation</a></li>
+<li><a href="#beforesave"><code>beforeSave</code> and <code>afterSave</code> Hooks</a></li>
+<li><a href="#messages">Custom Validation Error Messages</a></li>
+<li><a href="#rules">Custom Validation Rules</a></li>
+<li><a href="#hydra">Automatically Hydrate Ardent Entities</a></li>
+<li><a href="#purge">Automatically Purge Redundant Form Data</a></li>
+<li><a href="#secure">Automatically Transform Secure-Text Attributes</a></li>
+</ul><p><a name="start"></a></p>
+
+<h2>Introduction</h2>
+
+<p>How often do you find yourself re-creating the same boilerplate code in the applications you build? Does this typical form processing code look all too familiar to you?</p>
+
+<div class="highlight"><pre><span class="nx">Route</span><span class="o">::</span><span class="na">post</span><span class="p">(</span> <span class="s1">'register'</span><span class="p">,</span> <span class="k">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nv">$rules</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+            <span class="s1">'name'</span>      <span class="o">=&gt;</span> <span class="s1">'required|min:3|max:80|alpha_dash'</span><span class="p">,</span>
+            <span class="s1">'email'</span>     <span class="o">=&gt;</span> <span class="s1">'required|between:3,64|email|unique:users'</span><span class="p">,</span>
+            <span class="s1">'password'</span>  <span class="o">=&gt;</span><span class="s1">'required|alpha_num|between:4,8|confirmed'</span><span class="p">,</span>
+            <span class="s1">'password_confirmation'</span><span class="o">=&gt;</span><span class="s1">'required|alpha_num|between:4,8'</span>
+        <span class="p">);</span>
+
+        <span class="nv">$validator</span> <span class="o">=</span> <span class="nx">Validator</span><span class="o">::</span><span class="na">make</span><span class="p">(</span> <span class="nx">Input</span><span class="o">::</span><span class="na">all</span><span class="p">(),</span> <span class="nv">$rules</span> <span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span> <span class="nv">$validator</span><span class="o">-&gt;</span><span class="na">passes</span><span class="p">()</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="nx">User</span><span class="o">::</span><span class="na">create</span><span class="p">(</span> <span class="k">array</span><span class="p">(</span>
+                    <span class="s1">'name'</span>      <span class="o">=&gt;</span> <span class="nx">Input</span><span class="o">::</span><span class="na">get</span><span class="p">(</span> <span class="s1">'real_name'</span> <span class="p">),</span>
+                    <span class="s1">'email'</span>     <span class="o">=&gt;</span> <span class="nx">Input</span><span class="o">::</span><span class="na">get</span><span class="p">(</span> <span class="s1">'email'</span> <span class="p">),</span>
+                    <span class="s1">'password'</span>  <span class="o">=&gt;</span> <span class="nx">Hash</span><span class="o">::</span><span class="na">make</span><span class="p">(</span> <span class="nx">Input</span><span class="o">::</span><span class="na">get</span><span class="p">(</span> <span class="s1">'password'</span> <span class="p">)</span> <span class="p">)</span>
+                <span class="p">)</span> <span class="p">);</span>
+
+            <span class="k">return</span> <span class="nx">Redirect</span><span class="o">::</span><span class="na">to</span><span class="p">(</span> <span class="s1">'/'</span> <span class="p">)</span><span class="o">-&gt;</span><span class="na">with</span><span class="p">(</span> <span class="s1">'message'</span><span class="p">,</span> <span class="s1">'Thanks for registering!'</span> <span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">Redirect</span><span class="o">::</span><span class="na">to</span><span class="p">(</span> <span class="s1">'/'</span> <span class="p">)</span><span class="o">-&gt;</span><span class="na">withErrors</span><span class="p">(</span> <span class="nv">$v</span><span class="o">-&gt;</span><span class="na">getMessages</span><span class="p">()</span> <span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
+
+<p>Implementing this yourself often results in a lot of repeated boilerplate code. As an added bonus, you controllers (or route handlers) get prematurely fat, and your code becomes messy, ugly and difficult to understand.</p>
+
+<p>What if someone else did all the heavy-lifting for you? What if, instead of regurgitating the above mess, all you needed to type was these few lines?...</p>
+
+<div class="highlight"><pre><span class="nx">Route</span><span class="o">::</span><span class="na">post</span><span class="p">(</span> <span class="s1">'register'</span><span class="p">,</span> <span class="k">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">()</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">Redirect</span><span class="o">::</span><span class="na">to</span><span class="p">(</span> <span class="s1">'/'</span> <span class="p">)</span><span class="o">-&gt;</span><span class="na">with</span><span class="p">(</span> <span class="s1">'message'</span><span class="p">,</span> <span class="s1">'Thanks for registering!'</span> <span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">Redirect</span><span class="o">::</span><span class="na">to</span><span class="p">(</span> <span class="s1">'/'</span> <span class="p">)</span><span class="o">-&gt;</span><span class="na">withErrors</span><span class="p">(</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">errors</span><span class="p">()</span> <span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
+
+<p><strong>Enter Ardent!</strong> </p>
+
+<p><strong>Ardent</strong> - the magic-dust-powered, wrist-friendly, one-stop solution to all your dreary input sanitization boilerplates!</p>
+
+<p>Puns aside, input validation can quickly become tedious to write and maintain. Ardent deals away with these complexities by providing helpers for automating many repetitive tasks. Ardent is not just great for input validation, though - it will help you significantly reduce your Eloquent data model code.</p>
+
+<p>Ardent is particularly useful if you find yourself wearily writing very similar code time and again in multiple individual applications. For example, user registration or blog post submission is a common coding requirement that you might want to implement in one application and reuse again in other applications.</p>
+
+<p>With Ardent, you can write it just once, then re-use it (with no or very little modification) in your other projects. Once you get used to this way of doing things, you'll honestly wonder how you ever coped without Ardent. It's the business.</p>
+
+<p><strong>No more repetitive brain strain injury for you!</strong></p>
+
+<p><a name="start"></a></p>
+
+<h2>Getting Started</h2>
+
+<p><code>Ardent</code> aims to extend the <code>Eloquent</code> base class without changing its core functionality. Since <code>Ardent</code> itself is a descendant of <code>Illuminate\Database\Eloquent\Model</code>, all your <code>Ardent</code> models are fully compatible with and harness the full power of <code>Eloquent</code>.</p>
+
+<p>To create a new Ardent model, simply make your model class descend from the <code>Ardent</code> base class:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{}</span>
+</pre></div>
+
+<p><a name="validation"></a></p>
+
+<h2>Effortless Validation with Ardent</h2>
+
+<p>Ardent models use Laravel's built-in <a href="http://doc.laravelbook.com/validation/">Validator class</a>. Defining validation rules for a model is simple and is typically done in your model class as a static variable:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+
+  <span class="sd">/**</span>
+<span class="sd">   * Ardent validation rules</span>
+<span class="sd">   */</span>
+  <span class="k">public</span> <span class="k">static</span> <span class="nv">$rules</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'required|between:4,16'</span><span class="p">,</span>
+    <span class="s1">'email'</span> <span class="o">=&gt;</span> <span class="s1">'required|email'</span><span class="p">,</span>
+    <span class="s1">'password'</span> <span class="o">=&gt;</span> <span class="s1">'required|alpha_num|between:4,8|confirmed'</span><span class="p">,</span>
+    <span class="s1">'password_confirmation'</span> <span class="o">=&gt;</span> <span class="s1">'required|alpha_num|between:4,8'</span><span class="p">,</span>
+  <span class="p">);</span>
+
+  <span class="o">...</span>
+
+<span class="p">}</span>
+</pre></div>
+
+<p>Ardent models validate themselves automatically when <code>Ardent-&gt;save()</code> is called.</p>
+
+<div class="highlight"><pre><span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">;</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">name</span> <span class="o">=</span> <span class="s1">'John doe'</span><span class="p">;</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">email</span> <span class="o">=</span> <span class="s1">'john@doe.com'</span><span class="p">;</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="s1">'test'</span><span class="p">;</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">();</span> <span class="c1">// returns false if model is invalid</span>
+</pre></div>
+
+<p><strong>note:</strong> You also can validate a model at any time using the <code>Ardent-&gt;validate()</code> method.</p>
+
+<p><a name="errors"></a></p>
+
+<h2>Retrieving Validation Errors</h2>
+
+<p>When an Ardent model fails to validate, a <code>Illuminate\Support\MessageBag</code> object is attached to the Ardent object.</p>
+
+<p>Retrieve the validation errors message collection instance with <code>Ardent-&gt;errors()</code> method or <code>Ardent-&gt;validationErrors</code> property.</p>
+
+<p>Retrieve all validation errors with <code>Ardent-&gt;errors()-&gt;all()</code>. Retrieve errors for a <em>specific</em> attribute using <code>Ardent-&gt;validationErrors-&gt;get('attribute')</code>.</p>
+
+<blockquote>
+<p><strong>Note:</strong> Ardent leverages Laravel's MessagesBag object which has a <a href="http://doc.laravelbook.com/validation/#working-with-error-messages">simple and elegant method</a> of formatting errors.</p>
+</blockquote>
+
+<p><a name="overide"></a></p>
+
+<h2>Overriding Validation</h2>
+
+<p>There are two ways to override Ardent's validation:</p>
+
+<h4>1. Forced Save</h4>
+
+<p><code>forceSave()</code> validates the model but saves regardless of whether or not there are validation errors.</p>
+
+<h4>2. Override Rules and Messages</h4>
+
+<p>both <code>Ardent-&gt;save($rules, $customMessages)</code> and <code>Ardent-&gt;validate($rules, $customMessages)</code> take two parameters:</p>
+
+<ul>
+<li>
+<code>$rules</code> is an array of Validator rules of the same form as <code>Ardent::rules</code>.</li>
+<li>The same is true of the <code>$customMessages</code> parameter (same as <code>Ardent::customMessages</code>)</li>
+</ul><p>An array that is <strong>not empty</strong> will override the rules or custom error messages specified by the class for that instance of the method only.</p>
+
+<blockquote>
+<p><strong>Note:</strong> the default value for <code>$rules</code> and <code>$customMessages</code> is <code>array()</code>, if you pass an <code>array()</code> nothing will be overriden</p>
+</blockquote>
+
+<p><a name="beforesave"></a></p>
+
+<h2>beforeSave and afterSave Hooks</h2>
+
+<p>Ardent provides a convenient method for performing actions when <code>$model-&gt;save()</code> is called. For example, use <code>beforeSave</code> to automatically hash a users password:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+
+  <span class="k">public</span> <span class="k">function</span> <span class="nf">beforeSave</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="c1">// if there's a new password, hash it</span>
+    <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">changed</span><span class="p">(</span><span class="s1">'password'</span><span class="p">))</span>
+    <span class="p">{</span>
+      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="nx">Hash</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+
+<p>Notice that <code>beforeSave</code> returns a boolean. If you would like to halt the <code>save()</code> operation, simply return false.</p>
+
+<blockquote>
+<p><strong>Note:</strong> <code>forceSave()</code> has it's own <code>beforeForceSave()</code> and <code>afterForceSave()</code> hooks.</p>
+</blockquote>
+
+<h3>Overriding beforeSave and afterSave</h3>
+
+<p>Just like, <code>$rules</code> and <code>$customMessages</code>, <code>beforeSave</code> and <code>afterSave</code> can be overridden at run-time. Simply pass the closures to the <code>save()</code> (or <code>forceSave()</code>) function.</p>
+
+<div class="highlight"><pre><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="k">array</span><span class="p">(),</span> <span class="k">array</span><span class="p">(),</span> 
+    <span class="k">function</span> <span class="p">(</span><span class="nv">$model</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">echo</span> <span class="s2">"saving..."</span><span class="p">;</span>
+      <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="k">function</span> <span class="p">(</span><span class="nv">$model</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">echo</span> <span class="s2">"saved!"</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+</pre></div>
+
+<blockquote>
+<p><strong>Note:</strong> the closures should have one parameter as it will be passed a reference to the model being saved.</p>
+</blockquote>
+
+<p><a name="messages"></a></p>
+
+<h2>Custom Error Messages</h2>
+
+<p>Just like the Laravel Validator, Ardent lets you set custom error messages using the <a href="http://doc.laravelbook.com/validation/#custom-error-messages">same sytax</a>.</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+
+  <span class="sd">/**</span>
+<span class="sd">   * Ardent Messages</span>
+<span class="sd">   */</span>
+  <span class="k">public</span> <span class="k">static</span> <span class="nv">$customMessages</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s1">'required'</span> <span class="o">=&gt;</span> <span class="s1">'The :attribute field is required.'</span>
+  <span class="p">);</span>
+
+  <span class="o">...</span>
+
+<span class="p">}</span>
+</pre></div>
+
+<p><a name="rules"></a></p>
+
+<h2>Custom Validation Rules</h2>
+
+<p>You can create custom validation rules the <a href="http://doc.laravelbook.com/validation/#custom-validation-rules">same way</a> you would for the Laravel Validator.</p>
+
+<p><a name="hydra"></a></p>
+
+<h2>Automatically Hydrate Ardent Entities</h2>
+
+<p>Ardent automatically hydrates entity model class from the form input submission for you! Let's invoke the magic of Ardent and rewrite the previous snippet:</p>
+
+<div class="highlight"><pre><span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">;</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">();</span>
+</pre></div>
+
+<p>The code above performs essentially the same task as its earlier, albeit more verbose cousin. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel <code>Input::all()</code> method internally). Did you notice the succinctness?</p>
+
+<p>To enable the auto-hydration feature, simply set the <code>$autoHydrateEntityFromInput</code> instance variable to <code>true</code> in your model class:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+
+  <span class="k">public</span> <span class="nv">$autoHydrateEntityFromInput</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+
+<p><a name="purge"></a></p>
+
+<h2>Automatically Purge Redundant Form Data</h2>
+
+<p>Ardent models can <em>auto-magically</em> purge redundant input data (such as <em>password confirmation</em> fields) - so that the extra data is never saved to database. Ardent will use the confirmation fields to validate form input, then prudently discard these attributes before saving the model instance to database!</p>
+
+<p>To enable this feature, simply set the <code>$autoPurgeRedundantAttributes</code> instance variable to <code>true</code> in your model class:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+
+  <span class="k">public</span> <span class="nv">$autoPurgeRedundantAttributes</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+
+<p><a name="secure"></a></p>
+
+<h2>Automatically Transform Secure-Text Attributes</h2>
+
+<p>Do you have a <code>password</code> attribute in your model class, but don't want to store the plain-text version in the database? Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!</p>
+
+<p>To do that, add the attribute name to the <code>Ardent::$passwordAttributes</code> static array variable in your model class, and set the <code>$autoHashPasswordAttributes</code> instance variable to <code>true</code>:</p>
+
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+
+  <span class="k">public</span> <span class="k">static</span> <span class="nv">$passwordAttributes</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'password'</span><span class="p">);</span>
+
+  <span class="k">public</span> <span class="nv">$autoHashPasswordAttributes</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+
+<p>Ardent will automatically replace the plain-text password field with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.</p>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/laravelbook" class="avatar"><img src="https://secure.gravatar.com/avatar/c0569ef6b4cc50dbca2ec03a006e0c60?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="48" height="48"/></a> <a href="https://github.com/laravelbook">laravelbook</a> maintains <a href="https://github.com/laravelbook/ardent">Ardent</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/laravelbook/ardent/tarball/master" class="tar">tar</a><a href="https://github.com/laravelbook/ardent/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-37509080-3");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+</body>
+</html>
