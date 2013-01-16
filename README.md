@@ -21,6 +21,7 @@ Update your packages with `composer update` or install with `composer install`.
 
 ## Documentation
 
+* [Introduction](#intro)
 * [Getting Started](#start)
 * [Effortless Validation with Ardent](#validation)
 * [Retrieving Validation Errors](#errors)
@@ -30,9 +31,68 @@ Update your packages with `composer update` or install with `composer install`.
 * [Custom Validation Rules](#rules)
 
 <a name="start"></a>
+## Introduction
+
+How often do you find yourself re-creating the same boilerplate code in the applications you build? Does this typical form processing code look all too familiar to you?
+
+```php
+Route::post( 'register', function () {
+        $rules = array(
+            'name'      => 'required|min:3|max:80|alpha_dash',
+            'email'     => 'required|between:3,64|email|unique:users',
+            'password'  =>'required|alpha_num|between:4,8|confirmed',
+            'password_confirmation'=>'required|alpha_num|between:4,8'
+        );
+
+        $validator = Validator::make( Input::all(), $rules );
+
+        if ( $validator->passes() ) {
+            User::create( array(
+                    'name'      => Input::get( 'real_name' ),
+                    'email'     => Input::get( 'email' ),
+                    'password'  => Hash::make( Input::get( 'password' ) )
+                ) );
+
+            return Redirect::to( '/' )->with( 'message', 'Thanks for registering!' );
+        } else {
+            return Redirect::to( '/' )->withErrors( $v->getMessages() );
+        }
+    }
+);
+```
+
+Implementing this yourself often results in a lot of repeated boilerplate code. As an added bonus, you controllers (or route handlers) get prematurely fat, and your code becomes messy, ugly and difficult to understand.
+
+What if someone else did all the heavy-lifting for you? What if, instead of regurgitating the above mess, all you needed to type was these few lines?...
+
+```php
+Route::post( 'register', function () {
+        $user = new User;
+        if ( $user->save() ) {
+            return Redirect::to( '/' )->with( 'message', 'Thanks for registering!' );
+        } else {
+            return Redirect::to( '/' )->withErrors( $user->errors() );
+        }
+    }
+);
+```
+
+**Enter Ardent!** 
+
+**Ardent** - the magic-dust-powered, wrist-friendly, one-stop solution to all your dreary input sanitization boilerplates!
+
+Puns aside, input validation can quickly become tedious to write and maintain. Ardent deals away with these complexities by providing helpers for automating many repetitive tasks. Ardent is not just great for input validation, though - it will help you significantly reduce your Eloquent data model code.
+
+Ardent is particularly useful if you find yourself wearily writing very similar code time and again in multiple individual applications. For example, user registration or blog post submission is a common coding requirement that you might want to implement in one application and reuse again in other applications.
+
+With Ardent, you can write it just once, then re-use it (with no or very little modification) in your other projects. Once you get used to this way of doing things, you'll honestly wonder how you ever coped without Ardent. It's the business.
+
+**No more repetitive brain strain injury for you!**
+
+<a name="start"></a>
 ## Getting Started
 
-Ardent aims to extend the Eloquent base class without changing its core functionality. All Eloquent models are fully compatible with Ardent.
+`Ardent` aims to extend the `Eloquent` base class without changing its core functionality. Since `Ardent` itself is a descendant of `Illuminate\Database\Eloquent\Model`, all your `Ardent` models are fully compatible with and harness the full power of `Eloquent`.
 
 To create a new Ardent model, simply make your model class descend from the `Ardent` base class:
 
@@ -43,7 +103,7 @@ class User extends Ardent {}
 <a name="validation"></a>
 ## Effortless Validation with Ardent
 
-Ardent models use Laravel's built-in [Validator class](http://doc.laravelbook.com/validation/). Defining validation rules for a model is simple:
+Ardent models use Laravel's built-in [Validator class](http://doc.laravelbook.com/validation/). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
 
 ```php
 class User extends Ardent {
@@ -66,7 +126,7 @@ class User extends Ardent {
 Ardent models validate themselves automatically when `Ardent->save()` is called.
 
 ```php
-$user = new User();
+$user = new User;
 $user->name = 'John doe';
 $user->email = 'john@doe.com';
 $user->password = 'test';
@@ -74,6 +134,61 @@ $user->save(); // returns false if model is invalid
 ```
 
 **note:** You also can validate a model at any time using the `Ardent->validate()` method.
+
+<a name="hydra"></a>
+### Automatic Hydration of Ardent Models
+
+Ardent automatically hydrates entity model class from the form input submission for you! Let's invoke the magic of Ardent and rewrite the previous snippet:
+
+```php
+$user = new User;
+$user->save();
+```
+
+The code above performs essentially the same task as its earlier, albeit more verbose cousin. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel `Input::all()` method internally). Did you notice the succinctness?
+
+To enable the auto-hydration, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class:
+
+```php
+class User extends Ardent {
+
+  public $autoHydrateEntityFromInput = true;
+
+}
+```
+
+### Automatically Purge Redundant Form Data
+
+Not only that, Ardent models can *auto-magically* purge redundant input data (such as password confirmation fields) - so that the extra data is never saved to database. Ardent will use the confirmation code to validate the form input, then smartly discard these attributes before saving the model instance to database!
+
+
+To enable the auto-hydration, simply set the `$autoPurgeRedundantAttributes` instance variable to `true` in your model class:
+
+```php
+class User extends Ardent {
+
+  public $autoPurgeRedundantAttributes = true;
+
+}
+```
+
+### Automatically Transform Secure-Text Attributes
+
+Do you have a `password` attribute in your model class, but don't want to store the plain-text version in the database? Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!
+
+To do that, add the attribute name to the `Ardent::$passwordAttributes` static array variable in your model class, and set the `$autoHashPasswordAttributes` instance variable to `true`:
+
+```php
+class User extends Ardent {
+
+  public static $passwordAttributes = array('password');
+
+  public $autoHashPasswordAttributes = true;
+
+}
+```
+
+Ardent will automatically replace the plain-text password field with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.
 
 <a name="errors"></a>
 ## Retrieving Validation Errors
@@ -135,9 +250,9 @@ Notice that `beforeSave` returns a boolean. If you would like to halt the `save(
 Just like, `$rules` and `$customMessages`, `beforeSave` and `afterSave` can be overridden at run-time. Simply pass the closures to the `save()` (or `forceSave()`) function.
 
 ```php
-$user-save(array(), array(), 
+$user->save(array(), array(), 
 	function ($model) {
-	  echo "saving!";
+	  echo "saving...";
 	  return true;
 	},
 	function ($model) {
