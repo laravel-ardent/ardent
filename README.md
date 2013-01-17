@@ -171,28 +171,26 @@ An array that is **not empty** will override the rules or custom error messages 
 <a name="beforesave"></a>
 ## beforeSave and afterSave Hooks
 
-Ardent provides a convenient method for performing actions when `$model->save()` is called. For example, use `beforeSave` to automatically hash a users password:
+Ardent provides a convenient method for performing actions when `$model->save()` is called. For example, you may use `beforeSave` to hash a users password:
 
 ```php
 class User extends Ardent {
 
-  public function beforeSave()
-  {
-    // if there's a new password, hash it
-    if($this->changed('password'))
-    {
-      $this->password = Hash::make($this->password);
-    }
-
-    return true;
-  }
-
+	public function beforeSave( $forced )
+	{
+		// if there's a new password, hash it
+		if($this->changed('password'))
+		{
+			$this->password = Hash::make($this->password);
+		}
+		
+		return true;
+		}
+	
 }
 ```
 
-Notice that `beforeSave` returns a boolean. If you would like to halt the `save()` operation, simply return false.
-
-> **Note:** `forceSave()` has it's own `beforeForceSave()` and `afterForceSave()` hooks.
+Notice that `beforeSave` returns a boolean. If you'd like to halt the `save()` operation, simply return `false`.
 
 ### Overriding beforeSave and afterSave
 
@@ -200,15 +198,16 @@ Just like, `$rules` and `$customMessages`, `beforeSave` and `afterSave` can be o
 
 ```php
 $user->save(array(), array(), 
-	function ($model) {
-	  echo "saving...";
-	  return true;
+	function ($model) {	// closure for beforeSave
+		echo "saving the model object...";
+		return true;
 	},
-	function ($model) {
-	  echo "saved!";
+	function ($model) {	// closure for afterSave
+		echo "done!";
 	}
 );
 ```
+
 > **Note:** the closures should have one parameter as it will be passed a reference to the model being saved.
 
 <a name="messages"></a>
@@ -258,7 +257,7 @@ $user = new User;
 $user->save();
 ```
 
-That's it!
+That's it! All we've done is remove the boring stuff.
 
 Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel `Input::all()` method internally). No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!
 
