@@ -85,18 +85,18 @@ Route::post( 'register', function () {
 
 **Ardent** - the magic-dust-powered, wrist-friendly, one-stop solution to all your dreary input sanitization boilerplates!
 
-Puns aside, input validation can quickly become tedious to write and maintain. Ardent deals away with these complexities by providing helpers for automating many repetitive tasks. Ardent is not just great for input validation, though - it will help you significantly reduce your Eloquent data model code.
+Puns aside, input validation functionality can quickly become tedious to write and maintain. Ardent deals away with these complexities by providing helpers for automating many repetitive tasks.
 
-Ardent is particularly useful if you find yourself wearily writing very similar code time and again in multiple individual applications. For example, user registration or blog post submission is a common coding requirement that you might want to implement in one application and reuse again in other applications.
+Ardent is not just great for input validation, though - it will help you significantly reduce your Eloquent data model code. Ardent is particularly useful if you find yourself wearily writing very similar code time and again in multiple individual applications.
 
-With Ardent, you can write it just once, then re-use it (with no or very little modification) in your other projects. Once you get used to this way of doing things, you'll honestly wonder how you ever coped without Ardent. It's the business.
+For example, user registration or blog post submission is a common coding requirement that you might want to implement in one application and reuse again in other applications. With Ardent, you can write your *self-aware, smart* models just once, then re-use them (with no or very little modification) in other projects. Once you get used to this way of doing things, you'll honestly wonder how you ever coped without Ardent.
 
 **No more repetitive brain strain injury for you!**
 
 <a name="start"></a>
 ## Getting Started
 
-`Ardent` aims to extend the `Eloquent` base class without changing its core functionality. Since `Ardent` itself is a descendant of `Illuminate\Database\Eloquent\Model`, all your `Ardent` models are fully compatible with and harness the full power of `Eloquent`.
+`Ardent` aims to extend the `Eloquent` base class without changing its core functionality. Since `Ardent` itself is a descendant of `Illuminate\Database\Eloquent\Model`, all your `Ardent` models are fully compatible with `Eloquent` and can harness the full power of Laravels awesome OR/M.
 
 To create a new Ardent model, simply make your model class descend from the `Ardent` base class:
 
@@ -137,12 +137,12 @@ $user->password = 'test';
 $success = $user->save(); // returns false if model is invalid
 ```
 
-> **Note:** You also can validate a model at any time using the `Ardent->validate()` method.
+> **Note:** You can also validate a model at any time using the `Ardent->validate()` method.
 
 <a name="errors"></a>
 ## Retrieving Validation Errors
 
-When an Ardent model fails to validate, a `Illuminate\Support\MessageBag` object is attached to the Ardent object.
+When an Ardent model fails to validate, a `Illuminate\Support\MessageBag` object is attached to the Ardent object which contains validation failure messages.
 
 Retrieve the validation errors message collection instance with `Ardent->errors()` method or `Ardent->validationErrors` property.
 
@@ -166,7 +166,7 @@ both `Ardent->save($rules, $customMessages)` and `Ardent->validate($rules, $cust
 
 An array that is **not empty** will override the rules or custom error messages specified by the class for that instance of the method only.
 
-> **Note:** the default value for `$rules` and `$customMessages` is `array()`, if you pass an `array()` nothing will be overriden
+> **Note:** the default value for `$rules` and `$customMessages` is empty `array()`, if you pass an `array()` nothing will be overriden.
 
 <a name="beforesave"></a>
 ## beforeSave and afterSave Hooks
