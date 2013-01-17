@@ -305,4 +305,4 @@ class User extends Ardent {
 }
 ```
 
-Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.
+Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel `Hash::make()` method internally to generate hash.
