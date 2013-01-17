@@ -134,10 +134,10 @@ $user = new User;
 $user->name = 'John doe';
 $user->email = 'john@doe.com';
 $user->password = 'test';
-$user->save(); // returns false if model is invalid
+$success = $user->save(); // returns false if model is invalid
 ```
 
-**note:** You also can validate a model at any time using the `Ardent->validate()` method.
+> **Note:** You also can validate a model at any time using the `Ardent->validate()` method.
 
 <a name="errors"></a>
 ## Retrieving Validation Errors
@@ -239,14 +239,28 @@ You can create custom validation rules the [same way](http://doc.laravelbook.com
 <a name="hydra"></a>
 ## Automatically Hydrate Ardent Entities
 
-Ardent automatically hydrates entity model class from the form input submission for you! Let's invoke the magic of Ardent and rewrite the previous snippet:
+Ardent is capable of hydrating your entity model class from the form input submission automatically! 
+
+Let's see it action. Consider this snippet of code:
+
+```php
+$user = new User;
+$user->name = Input::get('name');
+$user->email = Input::get('email');
+$user->password = Hash::make(Input::get('password'));
+$user->save();
+```
+
+Let's invoke the *magick* of Ardent and rewrite the previous snippet:
 
 ```php
 $user = new User;
 $user->save();
 ```
 
-The code above performs essentially the same task as its earlier, albeit more verbose cousin. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel `Input::all()` method internally). Did you notice the succinctness?
+That's it!
+
+Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel `Input::all()` method internally). No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!
 
 To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class:
 
@@ -276,7 +290,7 @@ class User extends Ardent {
 <a name="secure"></a>
 ## Automatically Transform Secure-Text Attributes
 
-Do you have a `password` attribute in your model class, but don't want to store the plain-text version in the database? Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!
+Suppose you have an attribute named `password` in your model class, but don't want to store the plain-text version in the database. The pragmatic thing to do would be to store the hash of the original content. Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!
 
 To do that, add the attribute name to the `Ardent::$passwordAttributes` static array variable in your model class, and set the `$autoHashPasswordAttributes` instance variable to `true`:
 
@@ -290,4 +304,4 @@ class User extends Ardent {
 }
 ```
 
-Ardent will automatically replace the plain-text password field with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.
+Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.
