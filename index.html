@@ -135,10 +135,14 @@
 
 <p><code>Ardent</code> aims to extend the <code>Eloquent</code> base class without changing its core functionality. Since <code>Ardent</code> itself is a descendant of <code>Illuminate\Database\Eloquent\Model</code>, all your <code>Ardent</code> models are fully compatible with <code>Eloquent</code> and can harness the full power of Laravels awesome OR/M.</p>
 
-<p>To create a new Ardent model, simply make your model class descend from the <code>Ardent</code> base class:</p>
+<p>To create a new Ardent model, simply make your model class derive from the <code>Ardent</code> base class:</p>
 
 <div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{}</span>
 </pre></div>
+
+<blockquote>
+<p><strong>Note:</strong> You can freely <em>co-mingle</em> your plain-vanilla Eloquent models with Ardent descendants. If a model object doesn't rely upon user submitted content and therefore doesn't require validation - you may leave the Eloquent model class as it is.</p>
+</blockquote>
 
 <p><a name="validation"></a></p>
 
