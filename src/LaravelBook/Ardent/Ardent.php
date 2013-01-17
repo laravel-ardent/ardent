@@ -155,9 +155,10 @@ abstract class Ardent extends Model
     /**
      * Invoked before a model is saved. Return false to abort the operation.
      *
+     * @param bool    $forced Indicates whether the model is being saved forcefully
      * @return bool
      */
-    protected function beforeSave() {
+    protected function beforeSave( $forced = false ) {
         return true;
     }
 
@@ -165,28 +166,10 @@ abstract class Ardent extends Model
      * Called after a model is successfully saved.
      *
      * @param bool    $success Indicates whether the database save operation succeeded
+     * @param bool    $forced  Indicates whether the model is being saved forcefully
      * @return void
      */
-    public function afterSave( $success ) {
-        //
-    }
-
-    /**
-     * Invoked before a model is saved forcefully. Return false to abort the operation.
-     *
-     * @return bool
-     */
-    protected function beforeForceSave() {
-        return true;
-    }
-
-    /**
-     * Called after a model is successfully force-saved.
-     *
-     * @param bool    $success Indicates whether the database save operation succeeded
-     * @return void
-     */
-    public function afterForceSave( $success ) {
+    protected function afterSave( $success, $forced = false ) {
         //
     }
 
@@ -204,12 +187,12 @@ abstract class Ardent extends Model
         $validated = $this->validate( $rules, $customMessages );
 
         // execute beforeSave callback
-        $proceed = is_null( $beforeSave ) ? $this->beforeSave() : $beforeSave( $this );
+        $proceed = is_null( $beforeSave ) ? $this->beforeSave( false ) : $beforeSave( $this );
 
         // attempt to save if all conditions are satisfied
         $success = ( $proceed && $validated ) ? $this->performSave() : false;
 
-        is_null( $afterSave ) ? $this->afterSave( $success ) : $afterSave( $this );
+        is_null( $afterSave ) ? $this->afterSave( $success, false ) : $afterSave( $this );
 
         return $success;
     }
@@ -221,18 +204,18 @@ abstract class Ardent extends Model
      * @param array   $customMessages:array
      * @return bool
      */
-    public function forceSave( $rules = array(), $customMessages = array(), Closure $beforeForceSave = null, Closure $afterForceSave = null ) {
+    public function forceSave( $rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
 
         // validate the model
         $this->validate( $rules, $customMessages );
 
         // execute beforeForceSave callback
-        $proceed = is_null( $beforeForceSave ) ? $this->beforeForceSave() : $beforeForceSave( $this );
+        $proceed = is_null( $beforeSave ) ? $this->beforeSave( true ) : $beforeSave( $this );
 
         // attempt to save regardless of the outcome of validation
         $success = $proceed ? $this->performSave() : false;
 
-        is_null( $afterForceSave ) ? $this->afterForceSave( $success ) : $afterForceSave( $this );
+        is_null( $afterSave ) ? $this->afterSave( $success, true ) : $afterSave( $this );
 
         return $success;
     }
