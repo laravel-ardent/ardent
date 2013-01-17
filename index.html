@@ -169,10 +169,12 @@
 <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">name</span> <span class="o">=</span> <span class="s1">'John doe'</span><span class="p">;</span>
 <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">email</span> <span class="o">=</span> <span class="s1">'john@doe.com'</span><span class="p">;</span>
 <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="s1">'test'</span><span class="p">;</span>
-<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">();</span> <span class="c1">// returns false if model is invalid</span>
+<span class="nv">$success</span> <span class="o">=</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">();</span> <span class="c1">// returns false if model is invalid</span>
 </pre></div>
 
-<p><strong>note:</strong> You also can validate a model at any time using the <code>Ardent-&gt;validate()</code> method.</p>
+<blockquote>
+<p><strong>Note:</strong> You also can validate a model at any time using the <code>Ardent-&gt;validate()</code> method.</p>
+</blockquote>
 
 <p><a name="errors"></a></p>
 
@@ -216,41 +218,37 @@
 
 <h2>beforeSave and afterSave Hooks</h2>
 
-<p>Ardent provides a convenient method for performing actions when <code>$model-&gt;save()</code> is called. For example, use <code>beforeSave</code> to automatically hash a users password:</p>
+<p>Ardent provides a convenient method for performing actions when <code>$model-&gt;save()</code> is called. For example, you may use <code>beforeSave</code> to hash a users password:</p>
 
 <div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
 
-  <span class="k">public</span> <span class="k">function</span> <span class="nf">beforeSave</span><span class="p">()</span>
-  <span class="p">{</span>
-    <span class="c1">// if there's a new password, hash it</span>
-    <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">changed</span><span class="p">(</span><span class="s1">'password'</span><span class="p">))</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">beforeSave</span><span class="p">(</span> <span class="nv">$forced</span> <span class="p">)</span>
     <span class="p">{</span>
-      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="nx">Hash</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span><span class="p">);</span>
-    <span class="p">}</span>
+        <span class="c1">// if there's a new password, hash it</span>
+        <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">changed</span><span class="p">(</span><span class="s1">'password'</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="nx">Hash</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span><span class="p">);</span>
+        <span class="p">}</span>
 
-    <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
-  <span class="p">}</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
 
 <span class="p">}</span>
 </pre></div>
 
-<p>Notice that <code>beforeSave</code> returns a boolean. If you would like to halt the <code>save()</code> operation, simply return false.</p>
-
-<blockquote>
-<p><strong>Note:</strong> <code>forceSave()</code> has it's own <code>beforeForceSave()</code> and <code>afterForceSave()</code> hooks.</p>
-</blockquote>
+<p>Notice that <code>beforeSave</code> returns a boolean. If you'd like to halt the <code>save()</code> operation, simply return <code>false</code>.</p>
 
 <h3>Overriding beforeSave and afterSave</h3>
 
 <p>Just like, <code>$rules</code> and <code>$customMessages</code>, <code>beforeSave</code> and <code>afterSave</code> can be overridden at run-time. Simply pass the closures to the <code>save()</code> (or <code>forceSave()</code>) function.</p>
 
 <div class="highlight"><pre><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="k">array</span><span class="p">(),</span> <span class="k">array</span><span class="p">(),</span> 
-    <span class="k">function</span> <span class="p">(</span><span class="nv">$model</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">echo</span> <span class="s2">"saving..."</span><span class="p">;</span>
-      <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="k">function</span> <span class="p">(</span><span class="nv">$model</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// closure for beforeSave</span>
+        <span class="k">echo</span> <span class="s2">"saving the model object..."</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
     <span class="p">},</span>
-    <span class="k">function</span> <span class="p">(</span><span class="nv">$model</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">echo</span> <span class="s2">"saved!"</span><span class="p">;</span>
+    <span class="k">function</span> <span class="p">(</span><span class="nv">$model</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// closure for afterSave</span>
+        <span class="k">echo</span> <span class="s2">"done!"</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">);</span>
 </pre></div>
@@ -289,13 +287,26 @@
 
 <h2>Automatically Hydrate Ardent Entities</h2>
 
-<p>Ardent automatically hydrates entity model class from the form input submission for you! Let's invoke the magic of Ardent and rewrite the previous snippet:</p>
+<p>Ardent is capable of hydrating your entity model class from the form input submission automatically! </p>
+
+<p>Let's see it action. Consider this snippet of code:</p>
+
+<div class="highlight"><pre><span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">;</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">name</span> <span class="o">=</span> <span class="nx">Input</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">);</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">email</span> <span class="o">=</span> <span class="nx">Input</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">'email'</span><span class="p">);</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">=</span> <span class="nx">Hash</span><span class="o">::</span><span class="na">make</span><span class="p">(</span><span class="nx">Input</span><span class="o">::</span><span class="na">get</span><span class="p">(</span><span class="s1">'password'</span><span class="p">));</span>
+<span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">();</span>
+</pre></div>
+
+<p>Let's invoke the <em>magick</em> of Ardent and rewrite the previous snippet:</p>
 
 <div class="highlight"><pre><span class="nv">$user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">;</span>
 <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">();</span>
 </pre></div>
 
-<p>The code above performs essentially the same task as its earlier, albeit more verbose cousin. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel <code>Input::all()</code> method internally). Did you notice the succinctness?</p>
+<p>That's it! All we've done is remove the boring stuff.</p>
+
+<p>Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel <code>Input::all()</code> method internally). No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!</p>
 
 <p>To enable the auto-hydration feature, simply set the <code>$autoHydrateEntityFromInput</code> instance variable to <code>true</code> in your model class:</p>
 
@@ -325,7 +336,7 @@
 
 <h2>Automatically Transform Secure-Text Attributes</h2>
 
-<p>Do you have a <code>password</code> attribute in your model class, but don't want to store the plain-text version in the database? Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!</p>
+<p>Suppose you have an attribute named <code>password</code> in your model class, but don't want to store the plain-text version in the database. The pragmatic thing to do would be to store the hash of the original content. Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!</p>
 
 <p>To do that, add the attribute name to the <code>Ardent::$passwordAttributes</code> static array variable in your model class, and set the <code>$autoHashPasswordAttributes</code> instance variable to <code>true</code>:</p>
 
@@ -338,7 +349,7 @@
 <span class="p">}</span>
 </pre></div>
 
-<p>Ardent will automatically replace the plain-text password field with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.</p>
+<p>Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel Hash::make() method internally to generate hash.</p>
         </article>
       </div>
     </div>
