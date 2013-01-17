@@ -121,11 +121,11 @@
 
 <p><strong>Ardent</strong> - the magic-dust-powered, wrist-friendly, one-stop solution to all your dreary input sanitization boilerplates!</p>
 
-<p>Puns aside, input validation can quickly become tedious to write and maintain. Ardent deals away with these complexities by providing helpers for automating many repetitive tasks. Ardent is not just great for input validation, though - it will help you significantly reduce your Eloquent data model code.</p>
+<p>Puns aside, input validation functionality can quickly become tedious to write and maintain. Ardent deals away with these complexities by providing helpers for automating many repetitive tasks.</p>
 
-<p>Ardent is particularly useful if you find yourself wearily writing very similar code time and again in multiple individual applications. For example, user registration or blog post submission is a common coding requirement that you might want to implement in one application and reuse again in other applications.</p>
+<p>Ardent is not just great for input validation, though - it will help you significantly reduce your Eloquent data model code. Ardent is particularly useful if you find yourself wearily writing very similar code time and again in multiple individual applications.</p>
 
-<p>With Ardent, you can write it just once, then re-use it (with no or very little modification) in your other projects. Once you get used to this way of doing things, you'll honestly wonder how you ever coped without Ardent. It's the business.</p>
+<p>For example, user registration or blog post submission is a common coding requirement that you might want to implement in one application and reuse again in other applications. With Ardent, you can write your <em>self-aware, smart</em> models just once, then re-use them (with no or very little modification) in other projects. Once you get used to this way of doing things, you'll honestly wonder how you ever coped without Ardent.</p>
 
 <p><strong>No more repetitive brain strain injury for you!</strong></p>
 
@@ -133,7 +133,7 @@
 
 <h2>Getting Started</h2>
 
-<p><code>Ardent</code> aims to extend the <code>Eloquent</code> base class without changing its core functionality. Since <code>Ardent</code> itself is a descendant of <code>Illuminate\Database\Eloquent\Model</code>, all your <code>Ardent</code> models are fully compatible with and harness the full power of <code>Eloquent</code>.</p>
+<p><code>Ardent</code> aims to extend the <code>Eloquent</code> base class without changing its core functionality. Since <code>Ardent</code> itself is a descendant of <code>Illuminate\Database\Eloquent\Model</code>, all your <code>Ardent</code> models are fully compatible with <code>Eloquent</code> and can harness the full power of Laravels awesome OR/M.</p>
 
 <p>To create a new Ardent model, simply make your model class descend from the <code>Ardent</code> base class:</p>
 
@@ -173,14 +173,14 @@
 </pre></div>
 
 <blockquote>
-<p><strong>Note:</strong> You also can validate a model at any time using the <code>Ardent-&gt;validate()</code> method.</p>
+<p><strong>Note:</strong> You can also validate a model at any time using the <code>Ardent-&gt;validate()</code> method.</p>
 </blockquote>
 
 <p><a name="errors"></a></p>
 
 <h2>Retrieving Validation Errors</h2>
 
-<p>When an Ardent model fails to validate, a <code>Illuminate\Support\MessageBag</code> object is attached to the Ardent object.</p>
+<p>When an Ardent model fails to validate, a <code>Illuminate\Support\MessageBag</code> object is attached to the Ardent object which contains validation failure messages.</p>
 
 <p>Retrieve the validation errors message collection instance with <code>Ardent-&gt;errors()</code> method or <code>Ardent-&gt;validationErrors</code> property.</p>
 
@@ -211,7 +211,7 @@
 </ul><p>An array that is <strong>not empty</strong> will override the rules or custom error messages specified by the class for that instance of the method only.</p>
 
 <blockquote>
-<p><strong>Note:</strong> the default value for <code>$rules</code> and <code>$customMessages</code> is <code>array()</code>, if you pass an <code>array()</code> nothing will be overriden</p>
+<p><strong>Note:</strong> the default value for <code>$rules</code> and <code>$customMessages</code> is empty <code>array()</code>, if you pass an <code>array()</code> nothing will be overriden.</p>
 </blockquote>
 
 <p><a name="beforesave"></a></p>
