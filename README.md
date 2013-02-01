@@ -13,7 +13,7 @@ Add `laravelbook/ardent` as a requirement to `composer.json`:
 ```javascript
 {
     "require": {
-        "laravelbook/ardent": "1.0.*"
+        "laravelbook/ardent": "dev-master"
     }
 }
 ```
