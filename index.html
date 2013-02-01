@@ -50,7 +50,7 @@
 
 <div class="highlight"><pre><span class="p">{</span>
     <span class="s2">"require"</span><span class="o">:</span> <span class="p">{</span>
-        <span class="s2">"laravelbook/ardent"</span><span class="o">:</span> <span class="s2">"1.0.*"</span>
+        <span class="s2">"laravelbook/ardent"</span><span class="o">:</span> <span class="s2">"dev-master"</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -137,7 +137,9 @@
 
 <p>To create a new Ardent model, simply make your model class derive from the <code>Ardent</code> base class:</p>
 
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{}</span>
+<div class="highlight"><pre><span class="k">use</span> <span class="nx">LaravelBook\Ardent\Ardent</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{}</span>
 </pre></div>
 
 <blockquote>
@@ -150,7 +152,9 @@
 
 <p>Ardent models use Laravel's built-in <a href="http://doc.laravelbook.com/validation/">Validator class</a>. Defining validation rules for a model is simple and is typically done in your model class as a static variable:</p>
 
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="k">use</span> <span class="nx">LaravelBook\Ardent\Ardent</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
 
   <span class="sd">/**</span>
 <span class="sd">   * Ardent validation rules</span>
@@ -224,7 +228,9 @@
 
 <p>Ardent provides a convenient method for performing actions when <code>$model-&gt;save()</code> is called. For example, you may use <code>beforeSave</code> to hash a users password:</p>
 
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="k">use</span> <span class="nx">LaravelBook\Ardent\Ardent</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
 
     <span class="k">public</span> <span class="k">function</span> <span class="nf">beforeSave</span><span class="p">(</span> <span class="nv">$forced</span> <span class="p">)</span>
     <span class="p">{</span>
@@ -267,7 +273,9 @@
 
 <p>Just like the Laravel Validator, Ardent lets you set custom error messages using the <a href="http://doc.laravelbook.com/validation/#custom-error-messages">same sytax</a>.</p>
 
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="k">use</span> <span class="nx">LaravelBook\Ardent\Ardent</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
 
   <span class="sd">/**</span>
 <span class="sd">   * Ardent Messages</span>
@@ -314,7 +322,9 @@
 
 <p>To enable the auto-hydration feature, simply set the <code>$autoHydrateEntityFromInput</code> instance variable to <code>true</code> in your model class:</p>
 
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="k">use</span> <span class="nx">LaravelBook\Ardent\Ardent</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
 
   <span class="k">public</span> <span class="nv">$autoHydrateEntityFromInput</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
 
@@ -329,7 +339,9 @@
 
 <p>To enable this feature, simply set the <code>$autoPurgeRedundantAttributes</code> instance variable to <code>true</code> in your model class:</p>
 
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="k">use</span> <span class="nx">LaravelBook\Ardent\Ardent</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
 
   <span class="k">public</span> <span class="nv">$autoPurgeRedundantAttributes</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
 
@@ -344,7 +356,9 @@
 
 <p>To do that, add the attribute name to the <code>Ardent::$passwordAttributes</code> static array variable in your model class, and set the <code>$autoHashPasswordAttributes</code> instance variable to <code>true</code>:</p>
 
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="k">use</span> <span class="nx">LaravelBook\Ardent\Ardent</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">User</span> <span class="k">extends</span> <span class="nx">Ardent</span> <span class="p">{</span>
 
   <span class="k">public</span> <span class="k">static</span> <span class="nv">$passwordAttributes</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'password'</span><span class="p">);</span>
 
