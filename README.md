@@ -101,6 +101,8 @@ For example, user registration or blog post submission is a common coding requir
 To create a new Ardent model, simply make your model class derive from the `Ardent` base class:
 
 ```php
+use LaravelBook\Ardent\Ardent;
+
 class User extends Ardent {}
 ```
 
@@ -112,6 +114,8 @@ class User extends Ardent {}
 Ardent models use Laravel's built-in [Validator class](http://doc.laravelbook.com/validation/). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
 
 ```php
+use LaravelBook\Ardent\Ardent;
+
 class User extends Ardent {
 
   /**
@@ -176,6 +180,8 @@ An array that is **not empty** will override the rules or custom error messages 
 Ardent provides a convenient method for performing actions when `$model->save()` is called. For example, you may use `beforeSave` to hash a users password:
 
 ```php
+use LaravelBook\Ardent\Ardent;
+
 class User extends Ardent {
 
 	public function beforeSave( $forced )
@@ -218,6 +224,8 @@ $user->save(array(), array(),
 Just like the Laravel Validator, Ardent lets you set custom error messages using the [same sytax](http://doc.laravelbook.com/validation/#custom-error-messages).
 
 ```php
+use LaravelBook\Ardent\Ardent;
+
 class User extends Ardent {
 
   /**
@@ -266,6 +274,8 @@ Believe it or not, the code above performs essentially the same task as its olde
 To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class:
 
 ```php
+use LaravelBook\Ardent\Ardent;
+
 class User extends Ardent {
 
   public $autoHydrateEntityFromInput = true;
@@ -281,6 +291,8 @@ Ardent models can *auto-magically* purge redundant input data (such as *password
 To enable this feature, simply set the `$autoPurgeRedundantAttributes` instance variable to `true` in your model class:
 
 ```php
+use LaravelBook\Ardent\Ardent;
+
 class User extends Ardent {
 
   public $autoPurgeRedundantAttributes = true;
@@ -296,6 +308,8 @@ Suppose you have an attribute named `password` in your model class, but don't wa
 To do that, add the attribute name to the `Ardent::$passwordAttributes` static array variable in your model class, and set the `$autoHashPasswordAttributes` instance variable to `true`:
 
 ```php
+use LaravelBook\Ardent\Ardent;
+
 class User extends Ardent {
 
   public static $passwordAttributes = array('password');
