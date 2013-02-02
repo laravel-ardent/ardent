@@ -301,7 +301,7 @@ abstract class Ardent extends Model
     protected function hashPasswordAttributes( array $attributes = array(), array $passwordAttributes = array() ) {
 
         if ( empty( $passwordAttributes ) || empty( $attributes ) )
-            return;
+            return $attributes;
 
         $result = array();
         foreach ( $attributes as $key => $value ) {
