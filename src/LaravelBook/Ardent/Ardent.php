@@ -87,7 +87,7 @@ abstract class Ardent extends Model
      * Create a new Ardent model instance.
      *
      * @param array   $attributes
-     * @return void
+     * @return \LaravelBook\Ardent\Ardent
      */
     public function __construct( array $attributes = array() ) {
 
@@ -187,6 +187,7 @@ abstract class Ardent extends Model
      * @param array   $rules:array
      * @param array   $customMessages
      * @param closure $beforeSave
+     * @param callable $afterSave
      * @return bool
      */
     public function save( $rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
@@ -210,6 +211,8 @@ abstract class Ardent extends Model
      *
      * @param array   $rules:array
      * @param array   $customMessages:array
+     * @param callable $beforeSave
+     * @param callable $afterSave
      * @return bool
      */
     public function forceSave( $rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
@@ -289,11 +292,11 @@ abstract class Ardent extends Model
 
     /**
      * Automatically replaces all plain-text password attributes (listed in $passwordAttributes)
-     * with hash checksums.
+     * with hash checksum.
      *
      * @param array   $attributes
      * @param array   $passwordAttributes
-     * @return void
+     * @return array
      */
     protected function hashPasswordAttributes( array $attributes = array(), array $passwordAttributes = array() ) {
 
