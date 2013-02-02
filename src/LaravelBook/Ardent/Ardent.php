@@ -144,14 +144,8 @@ abstract class Ardent extends Model
                 $this->validationErrors = $validator->messages();
 
                 // stash the input to the current session
-                try {
+                if ( Input::hasSessionStore() ) {
                     Input::flash();
-                } catch (Exception $e) {
-                    // Illuminate bootstrapper doesn't initialize the session store when the app is
-                    // run from CLI (via artisan) or being unit-tested. cf. https://github.com/laravelbook/ardent/issues/3
-                    // Workaround: Insert the following line in the "setUp()" method of your test class:
-                    // Input::setSessionStore(app()['session']);
-                    unset($e);  // gobble it up...
                 }
             }
 
