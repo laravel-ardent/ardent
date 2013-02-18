@@ -280,7 +280,7 @@ abstract class Ardent extends Model
      *
      * @return Illuminate\Support\MessageBag
      */
-    public function getErrors() {
+    public function errors() {
         return $this->validationErrors;
     }
 
