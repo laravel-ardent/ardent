@@ -115,9 +115,7 @@ abstract class Ardent extends Model
      */
     public function validate( $rules = array(), $customMessages = array() ) {
 
-        $success = true;
-
-        $rules = ( empty( $rules ) ) ? static::$rules : $rules;
+        $success = false;
 
         if ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) {
             // pluck only the fields which are defined in the validation rule-set
@@ -126,13 +124,13 @@ abstract class Ardent extends Model
 
         $data = $this->attributes; // the data under validation
 
-        if ( !empty( $rules ) || !empty( static::$rules ) ) {
+        // check for overrides
+        $rules = ( empty( $rules ) ) ? static::$rules : $rules;
+        $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
 
-            // check for overrides
-            $rules = ( empty( $rules ) ) ? static::$rules : $rules;
-            $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
+        if ( !empty( $data ) && !empty( $rules ) ) {
 
-            // construct the validator
+            // perform validation
             $validator = Validator::make( $data, $rules, $customMessages );
             $success = $validator->passes();
 
