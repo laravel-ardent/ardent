@@ -105,6 +105,16 @@ abstract class Ardent extends Model
         };
     }
 
+    /**
+     * Determine if a given string ends with a given needle.
+     *
+     * @param string  $haystack
+     * @param string  $needle
+     * @return bool
+     */
+    protected function endsWith( $haystack, $needle ) {
+        return $needle == substr( $haystack, strlen( $haystack ) - strlen( $needle ) );
+    }
 
     /**
      * Validate the model instance
