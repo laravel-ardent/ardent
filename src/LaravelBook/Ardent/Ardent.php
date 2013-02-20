@@ -95,11 +95,13 @@ abstract class Ardent extends Model
         $this->validationErrors = new MessageBag;
 
         $this->purgeFilters[] = function ( $attributeKey ) {
-            $len = strlen( '_confirmation' );
-
-            if ( strlen( $attributeKey ) > $len && strcmp( substr( $attributeKey, -$len ), '_confirmation' ) == 0 ) {
+            // disallow password confirmation fields
+            if ( $this->endsWith( $attributeKey, '_confirmation' ) )
                 return false;
-            }
+
+            // "_method" is used by Illuminate\Routing\Router to simulate custom HTTP verbs
+            if ( strcmp( $attributeKey, '_method' ) === 0 )
+                return false;
 
             return true;
         };
