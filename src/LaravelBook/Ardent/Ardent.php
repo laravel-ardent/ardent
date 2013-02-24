@@ -129,16 +129,16 @@ abstract class Ardent extends Model
 
         $success = empty($rules);
 
+        // check for overrides
+        $rules = ( empty( $rules ) ) ? static::$rules : $rules;
+        $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
+
         if ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) {
             // pluck only the fields which are defined in the validation rule-set
             $this->attributes = array_intersect_key( Input::all(), $rules );
         }
 
         $data = $this->attributes; // the data under validation
-
-        // check for overrides
-        $rules = ( empty( $rules ) ) ? static::$rules : $rules;
-        $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
 
         if ( !empty( $data ) && !empty( $rules ) ) {
 
