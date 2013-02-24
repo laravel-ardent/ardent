@@ -127,7 +127,7 @@ abstract class Ardent extends Model
      */
     public function validate( $rules = array(), $customMessages = array() ) {
 
-        $success = false;
+        $success = empty($rules);
 
         if ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) {
             // pluck only the fields which are defined in the validation rule-set
