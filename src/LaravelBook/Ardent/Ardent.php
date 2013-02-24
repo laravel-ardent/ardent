@@ -53,6 +53,16 @@ abstract class Ardent extends Model
     public $autoHydrateEntityFromInput = false;
 
     /**
+     * By default, Ardent will attempt hydration only if the model object contains no attributes and
+     * the $autoHydrateEntityFromInput property is set to true.
+     * Setting $forceEntityHydrationFromInput to true will bypass the above check and enforce
+     * hydration of model attributes.
+     *
+     * @var bool
+     */
+    public $forceEntityHydrationFromInput = false;
+
+    /**
      * If set to true, the object will automatically remove redundant model
      * attributes (i.e. confirmation fields).
      *
@@ -131,7 +141,7 @@ abstract class Ardent extends Model
         $rules = ( empty( $rules ) ) ? static::$rules : $rules;
         $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
 
-        if ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) {
+        if ( $this->forceEntityHydrationFromInput || ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) ) {
             // pluck only the fields which are defined in the validation rule-set
             $this->attributes = array_intersect_key( Input::all(), $rules );
         }
