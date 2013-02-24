@@ -127,8 +127,6 @@ abstract class Ardent extends Model
      */
     public function validate( $rules = array(), $customMessages = array() ) {
 
-        $success = empty($rules);
-
         // check for overrides
         $rules = ( empty( $rules ) ) ? static::$rules : $rules;
         $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
@@ -139,6 +137,8 @@ abstract class Ardent extends Model
         }
 
         $data = $this->attributes; // the data under validation
+
+        $success = empty( $data ) && empty( $rules );
 
         if ( !empty( $data ) && !empty( $rules ) ) {
 
