@@ -137,8 +137,14 @@ abstract class Ardent extends Model
      */
     public function validate( $rules = array(), $customMessages = array() ) {
 
-        // check for overrides
+        // check for overrides, then remove any empty rules
         $rules = ( empty( $rules ) ) ? static::$rules : $rules;
+        foreach ($rules as $field => $rls) {
+            if ($rls == '') {
+                unset($rules[$field]);
+            }
+        }
+
         $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
 
         if ( $this->forceEntityHydrationFromInput || ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) ) {
