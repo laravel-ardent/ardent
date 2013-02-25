@@ -78,6 +78,8 @@ abstract class Ardent extends Model
      */
     protected $purgeFilters = array();
 
+    protected $purgeFiltersInitialized = false;
+
     /**
      * List of attribute names which should be hashed using the Bcrypt hashing algorithm.
      *
@@ -127,9 +129,9 @@ abstract class Ardent extends Model
 
         // check for overrides, then remove any empty rules
         $rules = ( empty( $rules ) ) ? static::$rules : $rules;
-        foreach ($rules as $field => $rls) {
-            if ($rls == '') {
-                unset($rules[$field]);
+        foreach ( $rules as $field => $rls ) {
+            if ( $rls == '' ) {
+                unset( $rules[$field] );
             }
         }
 
@@ -247,6 +249,8 @@ abstract class Ardent extends Model
      * @return void
      */
     protected function addBasicPurgeFilters() {
+        if ( $this->purgeFiltersInitialized ) return;
+
         $this->purgeFilters[] = function ( $attributeKey ) {
             // disallow password confirmation fields
             if ( $this->endsWith( $attributeKey, '_confirmation' ) )
@@ -258,6 +262,8 @@ abstract class Ardent extends Model
 
             return true;
         };
+
+        $this->purgeFiltersInitialized = true;
     }
 
     /**
