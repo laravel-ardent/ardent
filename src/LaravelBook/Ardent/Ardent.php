@@ -103,18 +103,6 @@ abstract class Ardent extends Model
 
         parent::__construct( $attributes );
         $this->validationErrors = new MessageBag;
-
-        $this->purgeFilters[] = function ( $attributeKey ) {
-            // disallow password confirmation fields
-            if ( $this->endsWith( $attributeKey, '_confirmation' ) )
-                return false;
-
-            // "_method" is used by Illuminate\Routing\Router to simulate custom HTTP verbs
-            if ( strcmp( $attributeKey, '_method' ) === 0 )
-                return false;
-
-            return true;
-        };
     }
 
     /**
@@ -254,6 +242,25 @@ abstract class Ardent extends Model
     }
 
     /**
+     * Add the basic purge filters
+     *
+     * @return void
+     */
+    protected function addBasicPurgeFilters() {
+        $this->purgeFilters[] = function ( $attributeKey ) {
+            // disallow password confirmation fields
+            if ( $this->endsWith( $attributeKey, '_confirmation' ) )
+                return false;
+
+            // "_method" is used by Illuminate\Routing\Router to simulate custom HTTP verbs
+            if ( strcmp( $attributeKey, '_method' ) === 0 )
+                return false;
+
+            return true;
+        };
+    }
+
+    /**
      * Removes redundant attributes from model
      *
      * @param array   $array Input array
@@ -263,6 +270,8 @@ abstract class Ardent extends Model
 
         $result = array();
         $keys = array_keys( $array );
+
+        $this->addBasicPurgeFilters();
 
         if ( !empty( $keys ) && !empty( $this->purgeFilters ) ) {
             foreach ( $keys as $key ) {
