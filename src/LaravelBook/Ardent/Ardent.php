@@ -139,7 +139,12 @@ abstract class Ardent extends Model
 
         if ( $this->forceEntityHydrationFromInput || ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) ) {
             // pluck only the fields which are defined in the validation rule-set
-            $this->attributes = array_intersect_key( Input::all(), $rules );
+            $attributes = array_intersect_key( Input::all(), $rules );
+            
+            //Set each given attribute on the model
+            foreach ($attributes as $key => $value){
+            	$this->setAttribute($key, $value);
+            }
         }
 
         $data = $this->attributes; // the data under validation
