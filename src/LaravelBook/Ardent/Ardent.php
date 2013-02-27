@@ -135,23 +135,25 @@ abstract class Ardent extends Model
             }
         }
 
+        if ( empty( $rules ) ) return true;
+
         $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
 
         if ( $this->forceEntityHydrationFromInput || ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) ) {
             // pluck only the fields which are defined in the validation rule-set
             $attributes = array_intersect_key( Input::all(), $rules );
-            
+
             //Set each given attribute on the model
-            foreach ($attributes as $key => $value){
-            	$this->setAttribute($key, $value);
+            foreach ( $attributes as $key => $value ) {
+                $this->setAttribute( $key, $value );
             }
         }
 
         $data = $this->attributes; // the data under validation
 
-        $success = empty( $data ) && empty( $rules );
+        $success = empty( $data );
 
-        if ( !empty( $data ) && !empty( $rules ) ) {
+        if ( !empty( $data ) ) {
 
             // perform validation
             $validator = Validator::make( $data, $rules, $customMessages );
