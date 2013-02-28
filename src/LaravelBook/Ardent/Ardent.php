@@ -114,7 +114,7 @@ abstract class Ardent extends Model
      * @param string  $needle
      * @return bool
      */
-    protected function endsWith( $haystack, $needle ) {
+    protected static function endsWith( $haystack, $needle ) {
         return $needle == substr( $haystack, strlen( $haystack ) - strlen( $needle ) );
     }
 
@@ -260,7 +260,7 @@ abstract class Ardent extends Model
 
         $this->purgeFilters[] = function ( $attributeKey ) {
             // disallow password confirmation fields
-            if ( $this->endsWith( $attributeKey, '_confirmation' ) )
+            if ( Ardent::endsWith( $attributeKey, '_confirmation' ) )
                 return false;
 
             // "_method" is used by Illuminate\Routing\Router to simulate custom HTTP verbs
