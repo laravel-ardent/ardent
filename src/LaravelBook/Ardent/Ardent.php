@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * Ardent - Self-validating Eloquent model base class
@@ -249,7 +250,7 @@ abstract class Ardent extends Model
 
         $this->purgeFilters[] = function ( $attributeKey ) {
             // disallow password confirmation fields
-            if ( '_confirmation' == substr( $attributeKey, strlen( $attributeKey ) - strlen( '_confirmation' ) ) )
+            if ( Str::endsWith( $attributeKey, '_confirmation' ) )
                 return false;
 
             // "_method" is used by Illuminate\Routing\Router to simulate custom HTTP verbs
