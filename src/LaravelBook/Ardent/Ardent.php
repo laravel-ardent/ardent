@@ -108,17 +108,6 @@ abstract class Ardent extends Model
     }
 
     /**
-     * Determine if a given string ends with a given needle.
-     *
-     * @param string  $haystack
-     * @param string  $needle
-     * @return bool
-     */
-    protected static function endsWith( $haystack, $needle ) {
-        return $needle == substr( $haystack, strlen( $haystack ) - strlen( $needle ) );
-    }
-
-    /**
      * Validate the model instance
      *
      * @param array   $rules          Validation rules
@@ -260,7 +249,7 @@ abstract class Ardent extends Model
 
         $this->purgeFilters[] = function ( $attributeKey ) {
             // disallow password confirmation fields
-            if ( Ardent::endsWith( $attributeKey, '_confirmation' ) )
+            if ( '_confirmation' == substr( $attributeKey, strlen( $attributeKey ) - strlen( '_confirmation' ) ) )
                 return false;
 
             // "_method" is used by Illuminate\Routing\Router to simulate custom HTTP verbs
