@@ -141,9 +141,9 @@ abstract class Ardent extends Model
 
         $data = $this->attributes; // the data under validation
 
-        $success = empty( $data );
+        $success = !empty( $data );
 
-        if ( !empty( $data ) ) {
+        if ( $success ) {
 
             // perform validation
             $validator = Validator::make( $data, $rules, $customMessages );
