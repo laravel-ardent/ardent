@@ -141,29 +141,23 @@ abstract class Ardent extends Model
 
         $data = $this->attributes; // the data under validation
 
-        $success = !empty( $data );
+        // perform validation
+        $validator = Validator::make( $data, $rules, $customMessages );
+        $success = $validator->passes();
 
         if ( $success ) {
-
-            // perform validation
-            $validator = Validator::make( $data, $rules, $customMessages );
-            $success = $validator->passes();
-
-            if ( $success ) {
-                // if the model is valid, unset old errors
-                if ( $this->validationErrors->count() > 0 ) {
-                    $this->validationErrors = new MessageBag;
-                }
-            } else {
-                // otherwise set the new ones
-                $this->validationErrors = $validator->messages();
-
-                // stash the input to the current session
-                if ( Input::hasSessionStore() ) {
-                    Input::flash();
-                }
+            // if the model is valid, unset old errors
+            if ( $this->validationErrors->count() > 0 ) {
+                $this->validationErrors = new MessageBag;
             }
+        } else {
+            // otherwise set the new ones
+            $this->validationErrors = $validator->messages();
 
+            // stash the input to the current session
+            if ( Input::hasSessionStore() ) {
+                Input::flash();
+            }
         }
 
         return $success;
