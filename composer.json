@@ -22,9 +22,6 @@
         "illuminate/database": "4.0.x"
     },
     "autoload": {
-        "files": [
-            "src/LaravelBook/Ardent/Ardent.php"
-        ],
         "psr-0": {
             "LaravelBook\\Ardent": "src/"
         }
