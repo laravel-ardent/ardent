@@ -193,7 +193,7 @@ abstract class Ardent extends Model
      * @param callable $afterSave
      * @return bool
      */
-    public function save( $rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
+    public function save( array $rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
 
         // validate
         $validated = $this->validate( $rules, $customMessages );
