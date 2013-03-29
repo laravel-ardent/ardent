@@ -187,13 +187,14 @@ abstract class Ardent extends Model
     /**
      * Save the model to the database.
      *
-     * @param array   $rules:array
+     * @param array   $rules
      * @param array   $customMessages
+     * @param array   $options
      * @param closure $beforeSave
      * @param callable $afterSave
      * @return bool
      */
-    public function save( array $rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
+    public function save( array $rules = array(), array $customMessages = array(), array $options = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
 
         // validate
         $validated = $this->validate( $rules, $customMessages );
@@ -202,7 +203,7 @@ abstract class Ardent extends Model
         $proceed = is_null( $beforeSave ) ? $this->beforeSave( false ) : $beforeSave( $this );
 
         // attempt to save if all conditions are satisfied
-        $success = ( $proceed && $validated ) ? $this->performSave() : false;
+        $success = ( $proceed && $validated ) ? $this->performSave( $options ) : false;
 
         is_null( $afterSave ) ? $this->afterSave( $success, false ) : $afterSave( $this );
 
@@ -218,7 +219,7 @@ abstract class Ardent extends Model
      * @param callable $afterSave
      * @return bool
      */
-    public function forceSave( $rules = array(), $customMessages = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
+    public function forceSave( $rules = array(), $customMessages = array(), array $options = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
 
         // validate the model
         $this->validate( $rules, $customMessages );
@@ -227,7 +228,7 @@ abstract class Ardent extends Model
         $proceed = is_null( $beforeSave ) ? $this->beforeSave( true ) : $beforeSave( $this );
 
         // attempt to save regardless of the outcome of validation
-        $success = $proceed ? $this->performSave() : false;
+        $success = $proceed ? $this->performSave( $options ) : false;
 
         is_null( $afterSave ) ? $this->afterSave( $success, true ) : $afterSave( $this );
 
@@ -296,7 +297,7 @@ abstract class Ardent extends Model
      *
      * @return bool
      */
-    protected function performSave() {
+    protected function performSave( array $options ) {
 
         if ( $this->autoPurgeRedundantAttributes ) {
             $this->attributes = $this->purgeArray( $this->attributes );
@@ -306,7 +307,7 @@ abstract class Ardent extends Model
             $this->attributes = $this->hashPasswordAttributes( $this->attributes, static::$passwordAttributes );
         }
 
-        return parent::save();
+        return parent::save( $options );
     }
 
     /**
