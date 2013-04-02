@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
  * Ardent - Self-validating Eloquent model base class
  *
  */
-abstract class Ardent extends Model
+class Ardent extends Model
 {
 
     /**
