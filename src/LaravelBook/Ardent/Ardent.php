@@ -28,7 +28,7 @@ abstract class Ardent extends Model
     /**
      * The rules to be applied to the data.
      *
-     * @var array
+     * @var array3
      */
     public static $rules = array();
 
@@ -213,8 +213,9 @@ abstract class Ardent extends Model
     /**
      * Force save the model even if validation fails.
      *
-     * @param array   $rules:array
-     * @param array   $customMessages:array
+     * @param array $rules:array
+     * @param array $customMessages:array
+     * @param array $options
      * @param callable $beforeSave
      * @param callable $afterSave
      * @return bool
@@ -295,6 +296,7 @@ abstract class Ardent extends Model
      * Saves the model instance to database. If necessary, it will purge the model attributes
      * of unnecessary fields. It will also replace plain-text password fields with their hashes.
      *
+     * @param array $options
      * @return bool
      */
     protected function performSave( array $options ) {
