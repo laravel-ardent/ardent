@@ -115,7 +115,7 @@ abstract class Ardent extends Model
      * @param array   $customMessages Custom error messages
      * @return bool
      */
-    public function validate( $rules = array(), $customMessages = array() ) {
+    public function validate( array $rules = array(), array $customMessages = array() ) {
 
         // check for overrides, then remove any empty rules
         $rules = ( empty( $rules ) ) ? static::$rules : $rules;
@@ -220,7 +220,7 @@ abstract class Ardent extends Model
      * @param callable $afterSave
      * @return bool
      */
-    public function forceSave( $rules = array(), $customMessages = array(), array $options = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
+    public function forceSave( array $rules = array(), array $customMessages = array(), array $options = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
 
         // validate the model
         $this->validate( $rules, $customMessages );
