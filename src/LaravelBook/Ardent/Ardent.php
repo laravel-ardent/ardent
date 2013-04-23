@@ -335,7 +335,9 @@ abstract class Ardent extends Model
         foreach ( $attributes as $key => $value ) {
 
             if ( in_array( $key, $passwordAttributes ) && !is_null( $value ) ) {
-                $result[$key] = Hash::make( $value );
+                if( $value != $this->getOriginal($key) ) {
+                    $result[$key] = Hash::make( $value );
+                }
             }
             else {
                 $result[$key] = $value;
@@ -343,6 +345,5 @@ abstract class Ardent extends Model
         }
 
         return $result;
-    }
-
+    }	
 }
