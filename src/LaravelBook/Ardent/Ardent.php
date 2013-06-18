@@ -349,4 +349,70 @@ abstract class Ardent extends Model
 
         return $result;
     }	
+
+    /** 
+     * When given an ID and a Laravel validation rules array, this function 
+     * appends the ID to the 'unique' rules given. The resulting array can
+     * then be fed to a Ardent save so that unchanged values
+     * don't flag a validation issue. Rules can be in either strings 
+     * with pipes or arrays, but the returned rules are in arrays.
+     * 
+     * @param int $id
+     * @param array $rules
+     * 
+     * @return array Rules with exclusions applied
+     */
+    protected function buildUniqueExclusionRules()
+    {
+        // Because Ardent uses statics (sigh), we need to do this to get the
+        // model's rules.
+        $class = new \ReflectionClass($this);
+        $rules = $class->getStaticPropertyValue('rules');
+
+        foreach($rules as $field => &$ruleset)
+        {
+            // If $ruleset is a pipe-separated string, switch it to array
+            $ruleset = (is_string($ruleset)) ? explode('|', $ruleset) : $ruleset;
+        
+            foreach($ruleset as &$rule)
+            {
+                if(strpos($rule, 'unique') === 0)
+                {
+                    $params = explode(',', $rule);
+
+                    // Append field name if needed
+                    if(count($params) == 1)
+                    {
+                        $params[2] = $field;
+                    }
+
+                    $params[3] = $this->id;
+
+                    $rule = implode(',', $params);
+                }
+            }
+        }
+        return $rules;
+    }
+
+    /**
+     * Update a model already saved in the database.
+     *
+     * @param array   $rules
+     * @param array   $customMessages
+     * @param array   $options
+     * @param closure $beforeSave
+     * @param callable $afterSave
+     * @return bool
+     */
+    public function update( array $rules = array(), array $customMessages = array(), array $options = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
+
+        // Only automatically modify rules if there are none coming in 
+        if(count($rules == 0))
+        {
+            $rules = $this->buildUniqueExclusionRules();
+        }
+        
+        return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
+    }
 }
