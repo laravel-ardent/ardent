@@ -184,10 +184,10 @@ use LaravelBook\Ardent\Ardent;
 
 class User extends Ardent {
 
-	public function beforeSave( $forced )
+	public function beforeSave($forced = false)
 	{
 		// if there's a new password, hash it
-		if($this->changed('password'))
+		if($this->isDirty('password'))
 		{
 			$this->password = Hash::make($this->password);
 		}
