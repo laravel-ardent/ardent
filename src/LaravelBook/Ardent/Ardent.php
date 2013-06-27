@@ -139,7 +139,7 @@ abstract class Ardent extends Model
             }
         }
 
-        $data = $this->attributes; // the data under validation
+        $data = $this->getAttributes(); // the data under validation
 
         // perform validation
         $validator = Validator::make( $data, $rules, $customMessages );
@@ -302,11 +302,11 @@ abstract class Ardent extends Model
     protected function performSave( array $options ) {
 
         if ( $this->autoPurgeRedundantAttributes ) {
-            $this->attributes = $this->purgeArray( $this->attributes );
+            $this->attributes = $this->purgeArray( $this->getAttributes() );
         }
 
         if ( $this->autoHashPasswordAttributes ) {
-            $this->attributes = $this->hashPasswordAttributes( $this->attributes, static::$passwordAttributes );
+            $this->attributes = $this->hashPasswordAttributes( $this->getAttributes(), static::$passwordAttributes );
         }
 
         return parent::save( $options );
