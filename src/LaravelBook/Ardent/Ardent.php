@@ -130,11 +130,11 @@ abstract class Ardent extends Model
 	/**
 	 * Configures Ardent to be used outside of Laravel - correctly setting Eloquent and Validation modules.
 	 *
+	 * @param string  $language   A language string as used by {@link \Symfony\Component\Translation\Translator}
 	 * @param array   $connection Connection info used by {@link \Illuminate\Database\Capsule\Manager::addConnection}.
 	 * Should contain driver, host, port, database, username, password, charset and collation.
-	 * @param string  $language   A language string as used by {@link \Symfony\Component\Translation\Translator}
 	 */
-	public static function configureAsExternal( array $connection, $language ) {
+	public static function configureAsExternal( $language, array $connection ) {
 		$db = new DatabaseCapsule;
 		$db->addConnection( $connection );
 		$db->setEventDispatcher( new Dispatcher( new Container ) );
