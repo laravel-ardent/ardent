@@ -11,12 +11,17 @@
 
 
 use Closure;
+use Illuminate\Container\Container;
+use Illuminate\Database\Capsule\Manager as DatabaseCapsule;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Factory as ValidationFactory;
+use Symfony\Component\Translation\Translator;
 
 /**
  * Ardent - Self-validating Eloquent model base class
@@ -96,6 +101,20 @@ abstract class Ardent extends Model
      */
     public $autoHashPasswordAttributes = false;
 
+	/**
+	 * If set to true will try to instantiate the validator as if it was outside Laravel.
+	 *
+	 * @var bool
+	 */
+	protected static $externalValidator = false;
+
+	/**
+	 * A Translator instance, to be used by standalone Ardent instances.
+	 *
+	 * @var \Illuminate\Validation\Factory
+	 */
+	protected static $validationFactory;
+
     /**
      * Create a new Ardent model instance.
      *
@@ -107,6 +126,31 @@ abstract class Ardent extends Model
         parent::__construct( $attributes );
         $this->validationErrors = new MessageBag;
     }
+
+	/**
+	 * Configures Ardent to be used outside of Laravel - correctly setting Eloquent and Validation modules.
+	 *
+	 * @param string  $language   A language string as used by {@link \Symfony\Component\Translation\Translator}
+	 * @param array   $connection Connection info used by {@link \Illuminate\Database\Capsule\Manager::addConnection}.
+	 * Should contain driver, host, port, database, username, password, charset and collation.
+	 */
+	public static function configureAsExternal( $language, array $connection ) {
+		$db = new DatabaseCapsule;
+		$db->addConnection( $connection );
+		$db->setEventDispatcher( new Dispatcher( new Container ) );
+		//TODO: configure a cache manager (as an option)
+		$db->bootEloquent();
+
+		self::$externalValidator = true;
+		self::$validationFactory = new ValidationFactory( new Translator( $language ) );
+	}
+
+	protected static function makeValidator( $data, $rules, $customMessages ) {
+		if (self::$externalValidator)
+			return self::$validationFactory->make( $data, $rules, $customMessages );
+		else
+			return Validator::make( $data, $rules, $customMessages );
+	}
 
     /**
      * Validate the model instance
@@ -142,7 +186,7 @@ abstract class Ardent extends Model
         $data = $this->getAttributes(); // the data under validation
 
         // perform validation
-        $validator = Validator::make( $data, $rules, $customMessages );
+        $validator = self::makeValidator( $data, $rules, $customMessages );
         $success = $validator->passes();
 
         if ( $success ) {
