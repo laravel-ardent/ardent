@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Factory as ValidationFactory;
+use Symfony\Component\Translation\Loader\PhpFileLoader;
 use Symfony\Component\Translation\Translator;
 
 /**
@@ -129,20 +130,25 @@ abstract class Ardent extends Model
 
 	/**
 	 * Configures Ardent to be used outside of Laravel - correctly setting Eloquent and Validation modules.
+	 * @todo Should allow for additional language files. Would probably receive a Translator instance as an optional argument, or a list of translation files.
 	 *
-	 * @param string  $language   A language string as used by {@link \Symfony\Component\Translation\Translator}
 	 * @param array   $connection Connection info used by {@link \Illuminate\Database\Capsule\Manager::addConnection}.
 	 * Should contain driver, host, port, database, username, password, charset and collation.
 	 */
-	public static function configureAsExternal( $language, array $connection ) {
+	public static function configureAsExternal( array $connection ) {
 		$db = new DatabaseCapsule;
 		$db->addConnection( $connection );
 		$db->setEventDispatcher( new Dispatcher( new Container ) );
 		//TODO: configure a cache manager (as an option)
 		$db->bootEloquent();
 
+		$translator = new Translator( 'en' );
+		$translator->addLoader( 'file_loader', new PhpFileLoader() );
+		$translator->addResource( 'file_loader', dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lang'.
+			DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'validation.php', 'en' );
+
 		self::$externalValidator = true;
-		self::$validationFactory = new ValidationFactory( new Translator( $language ) );
+		self::$validationFactory = new ValidationFactory( $translator );
 	}
 
 	protected static function makeValidator( $data, $rules, $customMessages ) {
@@ -199,7 +205,7 @@ abstract class Ardent extends Model
             $this->validationErrors = $validator->messages();
 
             // stash the input to the current session
-            if ( Input::hasSessionStore() ) {
+            if ( !self::$externalValidator && Input::hasSessionStore() ) {
                 Input::flash();
             }
         }
