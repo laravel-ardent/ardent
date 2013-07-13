@@ -53,6 +53,22 @@ abstract class Ardent extends Model
     public $validationErrors;
 
     /**
+     * Makes the validation procedure throw an {@link InvalidModelException} instead of returning
+     * false when validation fails.
+     *
+     * @var bool
+     */
+    public $throwOnValidation = false;
+
+    /**
+     * Forces the behavior of findOrFail in very find method - throwing a {@link ModelNotFoundException}
+     * when the model is not found.
+     *
+     * @var bool
+     */
+    public static $throwOnFind = false;
+
+    /**
      * If set to true, the object will automatically populate model attributes from Input::all()
      *
      * @var bool
@@ -207,6 +223,10 @@ abstract class Ardent extends Model
             // stash the input to the current session
             if ( !self::$externalValidator && Input::hasSessionStore() ) {
                 Input::flash();
+            }
+
+            if ( $this->throwOnValidation ) {
+                throw new InvalidModelException( $this );
             }
         }
 
@@ -464,5 +484,22 @@ abstract class Ardent extends Model
         }
         
         return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
+    }
+
+    /**
+     * Find a model by its primary key.
+     * If {@link $throwOnFind} is set, will use {@link findOrFail} internally.
+     *
+     * @param  mixed $id
+     * @param  array $columns
+     * @return Ardent|Collection
+     */
+    public static function find( $id, $columns = array( '*' ) ) {
+        if ( static::$throwOnFind && debug_backtrace()[1]['function'] != 'findOrFail' ) {
+            return self::findOrFail( $id, $columns );
+        }
+        else {
+            return parent::find( $id, $columns );
+        }
     }
 }
