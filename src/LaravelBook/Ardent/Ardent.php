@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-
 use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DatabaseCapsule;
@@ -28,13 +27,12 @@ use Symfony\Component\Translation\Translator;
  * Ardent - Self-validating Eloquent model base class
  *
  */
-abstract class Ardent extends Model
-{
+abstract class Ardent extends Model {
 
     /**
      * The rules to be applied to the data.
      *
-     * @var array3
+     * @var array
      */
     public static $rules = array();
 
@@ -48,7 +46,7 @@ abstract class Ardent extends Model
     /**
      * The message bag instance containing validation error messages
      *
-     * @var Illuminate\Support\MessageBag
+     * @var \Illuminate\Support\MessageBag
      */
     public $validationErrors;
 
@@ -118,102 +116,107 @@ abstract class Ardent extends Model
      */
     public $autoHashPasswordAttributes = false;
 
-	/**
-	 * If set to true will try to instantiate the validator as if it was outside Laravel.
-	 *
-	 * @var bool
-	 */
-	protected static $externalValidator = false;
+    /**
+     * If set to true will try to instantiate the validator as if it was outside Laravel.
+     *
+     * @var bool
+     */
+    protected static $externalValidator = false;
 
-	/**
-	 * A Translator instance, to be used by standalone Ardent instances.
-	 *
-	 * @var \Illuminate\Validation\Factory
-	 */
-	protected static $validationFactory;
+    /**
+     * A Translator instance, to be used by standalone Ardent instances.
+     *
+     * @var \Illuminate\Validation\Factory
+     */
+    protected static $validationFactory;
 
     /**
      * Create a new Ardent model instance.
      *
-     * @param array   $attributes
+     * @param array $attributes
      * @return \LaravelBook\Ardent\Ardent
      */
-    public function __construct( array $attributes = array() ) {
+    public function __construct(array $attributes = array()) {
 
-        parent::__construct( $attributes );
+        parent::__construct($attributes);
         $this->validationErrors = new MessageBag;
     }
 
-	/**
-	 * Configures Ardent to be used outside of Laravel - correctly setting Eloquent and Validation modules.
-	 * @todo Should allow for additional language files. Would probably receive a Translator instance as an optional argument, or a list of translation files.
-	 *
-	 * @param array   $connection Connection info used by {@link \Illuminate\Database\Capsule\Manager::addConnection}.
-	 * Should contain driver, host, port, database, username, password, charset and collation.
-	 */
-	public static function configureAsExternal( array $connection ) {
-		$db = new DatabaseCapsule;
-		$db->addConnection( $connection );
-		$db->setEventDispatcher( new Dispatcher( new Container ) );
-		//TODO: configure a cache manager (as an option)
-		$db->bootEloquent();
+    /**
+     * Configures Ardent to be used outside of Laravel - correctly setting Eloquent and Validation modules.
+     * @todo Should allow for additional language files. Would probably receive a Translator instance as an optional argument, or a list of translation files.
+     *
+     * @param array $connection Connection info used by {@link \Illuminate\Database\Capsule\Manager::addConnection}.
+     * Should contain driver, host, port, database, username, password, charset and collation.
+     */
+    public static function configureAsExternal(array $connection) {
+        $db = new DatabaseCapsule;
+        $db->addConnection($connection);
+        $db->setEventDispatcher(new Dispatcher(new Container));
+        //TODO: configure a cache manager (as an option)
+        $db->bootEloquent();
 
-		$translator = new Translator( 'en' );
-		$translator->addLoader( 'file_loader', new PhpFileLoader() );
-		$translator->addResource( 'file_loader', dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lang'.
-			DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'validation.php', 'en' );
+        $translator = new Translator('en');
+        $translator->addLoader('file_loader', new PhpFileLoader());
+        $translator->addResource('file_loader',
+            dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.'en'.
+            DIRECTORY_SEPARATOR.'validation.php', 'en');
 
-		self::$externalValidator = true;
-		self::$validationFactory = new ValidationFactory( $translator );
-	}
+        self::$externalValidator = true;
+        self::$validationFactory = new ValidationFactory($translator);
+    }
 
-	protected static function makeValidator( $data, $rules, $customMessages ) {
-		if (self::$externalValidator)
-			return self::$validationFactory->make( $data, $rules, $customMessages );
-		else
-			return Validator::make( $data, $rules, $customMessages );
-	}
+    protected static function makeValidator($data, $rules, $customMessages) {
+        if (self::$externalValidator) {
+            return self::$validationFactory->make($data, $rules, $customMessages);
+        } else {
+            return Validator::make($data, $rules, $customMessages);
+        }
+    }
 
     /**
      * Validate the model instance
      *
-     * @param array   $rules          Validation rules
-     * @param array   $customMessages Custom error messages
+     * @param array $rules          Validation rules
+     * @param array $customMessages Custom error messages
      * @return bool
      */
-    public function validate( array $rules = array(), array $customMessages = array() ) {
+    public function validate(array $rules = array(), array $customMessages = array()) {
 
         // check for overrides, then remove any empty rules
-        $rules = ( empty( $rules ) ) ? static::$rules : $rules;
-        foreach ( $rules as $field => $rls ) {
-            if ( $rls == '' ) {
-                unset( $rules[$field] );
+        $rules = (empty($rules))? static::$rules : $rules;
+        foreach ($rules as $field => $rls) {
+            if ($rls == '') {
+                unset($rules[$field]);
             }
         }
 
-        if ( empty( $rules ) ) return true;
+        if (empty($rules)) {
+            return true;
+        }
 
-        $customMessages = ( empty( $customMessages ) ) ? static::$customMessages : $customMessages;
+        $customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
 
-        if ( $this->forceEntityHydrationFromInput || ( empty( $this->attributes ) && $this->autoHydrateEntityFromInput ) ) {
+        if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)
+        ) {
             // pluck only the fields which are defined in the validation rule-set
-            $attributes = array_intersect_key( Input::all(), $rules );
+            $attributes = array_intersect_key(Input::all(), $rules);
 
             //Set each given attribute on the model
-            foreach ( $attributes as $key => $value ) {
-                $this->setAttribute( $key, $value );
+            foreach ($attributes as $key => $value) {
+                $this->setAttribute($key, $value);
             }
         }
 
         $data = $this->getAttributes(); // the data under validation
 
         // perform validation
-        $validator = self::makeValidator( $data, $rules, $customMessages );
-        $success = $validator->passes();
+        $validator = self::makeValidator($data, $rules, $customMessages);
+        $success   = $validator->passes();
 
-        if ( $success ) {
+        if ($success) {
             // if the model is valid, unset old errors
-            if ( $this->validationErrors->count() > 0 ) {
+            if ($this->validationErrors->count() > 0) {
                 $this->validationErrors = new MessageBag;
             }
         } else {
@@ -221,12 +224,12 @@ abstract class Ardent extends Model
             $this->validationErrors = $validator->messages();
 
             // stash the input to the current session
-            if ( !self::$externalValidator && Input::hasSessionStore() ) {
+            if (!self::$externalValidator && Input::hasSessionStore()) {
                 Input::flash();
             }
 
-            if ( $this->throwOnValidation ) {
-                throw new InvalidModelException( $this );
+            if ($this->throwOnValidation) {
+                throw new InvalidModelException($this);
             }
         }
 
@@ -236,21 +239,21 @@ abstract class Ardent extends Model
     /**
      * Invoked before a model is saved. Return false to abort the operation.
      *
-     * @param bool    $forced Indicates whether the model is being saved forcefully
+     * @param bool $forced Indicates whether the model is being saved forcefully
      * @return bool
      */
-    protected function beforeSave( $forced = false ) {
+    protected function beforeSave($forced = false) {
         return true;
     }
 
     /**
      * Called after a model is successfully saved.
      *
-     * @param bool    $success Indicates whether the database save operation succeeded
-     * @param bool    $forced  Indicates whether the model is being saved forcefully
+     * @param bool $success Indicates whether the database save operation succeeded
+     * @param bool $forced  Indicates whether the model is being saved forcefully
      * @return void
      */
-    protected function afterSave( $success, $forced = false ) {
+    protected function afterSave($success, $forced = false) {
         //
     }
 
@@ -260,22 +263,26 @@ abstract class Ardent extends Model
      * @param array   $rules
      * @param array   $customMessages
      * @param array   $options
-     * @param closure $beforeSave
-     * @param callable $afterSave
+     * @param Closure $beforeSave
+     * @param Closure $afterSave
      * @return bool
      */
-    public function save( array $rules = array(), array $customMessages = array(), array $options = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
+    public function save(array $rules = array(),
+        array $customMessages = array(),
+        array $options = array(),
+        Closure $beforeSave = null,
+        Closure $afterSave = null) {
 
         // validate
-        $validated = $this->validate( $rules, $customMessages );
+        $validated = $this->validate($rules, $customMessages);
 
         // execute beforeSave callback
-        $proceed = is_null( $beforeSave ) ? $this->beforeSave( false ) : $beforeSave( $this );
+        $proceed = is_null($beforeSave)? $this->beforeSave(false) : $beforeSave($this);
 
         // attempt to save if all conditions are satisfied
-        $success = ( $proceed && $validated ) ? $this->performSave( $options ) : false;
+        $success = ($proceed && $validated)? $this->performSave($options) : false;
 
-        is_null( $afterSave ) ? $this->afterSave( $success, false ) : $afterSave( $this );
+        is_null($afterSave)? $this->afterSave($success, false) : $afterSave($this);
 
         return $success;
     }
@@ -283,25 +290,29 @@ abstract class Ardent extends Model
     /**
      * Force save the model even if validation fails.
      *
-     * @param array $rules:array
-     * @param array $customMessages:array
-     * @param array $options
-     * @param callable $beforeSave
-     * @param callable $afterSave
+     * @param array   $rules         :array
+     * @param array   $customMessages:array
+     * @param array   $options
+     * @param Closure $beforeSave
+     * @param Closure $afterSave
      * @return bool
      */
-    public function forceSave( array $rules = array(), array $customMessages = array(), array $options = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
+    public function forceSave(array $rules = array(),
+        array $customMessages = array(),
+        array $options = array(),
+        Closure $beforeSave = null,
+        Closure $afterSave = null) {
 
         // validate the model
-        $this->validate( $rules, $customMessages );
+        $this->validate($rules, $customMessages);
 
         // execute beforeForceSave callback
-        $proceed = is_null( $beforeSave ) ? $this->beforeSave( true ) : $beforeSave( $this );
+        $proceed = is_null($beforeSave)? $this->beforeSave(true) : $beforeSave($this);
 
         // attempt to save regardless of the outcome of validation
-        $success = $proceed ? $this->performSave( $options ) : false;
+        $success = $proceed? $this->performSave($options) : false;
 
-        is_null( $afterSave ) ? $this->afterSave( $success, true ) : $afterSave( $this );
+        is_null($afterSave)? $this->afterSave($success, true) : $afterSave($this);
 
         return $success;
     }
@@ -312,16 +323,20 @@ abstract class Ardent extends Model
      * @return void
      */
     protected function addBasicPurgeFilters() {
-        if ( $this->purgeFiltersInitialized ) return;
+        if ($this->purgeFiltersInitialized) {
+            return;
+        }
 
-        $this->purgeFilters[] = function ( $attributeKey ) {
+        $this->purgeFilters[] = function ($attributeKey) {
             // disallow password confirmation fields
-            if ( Str::endsWith( $attributeKey, '_confirmation' ) )
+            if (Str::endsWith($attributeKey, '_confirmation')) {
                 return false;
+            }
 
             // "_method" is used by Illuminate\Routing\Router to simulate custom HTTP verbs
-            if ( strcmp( $attributeKey, '_method' ) === 0 )
+            if (strcmp($attributeKey, '_method') === 0) {
                 return false;
+            }
 
             return true;
         };
@@ -332,28 +347,29 @@ abstract class Ardent extends Model
     /**
      * Removes redundant attributes from model
      *
-     * @param array   $array Input array
+     * @param array $array Input array
      * @return array
      */
-    protected function purgeArray( array $array = array() ) {
+    protected function purgeArray(array $array = array()) {
 
         $result = array();
-        $keys = array_keys( $array );
+        $keys   = array_keys($array);
 
         $this->addBasicPurgeFilters();
 
-        if ( !empty( $keys ) && !empty( $this->purgeFilters ) ) {
-            foreach ( $keys as $key ) {
+        if (!empty($keys) && !empty($this->purgeFilters)) {
+            foreach ($keys as $key) {
                 $allowed = true;
 
-                foreach ( $this->purgeFilters as $filter ) {
-                    $allowed = $filter( $key );
+                foreach ($this->purgeFilters as $filter) {
+                    $allowed = $filter($key);
 
-                    if ( !$allowed )
+                    if (!$allowed) {
                         break;
+                    }
                 }
 
-                if ( $allowed ) {
+                if ($allowed) {
                     $result[$key] = $array[$key];
                 }
             }
@@ -369,23 +385,23 @@ abstract class Ardent extends Model
      * @param array $options
      * @return bool
      */
-    protected function performSave( array $options ) {
+    protected function performSave(array $options) {
 
-        if ( $this->autoPurgeRedundantAttributes ) {
-            $this->attributes = $this->purgeArray( $this->getAttributes() );
+        if ($this->autoPurgeRedundantAttributes) {
+            $this->attributes = $this->purgeArray($this->getAttributes());
         }
 
-        if ( $this->autoHashPasswordAttributes ) {
-            $this->attributes = $this->hashPasswordAttributes( $this->getAttributes(), static::$passwordAttributes );
+        if ($this->autoHashPasswordAttributes) {
+            $this->attributes = $this->hashPasswordAttributes($this->getAttributes(), static::$passwordAttributes);
         }
 
-        return parent::save( $options );
+        return parent::save($options);
     }
 
     /**
      * Get validation error message collection for the Model
      *
-     * @return Illuminate\Support\MessageBag
+     * @return \Illuminate\Support\MessageBag
      */
     public function errors() {
         return $this->validationErrors;
@@ -395,64 +411,59 @@ abstract class Ardent extends Model
      * Automatically replaces all plain-text password attributes (listed in $passwordAttributes)
      * with hash checksum.
      *
-     * @param array   $attributes
-     * @param array   $passwordAttributes
+     * @param array $attributes
+     * @param array $passwordAttributes
      * @return array
      */
-    protected function hashPasswordAttributes( array $attributes = array(), array $passwordAttributes = array() ) {
+    protected function hashPasswordAttributes(array $attributes = array(), array $passwordAttributes = array()) {
 
-        if ( empty( $passwordAttributes ) || empty( $attributes ) )
+        if (empty($passwordAttributes) || empty($attributes)) {
             return $attributes;
+        }
 
         $result = array();
-        foreach ( $attributes as $key => $value ) {
+        foreach ($attributes as $key => $value) {
 
-            if ( in_array( $key, $passwordAttributes ) && !is_null( $value ) ) {
-                if( $value != $this->getOriginal($key) ) {
-                    $result[$key] = Hash::make( $value );
+            if (in_array($key, $passwordAttributes) && !is_null($value)) {
+                if ($value != $this->getOriginal($key)) {
+                    $result[$key] = Hash::make($value);
                 }
-            }
-            else {
+            } else {
                 $result[$key] = $value;
             }
         }
 
         return $result;
-    }	
+    }
 
-    /** 
-     * When given an ID and a Laravel validation rules array, this function 
+    /**
+     * When given an ID and a Laravel validation rules array, this function
      * appends the ID to the 'unique' rules given. The resulting array can
      * then be fed to a Ardent save so that unchanged values
-     * don't flag a validation issue. Rules can be in either strings 
+     * don't flag a validation issue. Rules can be in either strings
      * with pipes or arrays, but the returned rules are in arrays.
-     * 
-     * @param int $id
+     *
+     * @param int   $id
      * @param array $rules
-     * 
+     *
      * @return array Rules with exclusions applied
      */
-    protected function buildUniqueExclusionRules()
-    {
+    protected function buildUniqueExclusionRules() {
         // Because Ardent uses statics (sigh), we need to do this to get the
         // model's rules.
         $class = new \ReflectionClass($this);
         $rules = $class->getStaticPropertyValue('rules');
 
-        foreach($rules as $field => &$ruleset)
-        {
+        foreach ($rules as $field => &$ruleset) {
             // If $ruleset is a pipe-separated string, switch it to array
-            $ruleset = (is_string($ruleset)) ? explode('|', $ruleset) : $ruleset;
-        
-            foreach($ruleset as &$rule)
-            {
-                if(strpos($rule, 'unique') === 0)
-                {
+            $ruleset = (is_string($ruleset))? explode('|', $ruleset) : $ruleset;
+
+            foreach ($ruleset as &$rule) {
+                if (strpos($rule, 'unique') === 0) {
                     $params = explode(',', $rule);
 
                     // Append field name if needed
-                    if(count($params) == 1)
-                    {
+                    if (count($params) == 1) {
                         $params[2] = $field;
                     }
 
@@ -462,6 +473,7 @@ abstract class Ardent extends Model
                 }
             }
         }
+
         return $rules;
     }
 
@@ -471,18 +483,21 @@ abstract class Ardent extends Model
      * @param array   $rules
      * @param array   $customMessages
      * @param array   $options
-     * @param closure $beforeSave
-     * @param callable $afterSave
+     * @param Closure $beforeSave
+     * @param Closure $afterSave
      * @return bool
      */
-    public function update( array $rules = array(), array $customMessages = array(), array $options = array(), Closure $beforeSave = null, Closure $afterSave = null ) {
+    public function update(array $rules = array(),
+        array $customMessages = array(),
+        array $options = array(),
+        Closure $beforeSave = null,
+        Closure $afterSave = null) {
 
-        // Only automatically modify rules if there are none coming in 
-        if(count($rules == 0))
-        {
+        // Only automatically modify rules if there are none coming in
+        if (count($rules == 0)) {
             $rules = $this->buildUniqueExclusionRules();
         }
-        
+
         return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
     }
 
@@ -494,12 +509,11 @@ abstract class Ardent extends Model
      * @param  array $columns
      * @return Ardent|Collection
      */
-    public static function find( $id, $columns = array( '*' ) ) {
-        if ( static::$throwOnFind && debug_backtrace()[1]['function'] != 'findOrFail' ) {
-            return self::findOrFail( $id, $columns );
-        }
-        else {
-            return parent::find( $id, $columns );
+    public static function find($id, $columns = array('*')) {
+        if (static::$throwOnFind && debug_backtrace()[1]['function'] != 'findOrFail') {
+            return self::findOrFail($id, $columns);
+        } else {
+            return parent::find($id, $columns);
         }
     }
 }
