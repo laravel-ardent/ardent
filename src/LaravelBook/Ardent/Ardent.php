@@ -350,8 +350,17 @@ abstract class Ardent extends Model {
      * @param array $rules          Validation rules
      * @param array $customMessages Custom error messages
      * @return bool
+     * @throws InvalidModelException
      */
     public function validate(array $rules = array(), array $customMessages = array()) {
+
+        if ($this->fireModelEvent('validating') === false) {
+            if ($this->throwOnValidation) {
+                throw new InvalidModelException($this);
+            } else {
+                return false;
+            }
+        }
 
         // check for overrides, then remove any empty rules
         $rules = (empty($rules))? static::$rules : $rules;
@@ -367,8 +376,7 @@ abstract class Ardent extends Model {
 
         $customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
 
-        if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)
-        ) {
+        if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
             // pluck only the fields which are defined in the validation rule-set
             $attributes = array_intersect_key(Input::all(), $rules);
 
@@ -402,6 +410,8 @@ abstract class Ardent extends Model {
                 throw new InvalidModelException($this);
             }
         }
+
+        $this->fireModelEvent('validated', false);
 
         return $success;
     }
