@@ -464,7 +464,7 @@ abstract class Ardent extends Model {
 
         $this->fireModelEvent('validated', false);
 
-	    if ($this->throwOnValidation) {
+	    if (!$success && $this->throwOnValidation) {
 		    throw new InvalidModelException($this);
 	    }
 
