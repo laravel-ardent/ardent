@@ -667,6 +667,30 @@ abstract class Ardent extends Model {
 
         return $rules;
     }
+    
+    /**
+     * Update a model already saved in the database.
+     *
+     * @param array   $rules
+     * @param array   $customMessages
+     * @param array   $options
+     * @param Closure $beforeSave
+     * @param Closure $afterSave
+     * @return bool
+     */
+    public function updateUniques(array $rules = array(),
+        array $customMessages = array(),
+        array $options = array(),
+        Closure $beforeSave = null,
+        Closure $afterSave = null
+    ) {
+        // Only automatically modify rules if there are none coming in
+        if (count($rules == 0)) {
+            $rules = $this->buildUniqueExclusionRules();
+        }
+
+        return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
+    }
 
     /**
      * Find a model by its primary key.
