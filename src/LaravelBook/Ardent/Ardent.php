@@ -228,6 +228,26 @@ abstract class Ardent extends Model {
         }
     }
 
+	/**
+	 * Register a validating model event with the dispatcher.
+	 *
+	 * @param Closure|string $callback
+	 * @return void
+	 */
+	public static function validating($callback) {
+		static::registerModelEvent('validating', $callback);
+	}
+
+	/**
+	 * Register a validated model event with the dispatcher.
+	 *
+	 * @param Closure|string $callback
+	 * @return void
+	 */
+	public static function validated($callback) {
+		static::registerModelEvent('validated', $callback);
+	}
+
     /**
      * Looks for the relation in the {@link $relationsData} array and does the correct magic as Eloquent would require
      * inside relation methods. For more information, read the documentation of the mentioned property.
@@ -257,7 +277,7 @@ abstract class Ardent extends Model {
         }
 
         $verifyArgs = function (array $opt, array $req = array()) use ($relationName, &$relation, $errorHeader) {
-            $missing = array('required' => array(), 'optional' => array());
+            $missing = array('req' => array(), 'opt' => array());
 
             foreach (array('req', 'opt') as $keyType) {
                 foreach ($$keyType as $key) {
@@ -267,12 +287,12 @@ abstract class Ardent extends Model {
                 }
             }
 
-            if ($missing['required']) {
+            if ($missing['req']) {
                 throw new \InvalidArgumentException($errorHeader.'
-                    should contain the following key(s): '.join(', ', $missing['required']));
+                    should contain the following key(s): '.join(', ', $missing['req']));
             }
-            if ($missing['optional']) {
-                foreach ($missing['optional'] as $include) {
+            if ($missing['opt']) {
+                foreach ($missing['opt'] as $include) {
                     $relation[$include] = null;
                 }
             }
@@ -389,7 +409,6 @@ abstract class Ardent extends Model {
      * @throws InvalidModelException
      */
     public function validate(array $rules = array(), array $customMessages = array()) {
-
         if ($this->fireModelEvent('validating') === false) {
             if ($this->throwOnValidation) {
                 throw new InvalidModelException($this);
@@ -407,47 +426,47 @@ abstract class Ardent extends Model {
         }
 
         if (empty($rules)) {
-            return true;
-        }
-
-        $customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
-
-        if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
-            // pluck only the fields which are defined in the validation rule-set
-            $attributes = array_intersect_key(Input::all(), $rules);
-
-            //Set each given attribute on the model
-            foreach ($attributes as $key => $value) {
-                $this->setAttribute($key, $value);
-            }
-        }
-
-        $data = $this->getAttributes(); // the data under validation
-
-        // perform validation
-        $validator = self::makeValidator($data, $rules, $customMessages);
-        $success   = $validator->passes();
-
-        if ($success) {
-            // if the model is valid, unset old errors
-            if ($this->validationErrors->count() > 0) {
-                $this->validationErrors = new MessageBag;
-            }
+            $success = true;
         } else {
-            // otherwise set the new ones
-            $this->validationErrors = $validator->messages();
+			$customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
 
-            // stash the input to the current session
-            if (!self::$externalValidator && Input::hasSessionStore()) {
-                Input::flash();
-            }
+			if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
+				// pluck only the fields which are defined in the validation rule-set
+				$attributes = array_intersect_key(Input::all(), $rules);
 
-            if ($this->throwOnValidation) {
-                throw new InvalidModelException($this);
-            }
-        }
+				//Set each given attribute on the model
+				foreach ($attributes as $key => $value) {
+					$this->setAttribute($key, $value);
+				}
+			}
+
+			$data = $this->getAttributes(); // the data under validation
+
+			// perform validation
+			$validator = self::makeValidator($data, $rules, $customMessages);
+			$success   = $validator->passes();
+
+			if ($success) {
+				// if the model is valid, unset old errors
+				if ($this->validationErrors->count() > 0) {
+					$this->validationErrors = new MessageBag;
+				}
+			} else {
+				// otherwise set the new ones
+				$this->validationErrors = $validator->messages();
+
+				// stash the input to the current session
+				if (!self::$externalValidator && Input::hasSessionStore()) {
+					Input::flash();
+				}
+			}
+		}
 
         $this->fireModelEvent('validated', false);
+
+	    if ($this->throwOnValidation) {
+		    throw new InvalidModelException($this);
+	    }
 
         return $success;
     }
