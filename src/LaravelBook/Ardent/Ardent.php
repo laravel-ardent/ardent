@@ -667,7 +667,7 @@ abstract class Ardent extends Model {
 
         return $rules;
     }
-
+    
     /**
      * Update a model already saved in the database.
      *
@@ -678,7 +678,7 @@ abstract class Ardent extends Model {
      * @param Closure $afterSave
      * @return bool
      */
-    public function update(array $rules = array(),
+    public function updateUniques(array $rules = array(),
         array $customMessages = array(),
         array $options = array(),
         Closure $beforeSave = null,
