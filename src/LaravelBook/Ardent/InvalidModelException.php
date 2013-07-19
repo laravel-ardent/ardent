@@ -28,7 +28,7 @@ class InvalidModelException extends \RuntimeException {
 	 */
 	public function __construct( Ardent $model ) {
 		$this->model = $model;
-		$this->errors = $model->validationErrors;
+		$this->errors = $model->errors();
 	}
 
 	/**
