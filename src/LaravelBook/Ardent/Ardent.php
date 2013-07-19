@@ -12,6 +12,7 @@
 use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DatabaseCapsule;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Input;
@@ -253,7 +254,7 @@ abstract class Ardent extends Model {
      * Looks for the relation in the {@link $relationsData} array and does the correct magic as Eloquent would require
      * inside relation methods. For more information, read the documentation of the mentioned property.
      *
-     * @param $relationName the relation key, camel-case version
+     * @param string $relationName the relation key, camel-case version
      * @return \Illuminate\Database\Eloquent\Relations\Relation
      * @throws \InvalidArgumentException when the first param of the relation is not a relation type constant,
      *      or there's one or more arguments missing
@@ -337,6 +338,71 @@ abstract class Ardent extends Model {
 
         return parent::__call($method, $parameters);
     }
+
+
+	/**
+	 * Define an inverse one-to-one or many relationship.
+	 * Overriden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the {@link
+	 * $relationsData} array.
+	 *
+	 * @param  string  $related
+	 * @param  string  $foreignKey
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function belongsTo($related, $foreignKey = null) {
+		$backtrace = debug_backtrace(false);
+		$caller = ($backtrace[1]['function'] == 'handleRelationalArray')? $backtrace[3] : $backtrace[1];
+
+		// If no foreign key was supplied, we can use a backtrace to guess the proper
+		// foreign key name by using the name of the relationship function, which
+		// when combined with an "_id" should conventionally match the columns.
+		$relation = $caller['function'];
+
+		if (is_null($foreignKey)) {
+			$foreignKey = snake_case($relation).'_id';
+		}
+
+		// Once we have the foreign key names, we'll just create a new Eloquent query
+		// for the related models and returns the relationship instance which will
+		// actually be responsible for retrieving and hydrating every relations.
+		$instance = new $related;
+
+		$query = $instance->newQuery();
+
+		return new BelongsTo($query, $this, $foreignKey, $relation);
+	}
+
+	/**
+	 * Define an polymorphic, inverse one-to-one or many relationship.
+	 * Overriden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the {@link
+	 * $relationsData} array.
+	 *
+	 * @param  string  $name
+	 * @param  string  $type
+	 * @param  string  $id
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function morphTo($name = null, $type = null, $id = null) {
+		// If no name is provided, we will use the backtrace to get the function name
+		// since that is most likely the name of the polymorphic interface. We can
+		// use that to get both the class and foreign key that will be utilized.
+		if (is_null($name))
+		{
+			$backtrace = debug_backtrace(false);
+			$caller = ($backtrace[1]['function'] == 'handleRelationalArray')? $backtrace[3] : $backtrace[1];
+
+			$name = snake_case($caller['function']);
+		}
+
+		// Next we will guess the type and ID if necessary. The type and IDs may also
+		// be passed into the function so that the developers may manually specify
+		// them on the relations. Otherwise, we will just make a great estimate.
+		list($type, $id) = $this->getMorphs($name, $type, $id);
+
+		$class = $this->$type;
+
+		return $this->belongsTo($class, $id);
+	}
 
     /**
      * Get an attribute from the model.
@@ -722,7 +788,7 @@ abstract class Ardent extends Model {
      * @return Ardent|Collection
      */
     public static function find($id, $columns = array('*')) {
-        $debug = debug_backtrace();
+        $debug = debug_backtrace(false);
 
         if (static::$throwOnFind && $debug[1]['function'] != 'findOrFail') {
             return self::findOrFail($id, $columns);
