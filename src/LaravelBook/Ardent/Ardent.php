@@ -720,7 +720,9 @@ abstract class Ardent extends Model {
      * @return Ardent|Collection
      */
     public static function find($id, $columns = array('*')) {
-        if (static::$throwOnFind && debug_backtrace()[1]['function'] != 'findOrFail') {
+        $debug = debug_backtrace();
+
+        if (static::$throwOnFind && $debug[1]['function'] != 'findOrFail') {
             return self::findOrFail($id, $columns);
         } else {
             return parent::find($id, $columns);
