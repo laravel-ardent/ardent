@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Validation\DatabasePresenceVerifier;
 use Illuminate\Validation\Factory as ValidationFactory;
 use Symfony\Component\Translation\Loader\PhpFileLoader;
 use Symfony\Component\Translation\Translator;
@@ -380,6 +381,7 @@ abstract class Ardent extends Model {
 
         self::$externalValidator = true;
         self::$validationFactory = new ValidationFactory($translator);
+        self::$validationFactory->setPresenceVerifier(new DatabasePresenceVerifier($db->manager));
     }
 
     /**
@@ -686,7 +688,7 @@ abstract class Ardent extends Model {
 
         return $rules;
     }
-    
+
     /**
      * Update a model already saved in the database.
      *
