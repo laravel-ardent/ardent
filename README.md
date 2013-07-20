@@ -6,7 +6,7 @@ Based on the Aware bundle for Laravel 3 by Colby Rabideau.
 
 Copyright (C) 2013 Max Ehsan <[http://laravelbook.com/](http://laravelbook.com/)>
 
-##Installation
+## Installation
 
 Add `laravelbook/ardent` as a requirement to `composer.json`:
 
@@ -19,6 +19,25 @@ Add `laravelbook/ardent` as a requirement to `composer.json`:
 ```
 
 Update your packages with `composer update` or install with `composer install`.
+
+### Usage outside of Laravel (since [ff41aae](https://github.com/laravelbook/ardent/commit/ff41aae645e38f21c0b5b9ee542a66ecc25f06a0))
+
+If you're willing to use Ardent as a standalone ORM package you're invited to do so by using the
+following configuration line in your project's boot/startup file (changing the properties according
+to your database, obviously):
+
+```php
+\LaravelBook\Ardent\Ardent::configureAsExternal(array(
+	'driver'    => 'mysql',
+	'host'      => 'localhost',
+	'port'      => 3306,
+	'database'  => 'my_system',
+	'username'  => 'myself',
+	'password'  => 'h4ckr',
+	'charset'   => 'utf8',
+	'collation' => 'utf8_unicode_ci'
+));
+```
 
 ## Documentation
 
