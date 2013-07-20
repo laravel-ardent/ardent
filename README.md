@@ -20,6 +20,8 @@ Add `laravelbook/ardent` as a requirement to `composer.json`:
 
 Update your packages with `composer update` or install with `composer install`.
 
+You can also add the package using `composer require laravelbook/ardent` and later specifying the version you want (for now, `dev-master` is your best bet).
+
 ### Usage outside of Laravel (since [ff41aae](https://github.com/laravelbook/ardent/commit/ff41aae645e38f21c0b5b9ee542a66ecc25f06a0))
 
 If you're willing to use Ardent as a standalone ORM package you're invited to do so by using the
@@ -46,7 +48,7 @@ to your database, obviously):
 * [Effortless Validation with Ardent](#validation)
 * [Retrieving Validation Errors](#errors)
 * [Overriding Validation](#override)
-* [`beforeSave` and `afterSave` Hooks](#beforesave)
+* [Model hooks](#modelhooks)
 * [Custom Validation Error Messages](#messages)
 * [Custom Validation Rules](#rules)
 * [Automatically Hydrate Ardent Entities](#hydra)
@@ -152,6 +154,8 @@ class User extends Ardent {
 }
 ```
 
+> **Note**: you're free to use the [array syntax](http://four.laravel.com/docs/validation#basic-usage) for validation rules as well.
+
 Ardent models validate themselves automatically when `Ardent->save()` is called.
 
 ```php
@@ -193,17 +197,26 @@ An array that is **not empty** will override the rules or custom error messages 
 
 > **Note:** the default value for `$rules` and `$customMessages` is empty `array()`, if you pass an `array()` nothing will be overriden.
 
-<a name="beforesave"></a>
-## beforeSave and afterSave Hooks
+<a name="modelhooks"></a>
+## Model Hooks
 
-Ardent provides a convenient method for performing actions when `$model->save()` is called. For example, you may use `beforeSave` to hash a users password:
+Ardent provides some syntatic sugar over Eloquent's model events: traditional model hooks. They are an easy way to hook up additional operations to different moments in your model life. They can be used to do additional clean-up work before deleting an entry, doing automatic fixes after validation occurs or updating related models after an update happens.
+
+All `before` hooks, when returning `false` (specifically boolean, not simply "falsy" values) will halt the operation. So, for example, if you want to stop saving if something goes wrong in a `beforeSave` method, just `return false` and the save will not happen - and obviously `afterSave` won't be called as well.
+
+Here's the complete list of available hooks:
+
+- `before`/`afterSave()`
+- `before`/`afterUpdate()`
+- `before`/`afterDelete()`
+- `before`/`afterValidate()` - when returning false will halt validation, thus making `save()` operations fail as well since the validation was a failure.
+
+For example, you may use `beforeSave` to hash a users password:
 
 ```php
-use LaravelBook\Ardent\Ardent;
+class User extends \LaravelBook\Ardent\Ardent {
 
-class User extends Ardent {
-
-	public function beforeSave($forced = false)
+	public function beforeSave()
 	{
 		// if there's a new password, hash it
 		if($this->isDirty('password'))
@@ -212,16 +225,15 @@ class User extends Ardent {
 		}
 		
 		return true;
-		}
-	
+		//or don't return nothing, since only a boolean false will halt the operation
+	}
+
 }
 ```
 
-Notice that `beforeSave` returns a boolean. If you'd like to halt the `save()` operation, simply return `false`.
+### Additionals beforeSave and afterSave
 
-### Overriding beforeSave and afterSave
-
-Just like, `$rules` and `$customMessages`, `beforeSave` and `afterSave` can be overridden at run-time. Simply pass the closures to the `save()` (or `forceSave()`) function.
+`beforeSave` and `afterSave` can be included at run-time. Simply pass in closures with the model as argument to the `save()` (or `forceSave()`) method.
 
 ```php
 $user->save(array(), array(), 
