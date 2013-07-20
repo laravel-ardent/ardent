@@ -457,12 +457,13 @@ abstract class Ardent extends Model {
      * @param array   $options
      * @param Closure $beforeSave
      * @param Closure $afterSave
-     * @param bool    $force Forces saving invalid data. Defaults to false; when true has the same effect as calling
-     *                       {@link Ardent::forceSave()}.
+     * @param bool    $force          Forces saving invalid data.
+
      * @return bool
+     * @see Ardent::save()
      * @see Ardent::forceSave()
      */
-    public function save(array $rules = array(),
+    protected function internalSave(array $rules = array(),
         array $customMessages = array(),
         array $options = array(),
         Closure $beforeSave = null,
@@ -486,6 +487,27 @@ abstract class Ardent extends Model {
     }
 
     /**
+     * Save the model to the database.
+     *
+     * @param array   $rules
+     * @param array   $customMessages
+     * @param array   $options
+     * @param Closure $beforeSave
+     * @param Closure $afterSave
+     *
+     * @return bool
+     * @see Ardent::forceSave()
+     */
+    public function save(array $rules = array(),
+        array $customMessages = array(),
+        array $options = array(),
+        Closure $beforeSave = null,
+        Closure $afterSave = null
+    ) {
+        return $this->internalSave($rules, $customMessages, $options, $beforeSave, $afterSave, false);
+    }
+
+    /**
      * Force save the model even if validation fails.
      *
      * @param array   $rules
@@ -502,8 +524,9 @@ abstract class Ardent extends Model {
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
-        return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave, true);
+        return $this->internalSave($rules, $customMessages, $options, $beforeSave, $afterSave, true);
     }
+
 
     /**
      * Add the basic purge filters
