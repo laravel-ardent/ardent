@@ -61,7 +61,7 @@ to your database, obviously):
 How often do you find yourself re-creating the same boilerplate code in the applications you build? Does this typical form processing code look all too familiar to you?
 
 ```php
-Route::post('register', function () {
+Route::post('register', function() {
         $rules = array(
             'name'                  => 'required|min:3|max:80|alpha_dash',
             'email'                 => 'required|between:3,64|email|unique:users',
@@ -136,14 +136,12 @@ Ardent models use Laravel's built-in [Validator class](http://doc.laravelbook.co
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
-
   public static $rules = array(
     'name'                  => 'required|between:4,16',
     'email'                 => 'required|email',
 	'password'              => 'required|alpha_num|between:4,8|confirmed',
 	'password_confirmation' => 'required|alpha_num|between:4,8',
   );
-
 }
 ```
 
@@ -209,19 +207,15 @@ For example, you may use `beforeSave` to hash a users password:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
-
-	public function beforeSave()
-	{
+	public function beforeSave() {
 		// if there's a new password, hash it
-		if($this->isDirty('password'))
-		{
+		if($this->isDirty('password')) {
 			$this->password = Hash::make($this->password);
 		}
 		
 		return true;
 		//or don't return nothing, since only a boolean false will halt the operation
 	}
-
 }
 ```
 
@@ -250,12 +244,10 @@ Just like the Laravel Validator, Ardent lets you set custom error messages using
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
-
   public static $customMessages = array(
     'required' => 'The :attribute field is required.',
     ...
   );
-
 }
 ```
 
@@ -294,9 +286,7 @@ To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInpu
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
-
   public $autoHydrateEntityFromInput = true;
-
 }
 ```
 
@@ -309,9 +299,7 @@ To enable this feature, simply set the `$autoPurgeRedundantAttributes` instance 
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
-
   public $autoPurgeRedundantAttributes = true;
-
 }
 ```
 
@@ -324,11 +312,8 @@ To do that, add the attribute name to the `Ardent::$passwordAttributes` static a
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
-
   public static $passwordAttributes  = array('password');
-
   public $autoHashPasswordAttributes = true;
-
 }
 ```
 
