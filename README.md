@@ -61,26 +61,26 @@ to your database, obviously):
 How often do you find yourself re-creating the same boilerplate code in the applications you build? Does this typical form processing code look all too familiar to you?
 
 ```php
-Route::post( 'register', function () {
+Route::post('register', function () {
         $rules = array(
-            'name'      => 'required|min:3|max:80|alpha_dash',
-            'email'     => 'required|between:3,64|email|unique:users',
-            'password'  =>'required|alpha_num|between:4,8|confirmed',
-            'password_confirmation'=>'required|alpha_num|between:4,8'
+            'name'                  => 'required|min:3|max:80|alpha_dash',
+            'email'                 => 'required|between:3,64|email|unique:users',
+            'password'              => 'required|alpha_num|between:4,8|confirmed',
+            'password_confirmation' => 'required|alpha_num|between:4,8'
         );
 
-        $validator = Validator::make( Input::all(), $rules );
+        $validator = Validator::make(Input::all(), $rules);
 
-        if ( $validator->passes() ) {
-            User::create( array(
-                    'name'      => Input::get( 'real_name' ),
-                    'email'     => Input::get( 'email' ),
-                    'password'  => Hash::make( Input::get( 'password' ) )
-                ) );
+        if ($validator->passes()) {
+            User::create(array(
+                    'name'     => Input::get('name'),
+                    'email'    => Input::get('email'),
+                    'password' => Hash::make(Input::get('password'))
+                ));
 
-            return Redirect::to( '/' )->with( 'message', 'Thanks for registering!' );
+            return Redirect::to('/')->with('message', 'Thanks for registering!');
         } else {
-            return Redirect::to( '/' )->withErrors( $v->getMessages() );
+            return Redirect::to('/')->withErrors($v->getMessages());
         }
     }
 );
@@ -91,12 +91,12 @@ Implementing this yourself often results in a lot of repeated boilerplate code. 
 What if someone else did all the heavy-lifting for you? What if, instead of regurgitating the above mess, all you needed to type was these few lines?...
 
 ```php
-Route::post( 'register', function () {
+Route::post('register', function() {
         $user = new User;
-        if ( $user->save() ) {
-            return Redirect::to( '/' )->with( 'message', 'Thanks for registering!' );
+        if ($user->save()) {
+            return Redirect::to('/')->with('message', 'Thanks for registering!');
         } else {
-            return Redirect::to( '/' )->withErrors( $user->errors() );
+            return Redirect::to('/')->withErrors($user->errors());
         }
     }
 );
@@ -119,7 +119,7 @@ For example, user registration or blog post submission is a common coding requir
 
 `Ardent` aims to extend the `Eloquent` base class without changing its core functionality. Since `Ardent` itself is a descendant of `Illuminate\Database\Eloquent\Model`, all your `Ardent` models are fully compatible with `Eloquent` and can harness the full power of Laravels awesome OR/M.
 
-To create a new Ardent model, simply make your model class derive from the `Ardent` base class:
+To create a new Ardent model, simply make your model class derive from the `Ardent` base class. In the next examples we will use the complete namespaced class to make examples cleaner, but you're encouraged to make use of `use` in all your classes:
 
 ```php
 use LaravelBook\Ardent\Ardent;
@@ -135,21 +135,14 @@ class User extends Ardent {}
 Ardent models use Laravel's built-in [Validator class](http://doc.laravelbook.com/validation/). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
 
 ```php
-use LaravelBook\Ardent\Ardent;
+class User extends \LaravelBook\Ardent\Ardent {
 
-class User extends Ardent {
-
-  /**
-   * Ardent validation rules
-   */
   public static $rules = array(
-    'name' => 'required|between:4,16',
-    'email' => 'required|email',
-	'password' => 'required|alpha_num|between:4,8|confirmed',
+    'name'                  => 'required|between:4,16',
+    'email'                 => 'required|email',
+	'password'              => 'required|alpha_num|between:4,8|confirmed',
 	'password_confirmation' => 'required|alpha_num|between:4,8',
   );
-
-  ...
 
 }
 ```
@@ -159,10 +152,11 @@ class User extends Ardent {
 Ardent models validate themselves automatically when `Ardent->save()` is called.
 
 ```php
-$user = new User;
-$user->name = 'John doe';
-$user->email = 'john@doe.com';
+$user           = new User;
+$user->name     = 'John doe';
+$user->email    = 'john@doe.com';
 $user->password = 'test';
+
 $success = $user->save(); // returns false if model is invalid
 ```
 
@@ -190,12 +184,12 @@ There are two ways to override Ardent's validation:
 #### 2. Override Rules and Messages
 both `Ardent->save($rules, $customMessages)` and `Ardent->validate($rules, $customMessages)` take two parameters:
 
-- `$rules` is an array of Validator rules of the same form as `Ardent::rules`.
-- The same is true of the `$customMessages` parameter (same as `Ardent::customMessages`)
+- `$rules` is an array of Validator rules of the same form as `Ardent::$rules`.
+- The same is true of the `$customMessages` parameter (same as `Ardent::$customMessages`)
 
 An array that is **not empty** will override the rules or custom error messages specified by the class for that instance of the method only.
 
-> **Note:** the default value for `$rules` and `$customMessages` is empty `array()`, if you pass an `array()` nothing will be overriden.
+> **Note:** the default value for `$rules` and `$customMessages` is empty `array()`; thus, if you pass an `array()` nothing will be overriden.
 
 <a name="modelhooks"></a>
 ## Model Hooks
@@ -255,18 +249,12 @@ $user->save(array(), array(),
 Just like the Laravel Validator, Ardent lets you set custom error messages using the [same sytax](http://doc.laravelbook.com/validation/#custom-error-messages).
 
 ```php
-use LaravelBook\Ardent\Ardent;
+class User extends \LaravelBook\Ardent\Ardent {
 
-class User extends Ardent {
-
-  /**
-   * Ardent Messages
-   */
   public static $customMessages = array(
-    'required' => 'The :attribute field is required.'
+    'required' => 'The :attribute field is required.',
+    ...
   );
-
-  ...
 
 }
 ```
@@ -284,9 +272,9 @@ Ardent is capable of hydrating your entity model class from the form input submi
 Let's see it action. Consider this snippet of code:
 
 ```php
-$user = new User;
-$user->name = Input::get('name');
-$user->email = Input::get('email');
+$user           = new User;
+$user->name     = Input::get('name');
+$user->email    = Input::get('email');
 $user->password = Hash::make(Input::get('password'));
 $user->save();
 ```
@@ -305,9 +293,7 @@ Believe it or not, the code above performs essentially the same task as its olde
 To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class:
 
 ```php
-use LaravelBook\Ardent\Ardent;
-
-class User extends Ardent {
+class User extends \LaravelBook\Ardent\Ardent {
 
   public $autoHydrateEntityFromInput = true;
 
@@ -322,9 +308,7 @@ Ardent models can *auto-magically* purge redundant input data (such as *password
 To enable this feature, simply set the `$autoPurgeRedundantAttributes` instance variable to `true` in your model class:
 
 ```php
-use LaravelBook\Ardent\Ardent;
-
-class User extends Ardent {
+class User extends \LaravelBook\Ardent\Ardent {
 
   public $autoPurgeRedundantAttributes = true;
 
@@ -339,11 +323,9 @@ Suppose you have an attribute named `password` in your model class, but don't wa
 To do that, add the attribute name to the `Ardent::$passwordAttributes` static array variable in your model class, and set the `$autoHashPasswordAttributes` instance variable to `true`:
 
 ```php
-use LaravelBook\Ardent\Ardent;
+class User extends \LaravelBook\Ardent\Ardent {
 
-class User extends Ardent {
-
-  public static $passwordAttributes = array('password');
+  public static $passwordAttributes  = array('password');
 
   public $autoHashPasswordAttributes = true;
 
