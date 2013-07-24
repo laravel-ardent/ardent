@@ -22,7 +22,7 @@ Update your packages with `composer update` or install with `composer install`.
 
 You can also add the package using `composer require laravelbook/ardent` and later specifying the version you want (for now, `dev-master` is your best bet).
 
-### Usage outside of Laravel (since [ff41aae](https://github.com/laravelbook/ardent/commit/ff41aae645e38f21c0b5b9ee542a66ecc25f06a0))
+### Usage outside of Laravel (since [1.1](https://github.com/laravelbook/ardent/tree/v1.1.0))
 
 If you're willing to use Ardent as a standalone ORM package you're invited to do so by using the
 following configuration line in your project's boot/startup file (changing the properties according
@@ -48,9 +48,10 @@ to your database, obviously):
 * [Effortless Validation with Ardent](#validation)
 * [Retrieving Validation Errors](#errors)
 * [Overriding Validation](#override)
-* [Model hooks](#modelhooks)
 * [Custom Validation Error Messages](#messages)
 * [Custom Validation Rules](#rules)
+* [Model hooks](#modelhooks)
+* [Cleaner definition of relationships](#relations)
 * [Automatically Hydrate Ardent Entities](#hydra)
 * [Automatically Purge Redundant Form Data](#purge)
 * [Automatically Transform Secure-Text Attributes](#secure)
@@ -189,54 +190,6 @@ An array that is **not empty** will override the rules or custom error messages 
 
 > **Note:** the default value for `$rules` and `$customMessages` is empty `array()`; thus, if you pass an `array()` nothing will be overriden.
 
-<a name="modelhooks"></a>
-## Model Hooks
-
-Ardent provides some syntatic sugar over Eloquent's model events: traditional model hooks. They are an easy way to hook up additional operations to different moments in your model life. They can be used to do additional clean-up work before deleting an entry, doing automatic fixes after validation occurs or updating related models after an update happens.
-
-All `before` hooks, when returning `false` (specifically boolean, not simply "falsy" values) will halt the operation. So, for example, if you want to stop saving if something goes wrong in a `beforeSave` method, just `return false` and the save will not happen - and obviously `afterSave` won't be called as well.
-
-Here's the complete list of available hooks:
-
-- `before`/`afterSave()`
-- `before`/`afterUpdate()`
-- `before`/`afterDelete()`
-- `before`/`afterValidate()` - when returning false will halt validation, thus making `save()` operations fail as well since the validation was a failure.
-
-For example, you may use `beforeSave` to hash a users password:
-
-```php
-class User extends \LaravelBook\Ardent\Ardent {
-	public function beforeSave() {
-		// if there's a new password, hash it
-		if($this->isDirty('password')) {
-			$this->password = Hash::make($this->password);
-		}
-		
-		return true;
-		//or don't return nothing, since only a boolean false will halt the operation
-	}
-}
-```
-
-### Additionals beforeSave and afterSave
-
-`beforeSave` and `afterSave` can be included at run-time. Simply pass in closures with the model as argument to the `save()` (or `forceSave()`) method.
-
-```php
-$user->save(array(), array(), 
-	function ($model) {	// closure for beforeSave
-		echo "saving the model object...";
-		return true;
-	},
-	function ($model) {	// closure for afterSave
-		echo "done!";
-	}
-);
-```
-
-> **Note:** the closures should have one parameter as it will be passed a reference to the model being saved.
-
 <a name="messages"></a>
 ## Custom Error Messages
 
@@ -289,6 +242,93 @@ class User extends \LaravelBook\Ardent\Ardent {
   public $autoHydrateEntityFromInput = true;
 }
 ```
+
+<a name="modelhooks"></a>
+## Model Hooks (since [2.0](https://github.com/laravelbook/ardent/tree/v2.0.0))
+
+Ardent provides some syntatic sugar over Eloquent's model events: traditional model hooks. They are an easy way to hook up additional operations to different moments in your model life. They can be used to do additional clean-up work before deleting an entry, doing automatic fixes after validation occurs or updating related models after an update happens.
+
+All `before` hooks, when returning `false` (specifically boolean, not simply "falsy" values) will halt the operation. So, for example, if you want to stop saving if something goes wrong in a `beforeSave` method, just `return false` and the save will not happen - and obviously `afterSave` won't be called as well.
+
+Here's the complete list of available hooks:
+
+- `before`/`afterSave()`
+- `before`/`afterUpdate()`
+- `before`/`afterDelete()`
+- `before`/`afterValidate()` - when returning false will halt validation, thus making `save()` operations fail as well since the validation was a failure.
+
+For example, you may use `beforeSave` to hash a users password:
+
+```php
+class User extends \LaravelBook\Ardent\Ardent {
+	public function beforeSave() {
+		// if there's a new password, hash it
+		if($this->isDirty('password')) {
+			$this->password = Hash::make($this->password);
+		}
+		
+		return true;
+		//or don't return nothing, since only a boolean false will halt the operation
+	}
+}
+```
+
+### Additionals beforeSave and afterSave (since 1.0)
+
+`beforeSave` and `afterSave` can be included at run-time. Simply pass in closures with the model as argument to the `save()` (or `forceSave()`) method.
+
+```php
+$user->save(array(), array(), 
+	function ($model) {	// closure for beforeSave
+		echo "saving the model object...";
+		return true;
+	},
+	function ($model) {	// closure for afterSave
+		echo "done!";
+	}
+);
+```
+
+> **Note:** the closures should have one parameter as it will be passed a reference to the model being saved.
+
+<a name="relations"></a>
+## Cleaner definition of relationships  (since [2.0](https://github.com/laravelbook/ardent/tree/v2.0.0))
+
+Have you ever written an Eloquent model with a bunch of relations, just to notice how cluttered your class is, with all those one-liners that have almost the same content as the method name itself?
+
+In Ardent you can cleanly define your relationships in an array with their information, and they will work just like if you had defined they in methods. Here's an example:
+
+```php
+class User extends \LaravelBook\Ardent\Ardent {
+  public static $relationsData = array(
+    'address' => array(self::HAS_ONE, 'Address'),
+    'orders'  => array(self::HAS_MANY, 'Order'),
+    'groups'  => array(self::BELONGS_TO_MANY, 'Group', 'table' => 'groups_have_users')
+  );
+}
+
+$user = User::find($id);
+echo "{$user->address->street}, {$user->address->city} - {$user->address->state}";
+```
+
+The array syntax is as follows:
+
+- First indexed value: relation name, being one of
+[`hasOne`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_hasOne),
+[`hasMany`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_hasMany),
+[`belongsTo`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_belongsTo),
+[`belongsToMany`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_belongsToMany),
+[`morphTo`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_morphTo),
+[`morphOne`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_morphOne),
+[`morphMany`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_morphMany),
+or one of the related constants (`Ardent::HAS_MANY` or `Ardent::MORPH_ONE` for example).
+- Second indexed: class name, with complete namespace. The exception is `morphTo` relations, that take no additional argument.
+- named arguments, following the ones defined for the original Eloquent methods:
+    - `foreignKey` [optional], valid for `hasOne`, `hasMany`, `belongsTo` and `belongsToMany`
+    - `table` and `otherKey` [optional], valid for `belongsToMany`
+    - `name`, `type` and `id`, used by `morphTo`, `morphOne` and `morphMany` (the last two requires `name` to be defined)
+    
+> **Note:** This feature was based on the easy [relations on Yii 1.1 ActiveRecord](http://www.yiiframework.com/doc/guide/1.1/en/database.arr#declaring-relationship).
 
 <a name="purge"></a>
 ## Automatically Purge Redundant Form Data
