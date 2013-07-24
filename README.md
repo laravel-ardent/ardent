@@ -81,7 +81,7 @@ Route::post('register', function() {
 
             return Redirect::to('/')->with('message', 'Thanks for registering!');
         } else {
-            return Redirect::to('/')->withErrors($v->getMessages());
+            return Redirect::to('/')->withErrors($validator->getMessages());
         }
     }
 );
