@@ -343,6 +343,19 @@ class User extends \LaravelBook\Ardent\Ardent {
 }
 ```
 
+You can also purge additional fields. The attribute `Ardent::$purgeFilters` is an array of closures to which you can add your custom rules. Those closures receive the attribute key as argument and should return `false` for attributes that should be purged. Like this:
+
+```php
+function __construct() {
+  parent::__construct();
+
+  $this->purgeFilters[] = function($key) {
+    $purge = array('tempData', 'myAttribute');
+    return ! in_array($key, $purge);
+  };
+}
+```
+
 <a name="secure"></a>
 ## Automatically Transform Secure-Text Attributes
 
