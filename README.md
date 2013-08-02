@@ -235,11 +235,12 @@ That's it! All we've done is remove the boring stuff.
 
 Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data (it uses the Laravel `Input::all()` method internally). No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!
 
-To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class:
+To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class. However, to prevent filling pre-existent properties, if you want auto-hydration also for update scenarios, you should also use `$forceEntityHydrationFromInput`:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
-  public $autoHydrateEntityFromInput = true;
+  public $autoHydrateEntityFromInput = true;    // hydrates on new entries
+  public $forceEntityHydrationFromInput = true; // hydrates on updates
 }
 ```
 
