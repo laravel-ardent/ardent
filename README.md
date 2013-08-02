@@ -242,6 +242,38 @@ class User extends \LaravelBook\Ardent\Ardent {
   public $autoHydrateEntityFromInput = true;
 }
 ```
+####Using $autoHydrateEntityFromInput on model "update"
+
+Even if `$autoHydrateEntityFromInput` is already set to `true`, it will not work if you are updating a record.
+
+To solve this problem, below is an example on how to change the `username` field of the Users table.
+
+Using plain Laravel model:
+
+```php
+$user           = User::find(1);
+$user->username = Input::get('username');
+$user->save();
+```
+
+Using model extended with Ardent:
+
+```php
+$user           = User::find(1);
+$user->forceEntityHydrationFromInput = true; // add this line to force hydration
+$user->save();
+```
+
+If we are going to view our Users table, the `username` with `id` equal to `1` will be updated with the value of `Input::get('username')`. Try to set `$user->forceEntityHydrationFromInput` to false and you will see that no updates will happen.
+
+The `Ardent->forceEntityHydrationFromInput` can also be set in your model class:
+
+```php
+class User extends \LaravelBook\Ardent\Ardent {
+  public $autoHydrateEntityFromInput = true;
+  public $forceEntityHydrationFromInput = true;
+}
+```
 
 <a name="modelhooks"></a>
 ## Model Hooks (since [2.0](https://github.com/laravelbook/ardent/tree/v2.0.0))
