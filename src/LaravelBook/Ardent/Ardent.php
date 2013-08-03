@@ -745,11 +745,10 @@ abstract class Ardent extends Model {
      *
      * @return array Rules with exclusions applied
      */
-    protected function buildUniqueExclusionRules() {
-        // Because Ardent uses statics (sigh), we need to do this to get the
-        // model's rules.
-        $class = new \ReflectionClass($this);
-        $rules = $class->getStaticPropertyValue('rules');
+    protected function buildUniqueExclusionRules(array $rules = array()) {
+      
+        if (!count($rules))
+          $rules = static::$rules;
 
         foreach ($rules as $field => &$ruleset) {
             // If $ruleset is a pipe-separated string, switch it to array
@@ -761,10 +760,12 @@ abstract class Ardent extends Model {
 
                     // Append field name if needed
                     if (count($params) == 1) {
-                        $params[2] = $field;
+                        $params[1] = $field;
                     }
 
-                    $params[3] = $this->id;
+                     // if the 3rd param was set, do not overwrite it
+                    if (!is_numeric(@$params[2])) $params[2] = $this->id;
+                   
 
                     $rule = implode(',', $params);
                 }
@@ -775,7 +776,8 @@ abstract class Ardent extends Model {
     }
 
     /**
-     * Update a model already saved in the database.
+     * Update a model, but filter uniques first to ensure a unique validation rule
+     * does not fire
      *
      * @param array   $rules
      * @param array   $customMessages
@@ -790,11 +792,8 @@ abstract class Ardent extends Model {
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
-        // Only automatically modify rules if there are none coming in
-        if (count($rules == 0)) {
-            $rules = $this->buildUniqueExclusionRules();
-        }
-
+        $rules = $this->buildUniqueExclusionRules($rules);
+        
         return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
     }
 
