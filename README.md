@@ -133,7 +133,7 @@ class User extends Ardent {}
 <a name="validation"></a>
 ## Effortless Validation with Ardent
 
-Ardent models use Laravel's built-in [Validator class](http://doc.laravelbook.com/validation/). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
+Ardent models use Laravel's built-in [Validator class](http://four.laravel.com/docs/validation). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
@@ -170,7 +170,7 @@ Retrieve the validation errors message collection instance with `Ardent->errors(
 
 Retrieve all validation errors with `Ardent->errors()->all()`. Retrieve errors for a *specific* attribute using `Ardent->validationErrors->get('attribute')`.
 
-> **Note:** Ardent leverages Laravel's MessagesBag object which has a [simple and elegant method](http://doc.laravelbook.com/validation/#working-with-error-messages) of formatting errors.
+> **Note:** Ardent leverages Laravel's MessagesBag object which has a [simple and elegant method](http://four.laravel.com/docs/validation#working-with-error-messages) of formatting errors.
 
 <a name="overide"></a>
 ## Overriding Validation
@@ -193,7 +193,7 @@ An array that is **not empty** will override the rules or custom error messages 
 <a name="messages"></a>
 ## Custom Error Messages
 
-Just like the Laravel Validator, Ardent lets you set custom error messages using the [same sytax](http://doc.laravelbook.com/validation/#custom-error-messages).
+Just like the Laravel Validator, Ardent lets you set custom error messages using the [same syntax](http://four.laravel.com/docs/validation#custom-error-messages).
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
@@ -207,7 +207,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 <a name="rules"></a>
 ## Custom Validation Rules
 
-You can create custom validation rules the [same way](http://doc.laravelbook.com/validation/#custom-validation-rules) you would for the Laravel Validator.
+You can create custom validation rules the [same way](http://four.laravel.com/docs/validation#custom-validation-rules) you would for the Laravel Validator.
 
 <a name="hydra"></a>
 ## Automatically Hydrate Ardent Entities
