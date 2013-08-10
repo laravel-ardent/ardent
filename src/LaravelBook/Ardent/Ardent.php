@@ -311,8 +311,12 @@ abstract class Ardent extends Model {
 
             case self::BELONGS_TO_MANY:
                 $verifyArgs(array('table', 'foreignKey', 'otherKey'));
-                return $this->$relationType($relation[1], $relation['table'], $relation['foreignKey'],
-                    $relation['otherKey']);
+                $relationship = $this->$relationType($relation[1], $relation['table'], $relation['foreignKey'], $relation['otherKey']);
+                if(isset($relation['pivotKeys']) && is_array($relation['pivotKeys']))
+                    $relationship->withPivot($relation['pivotKeys']);
+                if(isset($relation['timestamps']) && $relation['timestamps']==true)
+                    $relationship->withTimestamps();
+                return $relationship;
 
             case self::MORPH_TO:
                 $verifyArgs(array('name', 'type', 'id'));
