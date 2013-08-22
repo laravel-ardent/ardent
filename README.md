@@ -55,6 +55,7 @@ to your database, obviously):
 * [Automatically Hydrate Ardent Entities](#hydra)
 * [Automatically Purge Redundant Form Data](#purge)
 * [Automatically Transform Secure-Text Attributes](#secure)
+* [Updates with Unique Rules] (#uniquerules)
 
 <a name="start"></a>
 ## Introduction
@@ -358,8 +359,8 @@ function __construct() {
 }
 ```
 
-<a name="secure"></a>
-## Automatically Transform Secure-Text Attributes
+<a name="uniquerules"></a>
+## Updates with Unique Rules
 
 Suppose you have an attribute named `password` in your model class, but don't want to store the plain-text version in the database. The pragmatic thing to do would be to store the hash of the original content. Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!
 
@@ -373,3 +374,39 @@ class User extends \LaravelBook\Ardent\Ardent {
 ```
 
 Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel `Hash::make()` method internally to generate hash.
+
+
+<a name="secure"></a>
+## Automatically Transform Secure-Text Attributes
+Ardent can assist you with unique updates. According to the Lavavel Documentation, when you update (and therefore validate) a field with a unique rule, you have to pass in the unique ID of the record you are updating. Without passing this ID, validation will fail because Laravel's Validator will think this record is a duplicate.
+
+From the Laravel Documentation:
+
+```php
+    'email' => 'unique:users,email,10'
+```
+
+In the past, programmers had to manually manage the passing of the ID and changing of the ruleset to include the ID at runtime. Not so with Ardent. Simply set up your rules with `unique`, call function `updateUniques` and Ardent will take care of the rest.
+
+#### Example:
+
+In your extended model define your rules
+
+```php
+  public static $rules = array(
+     'email' => 'required|email|unique',
+     'password' => 'required|between:4,20|confirmed',
+     'password_confirmation' => 'between:4,20',
+  );
+```
+
+In your controller, when you need to update, simply call
+
+```php
+$model->updateUniques();
+```
+
+If required, you can runtime pass rules to `updateUniques`, otherwise it will use the static rules provided by your model.
+
+Note that in the above example of the rules, we did not tell the Validator which table or even which field to use as it is described in the Laravel Documentation (ie `unique:users,email,10`). Ardent is clever enough to figure it out. (Thank you to github user @Sylph)
+
