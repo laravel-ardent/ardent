@@ -770,6 +770,7 @@ abstract class Ardent extends Model {
                      // if the 3rd param was set, do not overwrite it
                     if (!is_numeric(@$params[2])) $params[2] = $this->id;
                    
+
                     $rule = implode(',', $params);
                 }
             }
@@ -779,7 +780,8 @@ abstract class Ardent extends Model {
     }
 
     /**
-     * Update a model already saved in the database.
+     * Update a model, but filter uniques first to ensure a unique validation rule
+     * does not fire
      *
      * @param array   $rules
      * @param array   $customMessages
