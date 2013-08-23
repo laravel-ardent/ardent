@@ -30,14 +30,14 @@ to your database, obviously):
 
 ```php
 \LaravelBook\Ardent\Ardent::configureAsExternal(array(
-	'driver'    => 'mysql',
-	'host'      => 'localhost',
-	'port'      => 3306,
-	'database'  => 'my_system',
-	'username'  => 'myself',
-	'password'  => 'h4ckr',
-	'charset'   => 'utf8',
-	'collation' => 'utf8_unicode_ci'
+  'driver'    => 'mysql',
+  'host'      => 'localhost',
+  'port'      => 3306,
+  'database'  => 'my_system',
+  'username'  => 'myself',
+  'password'  => 'h4ckr',
+  'charset'   => 'utf8',
+  'collation' => 'utf8_unicode_ci'
 ));
 ```
 
@@ -141,8 +141,8 @@ class User extends \LaravelBook\Ardent\Ardent {
   public static $rules = array(
     'name'                  => 'required|between:4,16',
     'email'                 => 'required|email',
-	'password'              => 'required|alpha_num|between:4,8|confirmed',
-	'password_confirmation' => 'required|alpha_num|between:4,8',
+  'password'              => 'required|alpha_num|between:4,8|confirmed',
+  'password_confirmation' => 'required|alpha_num|between:4,8',
   );
 }
 ```
@@ -264,15 +264,15 @@ For example, you may use `beforeSave` to hash a users password:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
-	public function beforeSave() {
-		// if there's a new password, hash it
-		if($this->isDirty('password')) {
-			$this->password = Hash::make($this->password);
-		}
-		
-		return true;
-		//or don't return nothing, since only a boolean false will halt the operation
-	}
+  public function beforeSave() {
+    // if there's a new password, hash it
+    if($this->isDirty('password')) {
+      $this->password = Hash::make($this->password);
+    }
+    
+    return true;
+    //or don't return nothing, since only a boolean false will halt the operation
+  }
 }
 ```
 
@@ -282,13 +282,13 @@ class User extends \LaravelBook\Ardent\Ardent {
 
 ```php
 $user->save(array(), array(), 
-	function ($model) {	// closure for beforeSave
-		echo "saving the model object...";
-		return true;
-	},
-	function ($model) {	// closure for afterSave
-		echo "done!";
-	}
+  function ($model) { // closure for beforeSave
+    echo "saving the model object...";
+    return true;
+  },
+  function ($model) { // closure for afterSave
+    echo "done!";
+  }
 );
 ```
 
@@ -359,8 +359,9 @@ function __construct() {
 }
 ```
 
-<a name="uniquerules"></a>
-## Updates with Unique Rules
+
+<a name="secure"></a>
+## Automatically Transform Secure-Text Attributes
 
 Suppose you have an attribute named `password` in your model class, but don't want to store the plain-text version in the database. The pragmatic thing to do would be to store the hash of the original content. Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!
 
@@ -376,8 +377,9 @@ class User extends \LaravelBook\Ardent\Ardent {
 Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel `Hash::make()` method internally to generate hash.
 
 
-<a name="secure"></a>
-## Automatically Transform Secure-Text Attributes
+<a name="uniquerules"></a>
+## Updates with Unique Rules
+
 Ardent can assist you with unique updates. According to the Lavavel Documentation, when you update (and therefore validate) a field with a unique rule, you have to pass in the unique ID of the record you are updating. Without passing this ID, validation will fail because Laravel's Validator will think this record is a duplicate.
 
 From the Laravel Documentation:
