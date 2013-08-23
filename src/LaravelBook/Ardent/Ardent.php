@@ -776,6 +776,7 @@ abstract class Ardent extends Model {
                 if (isset($this->primaryKey)) {
                   $uniqueRules[3] = $this->{$this->primaryKey};
                   $uniqueRules[4] = $this->primaryKey;
+
                 }
                 else {
                   $uniqueRules[3] = $this->id;
