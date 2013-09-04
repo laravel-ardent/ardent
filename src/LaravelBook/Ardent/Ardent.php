@@ -791,7 +791,7 @@ abstract class Ardent extends Model {
         Closure $afterSave = null
     ) {
         // Only automatically modify rules if there are none coming in
-        if (count($rules == 0)) {
+        if (count($rules) === 0) {
             $rules = $this->buildUniqueExclusionRules();
         }
 
