@@ -745,37 +745,54 @@ abstract class Ardent extends Model {
      *
      * @return array Rules with exclusions applied
      */
-    protected function buildUniqueExclusionRules() {
-        // Because Ardent uses statics (sigh), we need to do this to get the
-        // model's rules.
-        $class = new \ReflectionClass($this);
-        $rules = $class->getStaticPropertyValue('rules');
+    protected function buildUniqueExclusionRules(array $rules = array()) {
+      
+        if (!count($rules))
+          $rules = static::$rules;
 
         foreach ($rules as $field => &$ruleset) {
             // If $ruleset is a pipe-separated string, switch it to array
             $ruleset = (is_string($ruleset))? explode('|', $ruleset) : $ruleset;
 
             foreach ($ruleset as &$rule) {
-                if (strpos($rule, 'unique') === 0) {
-                    $params = explode(',', $rule);
+              if (strpos($rule, 'unique') === 0) {
+                $params = explode(',', $rule);
 
-                    // Append field name if needed
-                    if (count($params) == 1) {
-                        $params[2] = $field;
-                    }
+                $uniqueRules = array();
+                
+                // Append table name if needed
+                $table = explode(':', $params[0]);
+                if (count($table) == 1)
+                  $uniqueRules[1] = $this->table;
+                else
+                  $uniqueRules[1] = $table[1];
+               
+                // Append field name if needed
+                if (count($params) == 1)
+                  $uniqueRules[2] = $field;
+                else
+                  $uniqueRules[2] = $params[1];
 
-                    $params[3] = $this->id;
-
-                    $rule = implode(',', $params);
+                if (isset($this->primaryKey)) {
+                  $uniqueRules[3] = $this->{$this->primaryKey};
+                  $uniqueRules[4] = $this->primaryKey;
                 }
-            }
+                else {
+                  $uniqueRules[3] = $this->id;
+                }
+       
+                $rule = 'unique:' . implode(',', $uniqueRules);  
+              } // end if strpos unique
+              
+            } // end foreach ruleset
         }
-
+        
         return $rules;
     }
 
     /**
-     * Update a model already saved in the database.
+     * Update a model, but filter uniques first to ensure a unique validation rule
+     * does not fire
      *
      * @param array   $rules
      * @param array   $customMessages
@@ -790,11 +807,8 @@ abstract class Ardent extends Model {
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
-        // Only automatically modify rules if there are none coming in
-        if (count($rules == 0)) {
-            $rules = $this->buildUniqueExclusionRules();
-        }
-
+        $rules = $this->buildUniqueExclusionRules($rules);
+        
         return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
     }
 
