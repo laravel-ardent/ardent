@@ -784,7 +784,7 @@ abstract class Ardent extends Model {
      * @param Closure $afterSave
      * @return bool
      */
-    public function updateUniques(array $rules = array(),
+    public function update(array $rules = array(),
         array $customMessages = array(),
         array $options = array(),
         Closure $beforeSave = null,
