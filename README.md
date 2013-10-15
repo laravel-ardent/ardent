@@ -327,7 +327,7 @@ or one of the related constants (`Ardent::HAS_MANY` or `Ardent::MORPH_ONE` for e
 - Second indexed: class name, with complete namespace. The exception is `morphTo` relations, that take no additional argument.
 - named arguments, following the ones defined for the original Eloquent methods:
     - `foreignKey` [optional], valid for `hasOne`, `hasMany`, `belongsTo` and `belongsToMany`
-    - `table` and `otherKey` [optional], valid for `belongsToMany`
+    - `table`,`otherKey` [optional],`timestamps` [boolean, optional], and `pivotKeys` [array, optional], valid for `belongsToMany`
     - `name`, `type` and `id`, used by `morphTo`, `morphOne` and `morphMany` (the last two requires `name` to be defined)
     
 > **Note:** This feature was based on the easy [relations on Yii 1.1 ActiveRecord](http://www.yiiframework.com/doc/guide/1.1/en/database.arr#declaring-relationship).
