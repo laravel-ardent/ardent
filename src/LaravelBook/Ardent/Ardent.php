@@ -639,6 +639,11 @@ abstract class Ardent extends Model {
                 return false;
             }
 
+            // "_token" is used by Illuminate\Html\FormBuilder to add CSRF protection
+            if (strcmp($attributeKey, '_token') === 0) {
+                return false;
+            }
+
             return true;
         };
 
