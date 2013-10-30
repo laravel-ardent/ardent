@@ -768,7 +768,14 @@ abstract class Ardent extends Model {
                     }
 
                      // if the 3rd param was set, do not overwrite it
-                    if (!is_numeric(@$params[2])) $params[2] = $this->id;
+                    if (!is_numeric(@$params[2])) {
+                        $params[2] = $this->attributes[$this->primaryKey];
+                    }
+                    
+                    // Add the primary key
+                    if (!isset($params[3])) {
+                        $params[3] = $this->primaryKey;
+                    }
                    
 
                     $rule = implode(',', $params);
