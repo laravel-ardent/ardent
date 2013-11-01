@@ -225,7 +225,7 @@ abstract class Ardent extends Model {
                 if (method_exists($myself, $method)) {
                     $eventMethod = $rad.$event;
                     self::$eventMethod(function($model) use ($method){
-                        return $model->$method();
+                        return $model->$method($model);
                     });
                 }
             }
