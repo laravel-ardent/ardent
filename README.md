@@ -281,7 +281,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 `beforeSave` and `afterSave` can be included at run-time. Simply pass in closures with the model as argument to the `save()` (or `forceSave()`) method.
 
 ```php
-$user->save(array(), array(), 
+$user->save(array(), array(), array(),
   function ($model) { // closure for beforeSave
     echo "saving the model object...";
     return true;
