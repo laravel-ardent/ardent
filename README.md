@@ -255,6 +255,7 @@ All `before` hooks, when returning `false` (specifically boolean, not simply "fa
 
 Here's the complete list of available hooks:
 
+- `before`/`afterCreate()`
 - `before`/`afterSave()`
 - `before`/`afterUpdate()`
 - `before`/`afterDelete()`
