@@ -511,7 +511,7 @@ abstract class Ardent extends Model {
 			$data = $this->getAttributes(); // the data under validation
 
 			// perform validation
-			$validator = self::makeValidator($data, $rules, $customMessages);
+			$validator = static::makeValidator($data, $rules, $customMessages);
 			$success   = $validator->passes();
 
 			if ($success) {
