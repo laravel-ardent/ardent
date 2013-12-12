@@ -225,7 +225,7 @@ abstract class Ardent extends Model {
                 if (method_exists($myself, $method)) {
                     $eventMethod = $rad.$event;
                     self::$eventMethod(function($model) use ($method){
-                        return $model->$method();
+                        return $model->$method($model);
                     });
                 }
             }
@@ -353,9 +353,10 @@ abstract class Ardent extends Model {
 	 *
 	 * @param  string  $related
 	 * @param  string  $foreignKey
+	 * @param  string  $otherKey
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function belongsTo($related, $foreignKey = null) {
+	public function belongsTo(($related, $foreignKey = NULL, $otherKey = NULL, $relation = NULL) {
 		$backtrace = debug_backtrace(false);
 		$caller = ($backtrace[1]['function'] == 'handleRelationalArray')? $backtrace[3] : $backtrace[1];
 
@@ -372,10 +373,12 @@ abstract class Ardent extends Model {
 		// for the related models and returns the relationship instance which will
 		// actually be responsible for retrieving and hydrating every relations.
 		$instance = new $related;
-
+		
+		$otherKey = $otherKey ?: $instance->getKeyName();
+		
 		$query = $instance->newQuery();
 
-		return new BelongsTo($query, $this, $foreignKey, $relation);
+		return new BelongsTo($query, $this, $foreignKey, $otherKey, $relation);
 	}
 
 	/**
