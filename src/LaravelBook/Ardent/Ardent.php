@@ -374,7 +374,7 @@ abstract class Ardent extends Model {
 		$instance = new $related;
 
 		$query = $instance->newQuery();
-
+		$otherKey = $otherKey ?: $instance->getKeyName();
 		return new BelongsTo($query, $this, $foreignKey, $otherKey, $relation);
 	}
 
