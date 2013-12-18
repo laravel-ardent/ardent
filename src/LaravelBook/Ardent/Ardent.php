@@ -355,7 +355,7 @@ abstract class Ardent extends Model {
 	 * @param  string  $foreignKey
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function belongsTo($related, $foreignKey = null) {
+	public function belongsTo($related, $foreignKey = null, $otherKey = null, $relation = null) {
 		$backtrace = debug_backtrace(false);
 		$caller = ($backtrace[1]['function'] == 'handleRelationalArray')? $backtrace[3] : $backtrace[1];
 
@@ -374,8 +374,8 @@ abstract class Ardent extends Model {
 		$instance = new $related;
 
 		$query = $instance->newQuery();
-
-		return new BelongsTo($query, $this, $foreignKey, $relation);
+		$otherKey = $otherKey ?: $instance->getKeyName();
+		return new BelongsTo($query, $this, $foreignKey, $otherKey, $relation);
 	}
 
 	/**
