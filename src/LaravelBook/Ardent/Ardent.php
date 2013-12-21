@@ -512,6 +512,8 @@ abstract class Ardent extends Model {
 			}
 
 			$data = $this->getAttributes(); // the data under validation
+			foreach($this->getMutatedAttributes() as $key) //Include mutated attributes
+      				$data[$key] = $this->mutateAttribute($key, null);
 
 			// perform validation
 			$validator = static::makeValidator($data, $rules, $customMessages);
