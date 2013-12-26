@@ -828,6 +828,19 @@ abstract class Ardent extends Model {
         return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
     }
 
+	/**
+	 * Validates a model with unique rules properly treated.
+	 *
+	 * @param array $rules Validation rules
+	 * @param array $customMessages Custom error messages
+	 * @return bool
+	 * @see Ardent::validate()
+	 */
+	public function validateUniques(array $rules = array(), array $customMessages = array()) {
+		$rules = $this->buildUniqueExclusionRules($rules);
+		return $this->validate($rules, $customMessages);
+	}
+
     /**
      * Find a model by its primary key.
      * If {@link $throwOnFind} is set, will use {@link findOrFail} internally.
