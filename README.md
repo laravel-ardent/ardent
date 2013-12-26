@@ -378,7 +378,7 @@ Ardent will automatically replace the plain-text password attribute with secure 
 <a name="uniquerules"></a>
 ## Updates with Unique Rules
 
-Ardent can assist you with unique updates. According to the Lavavel Documentation, when you update (and therefore validate) a field with a unique rule, you have to pass in the unique ID of the record you are updating. Without passing this ID, validation will fail because Laravel's Validator will think this record is a duplicate.
+Ardent can assist you with unique updates. According to the Laravel Documentation, when you update (and therefore validate) a field with a unique rule, you have to pass in the unique ID of the record you are updating. Without passing this ID, validation will fail because Laravel's Validator will think this record is a duplicate.
 
 From the Laravel Documentation:
 
