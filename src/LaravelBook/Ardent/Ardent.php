@@ -446,6 +446,10 @@ abstract class Ardent extends Model {
         $db->addConnection($connection);
         $db->setEventDispatcher(new Dispatcher(new Container));
         //TODO: configure a cache manager (as an option)
+
+        // Make this Capsule instance available globally via static methods
+        $db->setAsGlobal();
+        
         $db->bootEloquent();
 
         $translator = new Translator('en');
