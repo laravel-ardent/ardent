@@ -158,6 +158,7 @@ abstract class Ardent extends Model {
      *
      * @see \Illuminate\Database\Eloquent\Model::hasOne
      * @see \Illuminate\Database\Eloquent\Model::hasMany
+     * @see \Illuminate\Database\Eloquent\Model::hasManyThrough
      * @see \Illuminate\Database\Eloquent\Model::belongsTo
      * @see \Illuminate\Database\Eloquent\Model::belongsToMany
      * @see \Illuminate\Database\Eloquent\Model::morphTo
@@ -171,6 +172,8 @@ abstract class Ardent extends Model {
     const HAS_ONE = 'hasOne';
 
     const HAS_MANY = 'hasMany';
+
+    const HAS_MANY_THROUGH = 'hasManyThrough';
 
     const BELONGS_TO = 'belongsTo';
 
@@ -188,7 +191,7 @@ abstract class Ardent extends Model {
      * @var array
      */
     protected static $relationTypes = array(
-        self::HAS_ONE, self::HAS_MANY,
+        self::HAS_ONE, self::HAS_MANY, self::HAS_MANY_THROUGH,
         self::BELONGS_TO, self::BELONGS_TO_MANY,
         self::MORPH_TO, self::MORPH_ONE, self::MORPH_MANY
     );
@@ -269,15 +272,23 @@ abstract class Ardent extends Model {
 
         if (!in_array($relationType, static::$relationTypes)) {
             throw new \InvalidArgumentException($errorHeader.
-            ' should have as first param one of the relation constants of the Ardent class.');
+            ' should have as first parameter one of the relation constants of the Ardent class.');
         }
         if (!isset($relation[1]) && $relationType != self::MORPH_TO) {
             throw new \InvalidArgumentException($errorHeader.
-            ' should have at least two params: relation type and classname.');
+            ' should have at least two parameters: relation type and classname.');
         }
         if (isset($relation[1]) && $relationType == self::MORPH_TO) {
             throw new \InvalidArgumentException($errorHeader.
             ' is a morphTo relation and should not contain additional arguments.');
+        }
+        if (isset($relation[2]) && $relationType != self::HAS_MANY_THROUGH) {
+            throw new \InvalidArgumentException($errorHeader.
+            ' is not a hasManyThrough relation and should not contain additional arguments.');
+        }
+        if (!isset($relation[2]) && $relationType == self::HAS_MANY_THROUGH) {
+            throw new \InvalidArgumentException($errorHeader.
+            ' is a hasManyThrough relation and should have atleast three parameters: relation type, related model classname and through model classname.');
         }
 
         $verifyArgs = function (array $opt, array $req = array()) use ($relationName, &$relation, $errorHeader) {
@@ -305,12 +316,19 @@ abstract class Ardent extends Model {
         switch ($relationType) {
             case self::HAS_ONE:
             case self::HAS_MANY:
+                $verifyArgs(array('foreignKey', 'localKey'));
+                return $this->$relationType($relation[1], $relation['foreignKey'], $relation['localKey']);
+
+            case self::HAS_MANY_THROUGH:
+                $verifyArgs(array('firstKey', 'secondKey'));
+                return $this->$relationType($relation[1], $relation[2], $relation['firstKey'], $relation['secondKey']);
+
             case self::BELONGS_TO:
-                $verifyArgs(array('foreignKey'));
-                return $this->$relationType($relation[1], $relation['foreignKey']);
+                $verifyArgs(array('foreignKey', 'otherKey'));
+                return $this->$relationType($relation[1], $relation['foreignKey'], $relation['otherKey']);
 
             case self::BELONGS_TO_MANY:
-                $verifyArgs(array('table', 'foreignKey', 'otherKey'));
+                $verifyArgs(array('table', 'foreignKey', 'otherKey', 'pivoteKeys', 'timestamps'));
                 $relationship = $this->$relationType($relation[1], $relation['table'], $relation['foreignKey'], $relation['otherKey']);
                 if(isset($relation['pivotKeys']) && is_array($relation['pivotKeys']))
                     $relationship->withPivot($relation['pivotKeys']);
@@ -324,7 +342,7 @@ abstract class Ardent extends Model {
 
             case self::MORPH_ONE:
             case self::MORPH_MANY:
-                $verifyArgs(array('type', 'id'), array('name'));
+                $verifyArgs(array('type', 'id', 'localKey'), array('name'));
                 return $this->$relationType($relation[1], $relation['name'], $relation['type'], $relation['id']);
         }
     }
@@ -348,35 +366,39 @@ abstract class Ardent extends Model {
 
 	/**
 	 * Define an inverse one-to-one or many relationship.
-	 * Overriden from {@link Eloquent\Model} to allow the usage of the intermediary methods to handle the {@link
-	 * $relationsData} array.
+	 * Overriden from {@link Eloquent\Model} to allow the usage
+     * of the intermediary methods to handle the {@link $relationsData} array.
 	 *
 	 * @param  string  $related
 	 * @param  string  $foreignKey
 	 * @param  string  $otherKey
+     * @param  string  $relation
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function belongsTo($related, $foreignKey = NULL, $otherKey = NULL, $relation = NULL) {
-		$backtrace = debug_backtrace(false);
+		
+        // If no relation name was given, we will use this debug backtrace to extract
+        // the calling method's name and use that as the relationship name as most
+        // of the time this will be what we desire to use for the relatinoships.
+        $backtrace = debug_backtrace(false);
 		$caller = ($backtrace[1]['function'] == 'handleRelationalArray')? $backtrace[3] : $backtrace[1];
-
-		// If no foreign key was supplied, we can use a backtrace to guess the proper
-		// foreign key name by using the name of the relationship function, which
-		// when combined with an "_id" should conventionally match the columns.
 		$relation = $caller['function'];
 
+        // If no foreign key was supplied, we can use a backtrace to guess the proper
+        // foreign key name by using the name of the relationship function, which
+        // when combined with an "_id" should conventionally match the columns.
 		if (is_null($foreignKey)) {
 			$foreignKey = snake_case($relation).'_id';
 		}
 
-		// Once we have the foreign key names, we'll just create a new Eloquent query
-		// for the related models and returns the relationship instance which will
-		// actually be responsible for retrieving and hydrating every relations.
 		$instance = new $related;
-		
-		$otherKey = $otherKey ?: $instance->getKeyName();
-		
+
+        // Once we have the foreign key names, we'll just create a new Eloquent query
+        // for the related models and returns the relationship instance which will
+        // actually be responsible for retrieving and hydrating every relations.		
 		$query = $instance->newQuery();
+
+        $otherKey = $otherKey ?: $instance->getKeyName();
 
 		return new BelongsTo($query, $this, $foreignKey, $otherKey, $relation);
 	}
@@ -555,7 +577,7 @@ abstract class Ardent extends Model {
      * @param Closure $beforeSave
      * @param Closure $afterSave
      * @param bool    $force          Forces saving invalid data.
-
+     *
      * @return bool
      * @see Ardent::save()
      * @see Ardent::forceSave()
