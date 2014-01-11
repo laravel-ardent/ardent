@@ -1,3 +1,4 @@
 # the project itself is not installable, so we'll make sure nothing from composer gets into the repo
 vendor
 composer.lock
+build

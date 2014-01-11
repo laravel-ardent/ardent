@@ -29,6 +29,9 @@
         "illuminate/database": "~4.1",
         "illuminate/validation": "~4.1"
     },
+    "require-dev": {
+        "phpunit/phpunit": "~3.7"
+    },
     "autoload": {
         "psr-0": {
             "LaravelBook\\Ardent": "src/"
