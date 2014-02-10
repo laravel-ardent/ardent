@@ -315,7 +315,7 @@ $user = User::find($id);
 echo "{$user->address->street}, {$user->address->city} - {$user->address->state}";
 ```
 
-The array syntax should follow the form of 1 to 3 unnamed (numeric) index values followed by optional (and sometimes required) named index values. See the following for complete desciption:
+The array syntax should follow the form of 1 to 3 unnamed (numeric) index values followed by optional (and sometimes required) named index values. See the following for complete description:
 
 **First index value**
 
