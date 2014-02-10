@@ -182,7 +182,7 @@ There are two ways to override Ardent's validation:
 `forceSave()` validates the model but saves regardless of whether or not there are validation errors.
 
 #### 2. Override Rules and Messages
-both `Ardent->save($rules, $customMessages)` and `Ardent->validate($rules, $customMessages)` take two parameters:
+both `Ardent->save(null, $rules, $customMessages)` and `Ardent->validate($rules, $customMessages)` take two parameters:
 
 - `$rules` is an array of Validator rules of the same form as `Ardent::$rules`.
 - The same is true of the `$customMessages` parameter (same as `Ardent::$customMessages`)
@@ -282,7 +282,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 `beforeSave` and `afterSave` can be included at run-time. Simply pass in closures with the model as argument to the `save()` (or `forceSave()`) method.
 
 ```php
-$user->save(array(), array(), array(),
+$user->save(null, array(), array(), array(),
   function ($model) { // closure for beforeSave
     echo "saving the model object...";
     return true;
