@@ -32,6 +32,13 @@ use Symfony\Component\Translation\Translator;
 abstract class Ardent extends Model {
 
     /**
+     * Validation observable events
+     *
+     * @var array
+     */
+    protected $observables = array('validating', 'validated');
+
+    /**
      * The rules to be applied to the data.
      *
      * @var array
@@ -133,6 +140,20 @@ abstract class Ardent extends Model {
     protected static $validationFactory;
 
     /**
+     * Internally used variable to define if we're using forceSave()
+     *
+     * @var bool
+     */
+    protected $forceSaving = false;
+
+    /**
+     * Internally used variable to define if model was saved with forceSave()
+     *
+     * @var bool
+     */
+    protected $forceSaved = false;
+
+    /**
      * Can be used to ease declaration of relationships in Ardent models.
      * Follows closely the behavior of the relation methods used by Eloquent, but packing them into an indexed array
      * with relation constants make the code less cluttered.
@@ -230,6 +251,16 @@ abstract class Ardent extends Model {
                 }
             }
         }
+
+        static::creating(function($model) {
+            /** @var $model \LaravelBook\Ardent\Ardent */
+            return $model->validate();
+        });
+
+        static::updating(function($model) {
+            /** @var $model \LaravelBook\Ardent\Ardent */
+            return $model->validate();
+        });
     }
 
 	/**
@@ -506,7 +537,9 @@ abstract class Ardent extends Model {
             }
         }
 
-        if (empty($rules)) {
+        if ($this->forceSaving) {
+            $success = true;
+        } elseif (empty($rules)) {
             $success = true;
         } else {
 			$customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
@@ -549,8 +582,6 @@ abstract class Ardent extends Model {
     /**
      * Save the model to the database. Is used by {@link save()} and {@link forceSave()} as a way to DRY code.
      *
-     * @param array   $rules
-     * @param array   $customMessages
      * @param array   $options
      * @param Closure $beforeSave
      * @param Closure $afterSave
@@ -560,9 +591,7 @@ abstract class Ardent extends Model {
      * @see Ardent::save()
      * @see Ardent::forceSave()
      */
-    protected function internalSave(array $rules = array(),
-        array $customMessages = array(),
-        array $options = array(),
+    protected function internalSave(array $options = array(),
         Closure $beforeSave = null,
         Closure $afterSave = null,
         $force = false
@@ -574,54 +603,52 @@ abstract class Ardent extends Model {
             self::saved($afterSave);
         }
 
-        $valid = $this->validate($rules, $customMessages);
-
-        if ($force || $valid) {
-            return $this->performSave($options);
-        } else {
-            return false;
+        if ($force) {
+            $this->forceSaved  = false;
+            $this->forceSaving = true;
         }
+
+        $saved = $this->performSave($options);
+
+        if ($force) {
+            $this->forceSaved  = $saved;
+            $this->forceSaving = false;
+        }
+
+        return $saved;
     }
 
     /**
      * Save the model to the database.
      *
-     * @param array   $rules
-     * @param array   $customMessages
      * @param array   $options
      * @param Closure $beforeSave
      * @param Closure $afterSave
      *
      * @return bool
-     * @see Ardent::forceSave()
+     * @see Ardent::save()
      */
-    public function save(array $rules = array(),
-        array $customMessages = array(),
-        array $options = array(),
+    public function save(array $options = array(),
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
-        return $this->internalSave($rules, $customMessages, $options, $beforeSave, $afterSave, false);
+        return $this->internalSave($options, $beforeSave, $afterSave, false);
     }
 
     /**
      * Force save the model even if validation fails.
      *
-     * @param array   $rules
-     * @param array   $customMessages
      * @param array   $options
      * @param Closure $beforeSave
      * @param Closure $afterSave
      * @return bool
-     * @see Ardent::save()
+     * @see Ardent::forceSave()
      */
-    public function forceSave(array $rules = array(),
-        array $customMessages = array(),
-        array $options = array(),
+    public function forceSave(array $options = array(),
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
-        return $this->internalSave($rules, $customMessages, $options, $beforeSave, $afterSave, true);
+        return $this->internalSave($options, $beforeSave, $afterSave, true);
     }
 
 
@@ -823,9 +850,10 @@ abstract class Ardent extends Model {
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
-        $rules = $this->buildUniqueExclusionRules($rules);
+        $this->rules = $this->buildUniqueExclusionRules($rules);
+        $this->customMessages = $customMessages;
         
-        return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
+        return $this->save($options, $beforeSave, $afterSave);
     }
 
 	/**
