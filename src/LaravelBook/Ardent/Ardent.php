@@ -376,7 +376,7 @@ abstract class Ardent extends Model {
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function belongsTo($related, $foreignKey = NULL, $otherKey = NULL, $relation = NULL) {
-		
+
 		// If no relation name was given, we will use this debug backtrace to extract
 		// the calling method's name and use that as the relationship name as most
 		// of the time this will be what we desire to use for the relatinoships.
@@ -482,7 +482,7 @@ abstract class Ardent extends Model {
 
 		self::$externalValidator = true;
 		self::$validationFactory = new ValidationFactory($translator);
-		self::$validationFactory->setPresenceVerifier(new DatabasePresenceVerifier($db->manager));
+		self::$validationFactory->setPresenceVerifier(new DatabasePresenceVerifier($db->getDatabaseManager()));
 	}
 
 	/**
@@ -847,6 +847,37 @@ abstract class Ardent extends Model {
 		$rules = $this->buildUniqueExclusionRules($rules);
 
 		return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
+	}
+
+	/**
+	 * Validates a model with unique rules properly treated.
+	 *
+	 * @param array $rules Validation rules
+	 * @param array $customMessages Custom error messages
+	 * @return bool
+	 * @see Ardent::validate()
+	 */
+	public function validateUniques(array $rules = array(), array $customMessages = array()) {
+		$rules = $this->buildUniqueExclusionRules($rules);
+		return $this->validate($rules, $customMessages);
+	}
+
+	/**
+	 * Find a model by its primary key.
+	 * If {@link $throwOnFind} is set, will use {@link findOrFail} internally.
+	 *
+	 * @param  mixed $id
+	 * @param  array $columns
+	 * @return Ardent|Collection
+	 */
+	public static function find($id, $columns = array('*')) {
+		$debug = debug_backtrace(false);
+
+		if (static::$throwOnFind && $debug[1]['function'] != 'findOrFail') {
+			return self::findOrFail($id, $columns);
+		} else {
+			return parent::find($id, $columns);
+		}
 	}
 
 	/**
