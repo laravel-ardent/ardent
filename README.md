@@ -300,7 +300,7 @@ $user->save(array(), array(), array(),
 
 Have you ever written an Eloquent model with a bunch of relations, just to notice how cluttered your class is, with all those one-liners that have almost the same content as the method name itself?
 
-In Ardent you can cleanly define your relationships in an array with their information, and they will work just like if you had defined they in methods. Here's an example:
+In Ardent you can cleanly define your relationships in an array with their information, and they will work just like if you had defined them in methods. Here's an example:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
