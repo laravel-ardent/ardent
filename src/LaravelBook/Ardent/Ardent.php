@@ -235,6 +235,13 @@ abstract class Ardent extends Model {
 		}
 	}
 
+	public function getObservableEvents() {
+		return array_merge(
+			parent::getObservableEvents(),
+			array('validating', 'validated')
+		);
+	}
+
 	/**
 	 * Register a validating model event with the dispatcher.
 	 *
