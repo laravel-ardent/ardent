@@ -520,6 +520,15 @@ abstract class Ardent extends Model {
 
 			if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
 				$this->fill(Input::all());
+				// check if exists relationships and try to fill it
+                		$relations = $this->relationsToArray();
+                		if (!empty($relations)) {
+                    			foreach (array_keys($relations) as $relation) {
+                        			if (is_array(Input::get($relation))) {
+                            				$this->$relation->fill(Input::get($relation));
+                        			}
+                    			}
+                		}
 			}
 
 			$data = $this->getAttributes(); // the data under validation
