@@ -779,7 +779,8 @@ abstract class Ardent extends Model {
 
             foreach ($ruleset as &$rule) {
               if (strpos($rule, 'unique') === 0) {
-                $params = explode(',', $rule);
+                // Stop splitting at 4 so final param will hold optional where clause
+                $params = explode(',', $rule, 4); 
 
                 $uniqueRules = array();
                 
@@ -798,7 +799,9 @@ abstract class Ardent extends Model {
 
                 if (isset($this->primaryKey)) {
                   $uniqueRules[3] = $this->{$this->primaryKey};
-                  $uniqueRules[4] = $this->primaryKey;
+                  
+                  // If optional where rules are passed, append them otherwise use primary key
+                  $uniqueRules[4] = isset($params[3]) ? $params[3] : $this->primaryKey;
                 }
                 else {
                   $uniqueRules[3] = $this->id;
