@@ -525,7 +525,9 @@ abstract class Ardent extends Model {
                 		if (!empty($relations)) {
                     			foreach (array_keys($relations) as $relation) {
                         			if (is_array(Input::get($relation))) {
-                            				$this->$relation->fill(Input::get($relation));
+                        				if (count($this->$relation) == 1) {
+                            					$this->$relation->fill(Input::get($relation));
+                        				}
                         			}
                     			}
                 		}
