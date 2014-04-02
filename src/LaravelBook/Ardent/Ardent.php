@@ -497,6 +497,9 @@ abstract class Ardent extends Model {
      * @throws InvalidModelException
      */
     public function validate(array $rules = array(), array $customMessages = array()) {
+
+        if ($this->exists) $rules = $this->buildUniqueExclusionRules($rules);
+
         if ($this->fireModelEvent('validating') === false) {
             if ($this->throwOnValidation) {
                 throw new InvalidModelException($this);
