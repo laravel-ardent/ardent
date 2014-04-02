@@ -520,6 +520,23 @@ abstract class Ardent extends Model {
 
 			if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
 				$this->fill(Input::all());
+				// check if exists and try to fill relationships
+                		$relations = $this->relationsToArray();
+                			if (!empty($relations)) {
+                    			foreach (array_keys($relations) as $relation) {
+                        			// check if some data was posted to this relation
+                        			if (is_array(Input::get($relation))) {
+		                            	// check if it as Eloquent Collection or not
+                            				if (get_class($this->$relation) != 'Illuminate\Database\Eloquent\Collection') {
+                                				// fill data into the model
+                                				$this->$relation->fill(Input::get($relation));
+                            				} else {
+                                				// sync the data if it is many-to-many ralationship
+                                				$this->$relation()->sync(Input::get($relation));
+                            				}
+                        			}
+                    			}
+                		}
 			}
 
 			$data = $this->getAttributes(); // the data under validation
