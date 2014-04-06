@@ -608,8 +608,6 @@ abstract class Ardent extends Model {
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
-        if ($this->exists) $rules = $this->buildUniqueExclusionRules($rules);
-
         return $this->internalSave($rules, $customMessages, $options, $beforeSave, $afterSave, false);
     }
 
