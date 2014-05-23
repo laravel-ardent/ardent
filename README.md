@@ -300,7 +300,7 @@ $user->save(array(), array(), array(),
 
 Have you ever written an Eloquent model with a bunch of relations, just to notice how cluttered your class is, with all those one-liners that have almost the same content as the method name itself?
 
-In Ardent you can cleanly define your relationships in an array with their information, and they will work just like if you had defined they in methods. Here's an example:
+In Ardent you can cleanly define your relationships in an array with their information, and they will work just as if you had defined them as methods. Here's an example:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
@@ -315,22 +315,45 @@ $user = User::find($id);
 echo "{$user->address->street}, {$user->address->city} - {$user->address->state}";
 ```
 
-The array syntax is as follows:
+The array syntax should follow the form of 1 to 3 unnamed (numeric) index values followed by optional (and sometimes required) named index values. See the following for complete description:
 
-- First indexed value: relation name, being one of
+**First index value**
+
+This value should be the relation name, being one of
 [`hasOne`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_hasOne),
 [`hasMany`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_hasMany),
+[`hasManyThrough`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_hasManyThrough),
 [`belongsTo`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_belongsTo),
 [`belongsToMany`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_belongsToMany),
 [`morphTo`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_morphTo),
 [`morphOne`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_morphOne),
 [`morphMany`](http://laravel.com/api/class-Illuminate.Database.Eloquent.Model.html#_morphMany),
-or one of the related constants (`Ardent::HAS_MANY` or `Ardent::MORPH_ONE` for example).
-- Second indexed: class name, with complete namespace. The exception is `morphTo` relations, that take no additional argument.
-- named arguments, following the ones defined for the original Eloquent methods:
-    - `foreignKey` [optional], valid for `hasOne`, `hasMany`, `belongsTo` and `belongsToMany`
-    - `table`,`otherKey` [optional],`timestamps` [boolean, optional], and `pivotKeys` [array, optional], valid for `belongsToMany`
-    - `name`, `type` and `id`, used by `morphTo`, `morphOne` and `morphMany` (the last two requires `name` to be defined)
+or one of the related constants (`Ardent::HAS_MANY`, `Ardent::MORPH_ONE`, etc.).
+
+**Second index value**
+
+This value should be the related model class name, _with complete namespace_. The `morphTo` relationship does not require a second indexed value and will throw an exception if provided.
+
+**Third index value**
+
+This value should be the related "through" model class name, _with complete namespace_. This index is only required by the `hasManyThrough` relationship type.
+
+**Named indexes**
+
+Following the first, second, and third numeric indexes are named index values from the original Eloquent methods:
+
+- `foreignKey`: optional for `hasOne`, `hasMany`, `belongsTo`, `belongsToMany`
+- `firstKey`: optional for `hasManyThrough`
+- `secondKey`: optional for `hasManyThrough`
+- `otherKey`: optional for `belongsTo`, `belongsToMany`
+- `localKey`: optional for `hasOne`, `hasMany`, `morphOne`, `morphMany`
+- `table`: optional for `belongsToMany`
+- `timestamps`: optional for `belongsToMany`
+- `pivotKeys`: optional for `belongsToMany`
+- `relation`: optional for `belongsTo` and `belongsToMany`
+- `name`: optional for `morphTo` and required for `morphOne`, `morphMany`
+- `type`: optional for `morphTo`, `morphOne`, `morphMany`
+- `id`: optional for `morphTo`, `morphOne`, `morphMany`
     
 > **Note:** This feature was based on the easy [relations on Yii 1.1 ActiveRecord](http://www.yiiframework.com/doc/guide/1.1/en/database.arr#declaring-relationship).
 
