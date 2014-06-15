@@ -46,6 +46,13 @@ abstract class Ardent extends Model {
     public static $customMessages = array();
 
     /**
+     * The array of custom attributes.
+     *
+     * @var array
+     */
+    public static $customAttributes = array();
+
+    /**
      * The message bag instance containing validation error messages
      *
      * @var \Illuminate\Support\MessageBag
@@ -480,11 +487,11 @@ abstract class Ardent extends Model {
      * @return \Illuminate\Validation\Validator
      * @see Ardent::$externalValidator
      */
-    protected static function makeValidator($data, $rules, $customMessages) {
+    protected static function makeValidator($data, $rules, $customMessages, $customAttributes) {
         if (self::$externalValidator) {
-            return self::$validationFactory->make($data, $rules, $customMessages);
+            return self::$validationFactory->make($data, $rules, $customMessages, $customAttributes);
         } else {
-            return Validator::make($data, $rules, $customMessages);
+            return Validator::make($data, $rules, $customMessages, $customAttributes);
         }
     }
 
@@ -517,6 +524,7 @@ abstract class Ardent extends Model {
             $success = true;
         } else {
 			$customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
+			$customAttributes = (empty($customAttributes))? static::$customAttributes : $customAttributes;
 
 			if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
 				$this->fill(Input::all());
@@ -525,7 +533,7 @@ abstract class Ardent extends Model {
 			$data = $this->getAttributes(); // the data under validation
 
 			// perform validation
-			$validator = static::makeValidator($data, $rules, $customMessages);
+			$validator = static::makeValidator($data, $rules, $customMessages, $customAttributes);
 			$success   = $validator->passes();
 
 			if ($success) {
