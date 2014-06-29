@@ -134,7 +134,7 @@ class User extends Ardent {}
 <a name="validation"></a>
 ## Effortless Validation with Ardent
 
-Ardent models use Laravel's built-in [Validator class](http://four.laravel.com/docs/validation). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
+Ardent models use Laravel's built-in [Validator class](http://laravel.com/docs/validation). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
