@@ -873,7 +873,7 @@ abstract class Ardent extends Model {
 	* @param  bool  $excludeDeleted
 	* @return \Illuminate\Database\Eloquent\Builder
 	*/
-		public function newQuery($excludeDeleted = true) {
+	public function newQuery($excludeDeleted = true) {
 		$builder = new Builder($this->newBaseQueryBuilder());
 		$builder->throwOnFind = static::$throwOnFind;
 
