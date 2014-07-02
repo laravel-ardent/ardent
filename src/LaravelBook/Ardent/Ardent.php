@@ -867,13 +867,13 @@ abstract class Ardent extends Model {
     }
     
 	/**
-	 * Get a new query builder for the model's table.
-	 * Overriden from {@link \Model\Eloquent} to allow for usage of {@link throwOnFind}.
-	 *
-	 * @param  bool  $excludeDeleted
-	 * @return \Illuminate\Database\Eloquent\Builder
-	 */
-	public function newQuery($excludeDeleted = true) {
+	* Get a new query builder for the model's table.
+	* Overriden from {@link \Model\Eloquent} to allow for usage of {@link throwOnFind}.
+	*
+	* @param  bool  $excludeDeleted
+	* @return \Illuminate\Database\Eloquent\Builder
+	*/
+		public function newQuery($excludeDeleted = true) {
 		$builder = new Builder($this->newBaseQueryBuilder());
 		$builder->throwOnFind = static::$throwOnFind;
 
