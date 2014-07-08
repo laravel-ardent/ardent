@@ -134,7 +134,7 @@ class User extends Ardent {}
 <a name="validation"></a>
 ## Effortless Validation with Ardent
 
-Ardent models use Laravel's built-in [Validator class](http://four.laravel.com/docs/validation). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
+Ardent models use Laravel's built-in [Validator class](http://laravel.com/docs/validation). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
@@ -147,7 +147,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 }
 ```
 
-> **Note**: you're free to use the [array syntax](http://four.laravel.com/docs/validation#basic-usage) for validation rules as well.
+> **Note**: you're free to use the [array syntax](http://laravel.com/docs/validation#basic-usage) for validation rules as well.
 
 Ardent models validate themselves automatically when `Ardent->save()` is called.
 
@@ -171,7 +171,7 @@ Retrieve the validation errors message collection instance with `Ardent->errors(
 
 Retrieve all validation errors with `Ardent->errors()->all()`. Retrieve errors for a *specific* attribute using `Ardent->validationErrors->get('attribute')`.
 
-> **Note:** Ardent leverages Laravel's MessagesBag object which has a [simple and elegant method](http://four.laravel.com/docs/validation#working-with-error-messages) of formatting errors.
+> **Note:** Ardent leverages Laravel's MessagesBag object which has a [simple and elegant method](http://laravel.com/docs/validation#working-with-error-messages) of formatting errors.
 
 <a name="overide"></a>
 ## Overriding Validation
@@ -194,7 +194,7 @@ An array that is **not empty** will override the rules or custom error messages 
 <a name="messages"></a>
 ## Custom Error Messages
 
-Just like the Laravel Validator, Ardent lets you set custom error messages using the [same syntax](http://four.laravel.com/docs/validation#custom-error-messages).
+Just like the Laravel Validator, Ardent lets you set custom error messages using the [same syntax](http://laravel.com/docs/validation#custom-error-messages).
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
@@ -208,7 +208,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 <a name="rules"></a>
 ## Custom Validation Rules
 
-You can create custom validation rules the [same way](http://four.laravel.com/docs/validation#custom-validation-rules) you would for the Laravel Validator.
+You can create custom validation rules the [same way](http://laravel.com/docs/validation#custom-validation-rules) you would for the Laravel Validator.
 
 <a name="hydra"></a>
 ## Automatically Hydrate Ardent Entities
@@ -235,7 +235,7 @@ $user->save();
 That's it! All we've done is remove the boring stuff.
 
 Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data. No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!  
-It follows the same [mass assignment rules](http://four.laravel.com/docs/eloquent#mass-assignment) internally, depending on the `$fillable`/`$guarded` properties.
+It follows the same [mass assignment rules](http://laravel.com/docs/eloquent#mass-assignment) internally, depending on the `$fillable`/`$guarded` properties.
 
 To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class. However, to prevent filling pre-existent properties, if you want auto-hydration also for update scenarios, you should use instead `$forceEntityHydrationFromInput`:
 
