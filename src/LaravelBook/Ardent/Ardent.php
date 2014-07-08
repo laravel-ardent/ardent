@@ -865,7 +865,7 @@ abstract class Ardent extends Model {
             return parent::find($id, $columns);
         }
     }
-    
+
 	/**
 	* Get a new query builder for the model's table.
 	* Overriden from {@link \Model\Eloquent} to allow for usage of {@link throwOnFind}.
