@@ -213,42 +213,6 @@ class User extends \LaravelBook\Ardent\Ardent {
 You can create custom validation rules the [same way](http://laravel.com/docs/validation#custom-validation-rules) you would for the Laravel Validator.
 
 
-## Automatically Hydrate Ardent Entities
-
-Ardent is capable of hydrating your entity model class from the form input submission automatically! 
-
-Let's see it action. Consider this snippet of code:
-
-```php
-$user           = new User;
-$user->name     = Input::get('name');
-$user->email    = Input::get('email');
-$user->password = Hash::make(Input::get('password'));
-$user->save();
-```
-
-Let's invoke the *magick* of Ardent and rewrite the previous snippet:
-
-```php
-$user = new User;
-$user->save();
-```
-
-That's it! All we've done is remove the boring stuff.
-
-Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data. No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!  
-It follows the same [mass assignment rules](http://laravel.com/docs/eloquent#mass-assignment) internally, depending on the `$fillable`/`$guarded` properties.
-
-To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class. However, to prevent filling pre-existent properties, if you want auto-hydration also for update scenarios, you should use instead `$forceEntityHydrationFromInput`:
-
-```php
-class User extends \LaravelBook\Ardent\Ardent {
-  public $autoHydrateEntityFromInput = true;    // hydrates on new entries' validation
-  public $forceEntityHydrationFromInput = true; // hydrates whenever validation is called
-}
-```
-
-
 ## Model Hooks (since [2.0](https://github.com/laravelbook/ardent/tree/v2.0.0))
 
 Ardent provides some syntatic sugar over Eloquent's model events: traditional model hooks. They are an easy way to hook up additional operations to different moments in your model life. They can be used to do additional clean-up work before deleting an entry, doing automatic fixes after validation occurs or updating related models after an update happens.
@@ -335,6 +299,42 @@ or one of the related constants (`Ardent::HAS_MANY` or `Ardent::MORPH_ONE` for e
     - `name`, `type` and `id`, used by `morphTo`, `morphOne` and `morphMany` (the last two requires `name` to be defined)
     
 > **Note:** This feature was based on the easy [relations on Yii 1.1 ActiveRecord](http://www.yiiframework.com/doc/guide/1.1/en/database.arr#declaring-relationship).
+
+
+## Automatically Hydrate Ardent Entities
+
+Ardent is capable of hydrating your entity model class from the form input submission automatically! 
+
+Let's see it action. Consider this snippet of code:
+
+```php
+$user           = new User;
+$user->name     = Input::get('name');
+$user->email    = Input::get('email');
+$user->password = Hash::make(Input::get('password'));
+$user->save();
+```
+
+Let's invoke the *magick* of Ardent and rewrite the previous snippet:
+
+```php
+$user = new User;
+$user->save();
+```
+
+That's it! All we've done is remove the boring stuff.
+
+Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data. No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!  
+It follows the same [mass assignment rules](http://laravel.com/docs/eloquent#mass-assignment) internally, depending on the `$fillable`/`$guarded` properties.
+
+To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class. However, to prevent filling pre-existent properties, if you want auto-hydration also for update scenarios, you should use instead `$forceEntityHydrationFromInput`:
+
+```php
+class User extends \LaravelBook\Ardent\Ardent {
+  public $autoHydrateEntityFromInput = true;    // hydrates on new entries' validation
+  public $forceEntityHydrationFromInput = true; // hydrates whenever validation is called
+}
+```
 
 
 ## Automatically Purge Redundant Form Data
