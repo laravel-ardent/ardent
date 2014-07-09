@@ -31,6 +31,8 @@ use Symfony\Component\Translation\Translator;
  */
 abstract class Ardent extends Model {
 
+    private $validator = null;
+
     /**
      * The rules to be applied to the data.
      *
@@ -525,8 +527,8 @@ abstract class Ardent extends Model {
 			$data = $this->getAttributes(); // the data under validation
 
 			// perform validation
-			$validator = static::makeValidator($data, $rules, $customMessages);
-			$success   = $validator->passes();
+			$this->validator = static::makeValidator($data, $rules, $customMessages);
+			$success   = $this->validator->passes();
 
 			if ($success) {
 				// if the model is valid, unset old errors
@@ -535,7 +537,7 @@ abstract class Ardent extends Model {
 				}
 			} else {
 				// otherwise set the new ones
-				$this->validationErrors = $validator->messages();
+				$this->validationErrors = $this->validator->messages();
 
 				// stash the input to the current session
 				if (!self::$externalValidator && Input::hasSession()) {
@@ -892,4 +894,8 @@ abstract class Ardent extends Model {
 
 		return $builder;
 	}
+
+  public function getValidator() {
+    return $this->validator;
+  }
 }
