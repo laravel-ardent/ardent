@@ -235,6 +235,13 @@ abstract class Ardent extends Model {
 		}
 	}
 
+	public function getObservableEvents() {
+		return array_merge(
+			parent::getObservableEvents(),
+			array('validating', 'validated')
+		);
+	}
+
 	/**
 	 * Register a validating model event with the dispatcher.
 	 *
@@ -324,16 +331,18 @@ abstract class Ardent extends Model {
 				return $this->$relationType($relation[1], $relation[2], $relation['firstKey'], $relation['secondKey']);
 
 			case self::BELONGS_TO:
-				$verifyArgs(array('foreignKey', 'otherKey'));
-				return $this->$relationType($relation[1], $relation['foreignKey'], $relation['otherKey']);
+				$verifyArgs(array('foreignKey', 'otherKey', 'relation'));
+				return $this->$relationType($relation[1], $relation['foreignKey'], $relation['otherKey'], $relation['relation']);
 
 			case self::BELONGS_TO_MANY:
-				$verifyArgs(array('table', 'foreignKey', 'otherKey', 'pivoteKeys', 'timestamps'));
-				$relationship = $this->$relationType($relation[1], $relation['table'], $relation['foreignKey'], $relation['otherKey']);
-				if(isset($relation['pivotKeys']) && is_array($relation['pivotKeys']))
+				$verifyArgs(array('table', 'foreignKey', 'otherKey', 'relation', 'pivotKeys', 'timestamps'));
+				$relationship = $this->$relationType($relation[1], $relation['table'], $relation['foreignKey'], $relation['otherKey'], $relation['relation']);
+				if(isset($relation['pivotKeys']) && is_array($relation['pivotKeys'])) {
 					$relationship->withPivot($relation['pivotKeys']);
-				if(isset($relation['timestamps']) && $relation['timestamps']==true)
+				}
+				if(isset($relation['timestamps']) && $relation['timestamps']===true) {
 					$relationship->withTimestamps();
+				}
 				return $relationship;
 
 			case self::MORPH_TO:
@@ -343,7 +352,7 @@ abstract class Ardent extends Model {
 			case self::MORPH_ONE:
 			case self::MORPH_MANY:
 				$verifyArgs(array('type', 'id', 'localKey'), array('name'));
-				return $this->$relationType($relation[1], $relation['name'], $relation['type'], $relation['id']);
+				return $this->$relationType($relation[1], $relation['name'], $relation['type'], $relation['id'], $relation['localKey']);
 		}
 	}
 

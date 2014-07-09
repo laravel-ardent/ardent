@@ -350,6 +350,7 @@ Following the first, second, and third numeric indexes are named index values fr
 - `table`: optional for `belongsToMany`
 - `timestamps`: optional for `belongsToMany`
 - `pivotKeys`: optional for `belongsToMany`
+- `relation`: optional for `belongsTo` and `belongsToMany`
 - `name`: optional for `morphTo` and required for `morphOne`, `morphMany`
 - `type`: optional for `morphTo`, `morphOne`, `morphMany`
 - `id`: optional for `morphTo`, `morphOne`, `morphMany`
