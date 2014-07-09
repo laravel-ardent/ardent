@@ -484,6 +484,7 @@ abstract class Ardent extends Model {
      * @param $data
      * @param $rules
      * @param $customMessages
+     * @param $customAttributes
      * @return \Illuminate\Validation\Validator
      * @see Ardent::$externalValidator
      */
@@ -498,12 +499,13 @@ abstract class Ardent extends Model {
     /**
      * Validate the model instance
      *
-     * @param array $rules          Validation rules
-     * @param array $customMessages Custom error messages
+     * @param array $rules            Validation rules
+     * @param array $customMessages   Custom error messages
+     * @param array $customAttributes Custom attributes
      * @return bool
      * @throws InvalidModelException
      */
-    public function validate(array $rules = array(), array $customMessages = array()) {
+    public function validate(array $rules = array(), array $customMessages = array(), array $customAttributes = array()) {
         if ($this->fireModelEvent('validating') === false) {
             if ($this->throwOnValidation) {
                 throw new InvalidModelException($this);
