@@ -31,8 +31,6 @@ use Symfony\Component\Translation\Translator;
  */
 abstract class Ardent extends Model {
 
-    private $validator = null;
-
     /**
      * The rules to be applied to the data.
      *
@@ -46,6 +44,14 @@ abstract class Ardent extends Model {
      * @var array
      */
     public static $customMessages = array();
+
+    /**
+     * The validator object in case you need it externally (say, for a form builder).
+     *
+     * @see getValidator()
+     * @var \Illuminate\Validation\Validator
+     */
+    protected $validator;
 
     /**
      * The message bag instance containing validation error messages
@@ -895,7 +901,11 @@ abstract class Ardent extends Model {
 		return $builder;
 	}
 
-  public function getValidator() {
-    return $this->validator;
-  }
+    /**
+     * Returns the validator object created after {@link validate()}.
+     * @return \Illuminate\Validation\Validator
+     */
+    public function getValidator() {
+        return $this->validator;
+    }
 }
