@@ -527,7 +527,7 @@ abstract class Ardent extends Model {
 			$customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
 
 			if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
-				$this->fill(Input::all());
+				$this->fill(Input::except('_token'));
 			}
 
 			$data = $this->getAttributes(); // the data under validation
