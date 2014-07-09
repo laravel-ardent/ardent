@@ -339,7 +339,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 
 ## Automatically Purge Redundant Form Data
 
-Ardent models can *auto-magically* purge redundant input data (such as *password confirmation* fields) - so that the extra data is never saved to database. Ardent will use the confirmation fields to validate form input, then prudently discard these attributes before saving the model instance to database!
+Ardent models can *auto-magically* purge redundant input data (such as *password confirmation*, hidden CSRF `_token` or custom HTTP `_method` fields) - so that the extra data is never saved to database. Ardent will use the confirmation fields to validate form input, then prudently discard these attributes before saving the model instance to database!
 
 To enable this feature, simply set the `$autoPurgeRedundantAttributes` instance variable to `true` in your model class:
 
