@@ -1,11 +1,12 @@
-#Ardent
+Ardent
+======
 
+[![Latest Stable Version](https://poser.pugx.org/laravelbook/ardent/v/stable.svg)](https://packagist.org/packages/laravelbook/ardent)
+[![License](https://poser.pugx.org/laravelbook/ardent/license.svg)](https://packagist.org/packages/laravelbook/ardent)
 [![Total Downloads](https://poser.pugx.org/laravelbook/ardent/downloads.svg)](https://packagist.org/packages/laravelbook/ardent)
 [![Monthly Downloads](https://poser.pugx.org/laravelbook/ardent/d/monthly.png)](https://packagist.org/packages/laravelbook/ardent)
 [![Daily Downloads](https://poser.pugx.org/laravelbook/ardent/d/daily.png)](https://packagist.org/packages/laravelbook/ardent)
 
-[![Latest Stable Version](https://poser.pugx.org/laravelbook/ardent/v/stable.svg)](https://packagist.org/packages/laravelbook/ardent)
-[![License](https://poser.pugx.org/laravelbook/ardent/license.svg)](https://packagist.org/packages/laravelbook/ardent)
 
 Self-validating smart models for Laravel Framework 4's Eloquent ORM.
 
