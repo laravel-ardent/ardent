@@ -499,12 +499,13 @@ abstract class Ardent extends Model {
     /**
      * Validate the model instance
      *
-     * @param array $rules          Validation rules
-     * @param array $customMessages Custom error messages
+     * @param  array $rules               Validation rules
+     * @param  array $customMessages      Custom error messages
+     * @param  bool  $skipEntityHydration Override entity hydration
      * @return bool
      * @throws InvalidModelException
      */
-    public function validate(array $rules = array(), array $customMessages = array()) {
+    public function validate(array $rules = array(), array $customMessages = array(), $skipEntityHydration = false) {
         if ($this->fireModelEvent('validating') === false) {
             if ($this->throwOnValidation) {
                 throw new InvalidModelException($this);
@@ -524,9 +525,10 @@ abstract class Ardent extends Model {
         if (empty($rules)) {
             $success = true;
         } else {
-			$customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
-
-			if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
+            $customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
+            
+            $canHydrate = $this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput);
+			if ($canHydrate && !$skipEntityHydration) {
 				$this->fill(Input::all());
 			}
 
@@ -570,6 +572,7 @@ abstract class Ardent extends Model {
      * @param Closure $beforeSave
      * @param Closure $afterSave
      * @param bool    $force          Forces saving invalid data.
+     * @param bool    $skipEntityHydration
 
      * @return bool
      * @see Ardent::save()
@@ -580,7 +583,8 @@ abstract class Ardent extends Model {
         array $options = array(),
         Closure $beforeSave = null,
         Closure $afterSave = null,
-        $force = false
+        $force = false,
+        $skipEntityHydration = false
     ) {
         if ($beforeSave) {
             self::saving($beforeSave);
@@ -589,7 +593,7 @@ abstract class Ardent extends Model {
             self::saved($afterSave);
         }
 
-        $valid = $this->validate($rules, $customMessages);
+        $valid = $this->validate($rules, $customMessages, $skipEntityHydration);
 
         if ($force || $valid) {
             return $this->performSave($options);
@@ -638,7 +642,27 @@ abstract class Ardent extends Model {
     ) {
         return $this->internalSave($rules, $customMessages, $options, $beforeSave, $afterSave, true);
     }
-
+    
+    /**
+     * Save the model to the database without hydrating from input.
+     *
+     * @param array   $rules
+     * @param array   $customMessages
+     * @param array   $options
+     * @param Closure $beforeSave
+     * @param Closure $afterSave
+     *
+     * @return bool
+     * @see Ardent::save()
+     */
+    public function saveWithoutHydrating(array $rules = array(),
+        array $customMessages = array(),
+        array $options = array(),
+        Closure $beforeSave = null,
+        Closure $afterSave = null
+    ) {
+        return $this->internalSave($rules, $customMessages, $options, $beforeSave, $afterSave, false, true);
+    }
 
     /**
      * Add the basic purge filters
