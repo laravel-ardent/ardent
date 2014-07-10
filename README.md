@@ -17,12 +17,12 @@ Copyright (C) 2013-2014 [Max Ehsan](http://laravelbook.com/) & [Igor Santos](htt
 
 ## Installation
 
-Add `laravelbook/ardent` as a requirement to `composer.json`:
+Add `laravelbook/ardent` as a requirement to `composer.json` (see our latest stable version on the badges!):
 
 ```javascript
 {
     "require": {
-        "laravelbook/ardent": "dev-master"
+        "laravelbook/ardent": "2.*"
     }
 }
 ```
