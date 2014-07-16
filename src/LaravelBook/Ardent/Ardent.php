@@ -414,18 +414,10 @@ abstract class Ardent extends Model {
 		{
 			$backtrace = debug_backtrace(false);
 			$caller = ($backtrace[1]['function'] == 'handleRelationalArray')? $backtrace[3] : $backtrace[1];
-
 			$name = snake_case($caller['function']);
 		}
 
-		// Next we will guess the type and ID if necessary. The type and IDs may also
-		// be passed into the function so that the developers may manually specify
-		// them on the relations. Otherwise, we will just make a great estimate.
-		list($type, $id) = $this->getMorphs($name, $type, $id);
-
-		$class = $this->$type;
-
-		return $this->belongsTo($class, $id);
+		return parent::morphTo($name, $type, $id);
 	}
 
     /**
