@@ -898,7 +898,7 @@ abstract class Ardent extends Model {
 			$builder->whereNull($this->getQualifiedDeletedAtColumn());
 		}
 
-		return $builder;
+		return $this->applyGlobalScopes($builder);
 	}
 
     /**
