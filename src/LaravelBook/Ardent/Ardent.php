@@ -795,7 +795,7 @@ abstract class Ardent extends Model {
                 // Append table name if needed
                 $table = explode(':', $params[0]);
                 if (count($table) == 1)
-                  $uniqueRules[1] = $this->table;
+                  $uniqueRules[1] = $this->getTable();
                 else
                   $uniqueRules[1] = $table[1];
                
