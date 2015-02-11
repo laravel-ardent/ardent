@@ -378,7 +378,7 @@ abstract class Ardent extends Model {
 		// If no foreign key was supplied, we can use a backtrace to guess the proper
 		// foreign key name by using the name of the relationship function, which
 		// when combined with an "_id" should conventionally match the columns.
-		$relation = $caller['function'];
+		if(is_null($relation)) $relation = $caller['function'];
 
 		if (is_null($foreignKey)) {
 			$foreignKey = snake_case($relation).'_id';
