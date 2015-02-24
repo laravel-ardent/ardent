@@ -515,7 +515,27 @@ abstract class Ardent extends Model {
 
         // check for overrides, then remove any empty rules
         $rules = (empty($rules))? static::$rules : $rules;
+
+        // make sure primary key is validated
+        if (!isset($rules[$this->primaryKey])) {
+            $rules[$this->primaryKey] = 'unique:'.$this->table;
+        }
+
         foreach ($rules as $field => $rls) {
+
+            // check if unique fields have been modified or not, if not, exclude them from validation
+            $uPos = strpos($rls, 'unique');
+
+            if ($uPos !== false) {
+                // didnt change
+                if ($this->$field == $this->getOriginal($field)) {
+                    // remove the unique rule as field didnt change
+                    $uEPos = strpos($rls, '|', $uPos);
+                    $uEPos = $uEPos ? $uEPos : strlen($rls);
+                    $rules[$field] = substr($rls, 0, $uPos) . substr($rls, $uEPos);
+                }
+            }
+
             if ($rls == '') {
                 unset($rules[$field]);
             }
