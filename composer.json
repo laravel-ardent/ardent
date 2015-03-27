@@ -1,5 +1,5 @@
 {
-    "name": "laravelbook/ardent",
+    "name": "aziz/smartmodel",
     "description": "Self-validating smart models for Laravel 4's Eloquent O/RM",
     "keywords": ["validation", "laravel", "framework", "eloquent", "database", "sql", "orm", "activerecord", "active record"],
     "type": "library",
