@@ -1,6 +1,6 @@
 {
     "name": "aziz/smartmodel",
-    "description": "Self-validating smart models for Laravel 4's Eloquent O/RM",
+    "description": "Self-validating smart models for Laravel 5's Eloquent O/RM Inspired by Aedent/LaravelBook",
     "keywords": ["validation", "laravel", "framework", "eloquent", "database", "sql", "orm", "activerecord", "active record"],
     "type": "library",
     "homepage": "http://laravelbook.com/",
