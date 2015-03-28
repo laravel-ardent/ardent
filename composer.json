@@ -1,6 +1,6 @@
 {
-    "name": "laravelbook/ardent",
-    "description": "Self-validating smart models for Laravel 4's Eloquent O/RM",
+    "name": "aziz/smartmodel",
+    "description": "Self-validating smart models for Laravel 5's Eloquent O/RM Inspired by Aedent/LaravelBook",
     "keywords": ["validation", "laravel", "framework", "eloquent", "database", "sql", "orm", "activerecord", "active record"],
     "type": "library",
     "homepage": "http://laravelbook.com/",
@@ -25,9 +25,9 @@
     },
     "require": {
         "php": ">=5.3.0",
-        "illuminate/support": "~4.1",
-        "illuminate/database": "~4.1",
-        "illuminate/validation": "~4.1"
+        "illuminate/support": "~5.0",
+        "illuminate/database": "~5.0",
+        "illuminate/validation": "~5.0"
     },
     "autoload": {
         "psr-0": {
