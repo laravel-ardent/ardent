@@ -570,7 +570,7 @@ abstract class Ardent extends Model {
      * @param Closure $beforeSave
      * @param Closure $afterSave
      * @param bool    $force          Forces saving invalid data.
-
+     * 
      * @return bool
      * @see Ardent::save()
      * @see Ardent::forceSave()
