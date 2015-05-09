@@ -12,7 +12,7 @@ Self-validating smart models for Laravel Framework 4's Eloquent ORM.
 
 Based on the Aware bundle for Laravel 3 by Colby Rabideau.
 
-Copyright (C) 2013-2014 [Max Ehsan](http://laravelbook.com/) & [Igor Santos](http://www.igorsantos.com.br)
+Copyright (C) 2013-2015 [Max Ehsan](http://laravelbook.com/) & [Igor Santos](http://www.igorsantos.com.br)
 
 
 ## Installation
