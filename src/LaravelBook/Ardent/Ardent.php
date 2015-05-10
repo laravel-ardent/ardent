@@ -320,9 +320,12 @@ abstract class Ardent extends Model {
         switch ($relationType) {
             case self::HAS_ONE:
             case self::HAS_MANY:
-            case self::BELONGS_TO:
                 $verifyArgs(['foreignKey', 'localKey']);
                 return $this->$relationType($relation[1], $relation['foreignKey'], $relation['localKey']);
+
+            case self::BELONGS_TO:
+                $verifyArgs(['foreignKey', 'otherKey', 'relation']);
+                return $this->$relationType($relation[1], $relation['foreignKey'], $relation['otherKey'], $relation['relation']);
 
             case self::BELONGS_TO_MANY:
                 $verifyArgs(array('table', 'foreignKey', 'otherKey'));
