@@ -171,6 +171,8 @@ abstract class Ardent extends Model {
      * @see \Illuminate\Database\Eloquent\Model::morphTo
      * @see \Illuminate\Database\Eloquent\Model::morphOne
      * @see \Illuminate\Database\Eloquent\Model::morphMany
+     * @see \Illuminate\Database\Eloquent\Model::morphToMany
+     * @see \Illuminate\Database\Eloquent\Model::morphedByMany
      *
      * @var array
      */
@@ -190,6 +192,10 @@ abstract class Ardent extends Model {
 
     const MORPH_MANY = 'morphMany';
 
+    const MORPH_TO_MANY = 'morphToMany';
+
+    const MORPHED_BY_MANY = 'morphedByMany';
+
     /**
      * Array of relations used to verify arguments used in the {@link $relationsData}
      *
@@ -198,7 +204,8 @@ abstract class Ardent extends Model {
     protected static $relationTypes = array(
         self::HAS_ONE, self::HAS_MANY,
         self::BELONGS_TO, self::BELONGS_TO_MANY,
-        self::MORPH_TO, self::MORPH_ONE, self::MORPH_MANY
+        self::MORPH_TO, self::MORPH_ONE, self::MORPH_MANY,
+        self::MORPH_TO_MANY, self::MORPHED_BY_MANY
     );
 
     /**
@@ -208,7 +215,6 @@ abstract class Ardent extends Model {
      * @return \LaravelBook\Ardent\Ardent
      */
     public function __construct(array $attributes = array()) {
-
         parent::__construct($attributes);
         $this->validationErrors = new MessageBag;
     }
@@ -328,12 +334,14 @@ abstract class Ardent extends Model {
                 return $this->$relationType($relation[1], $relation['foreignKey'], $relation['otherKey'], $relation['relation']);
 
             case self::BELONGS_TO_MANY:
-                $verifyArgs(array('table', 'foreignKey', 'otherKey'));
-                $relationship = $this->$relationType($relation[1], $relation['table'], $relation['foreignKey'], $relation['otherKey']);
-                if(isset($relation['pivotKeys']) && is_array($relation['pivotKeys']))
+                $verifyArgs(array('table', 'foreignKey', 'otherKey', 'relation'));
+                $relationship = $this->$relationType($relation[1], $relation['table'], $relation['foreignKey'], $relation['otherKey'], $relation['relation']);
+                if(isset($relation['pivotKeys']) && is_array($relation['pivotKeys'])) {
                     $relationship->withPivot($relation['pivotKeys']);
-                if(isset($relation['timestamps']) && $relation['timestamps']==true)
+                }
+                if(isset($relation['timestamps']) && $relation['timestamps']) {
                     $relationship->withTimestamps();
+                }
                 return $relationship;
 
             case self::MORPH_TO:
@@ -342,8 +350,16 @@ abstract class Ardent extends Model {
 
             case self::MORPH_ONE:
             case self::MORPH_MANY:
-                $verifyArgs(array('type', 'id'), array('name'));
-                return $this->$relationType($relation[1], $relation['name'], $relation['type'], $relation['id']);
+                $verifyArgs(array('type', 'id', 'localKey'), array('name'));
+                return $this->$relationType($relation[1], $relation['name'], $relation['type'], $relation['id'], $relation['localKey']);
+
+            case self::MORPH_TO_MANY:
+                $verifyArgs(array('table', 'foreignKey', 'otherKey', 'inverse'), array('name'));
+                return $this->$relationType($relation[1], $relation['name'], $relation['table'], $relation['foreignKey'], $relation['otherKey'], $relation['inverse']);
+
+            case self::MORPHED_BY_MANY:
+                $verifyArgs(array('table', 'foreignKey', 'otherKey'), array('name'));
+                return $this->$relationType($relation[1], $relation['name'], $relation['table'], $relation['foreignKey'], $relation['otherKey']);
         }
     }
 
