@@ -134,7 +134,7 @@ abstract class Ardent extends Model {
     protected static $externalValidator = false;
 
     /**
-     * A Translator instance, to be used by standalone Ardent instances.
+     * A Validation Factory instance, to be used by standalone Ardent instances with the Translator.
      *
      * @var \Illuminate\Validation\Factory
      */
@@ -484,7 +484,7 @@ abstract class Ardent extends Model {
      * @param array $connection Connection info used by {@link \Illuminate\Database\Capsule\Manager::addConnection}.
      * Should contain driver, host, port, database, username, password, charset and collation.
      */
-    public static function configureAsExternal(array $connection) {
+    public static function configureAsExternal(array $connection, $lang = 'en') {
         $db = new DatabaseCapsule;
         $db->addConnection($connection);
         $db->setEventDispatcher(new Dispatcher(new Container));
@@ -495,11 +495,11 @@ abstract class Ardent extends Model {
         
         $db->bootEloquent();
 
-        $translator = new Translator('en');
+        $translator = new Translator($lang);
         $translator->addLoader('file_loader', new PhpFileLoader());
         $translator->addResource('file_loader',
-            dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.'en'.
-            DIRECTORY_SEPARATOR.'validation.php', 'en');
+            dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.$lang.
+            DIRECTORY_SEPARATOR.'validation.php', $lang);
 
         self::$externalValidator = true;
         self::$validationFactory = new ValidationFactory($translator);

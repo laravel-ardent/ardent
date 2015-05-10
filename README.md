@@ -47,7 +47,7 @@ to your database, obviously):
   'password'  => 'h4ckr',
   'charset'   => 'utf8',
   'collation' => 'utf8_unicode_ci'
-));
+), 'en'); //English is the default messages language, may be left empty
 ```
 
 ------------------------------------------------------------------------------------------------------------
