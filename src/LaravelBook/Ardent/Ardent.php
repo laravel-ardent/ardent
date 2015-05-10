@@ -913,18 +913,13 @@ abstract class Ardent extends Model {
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
 	public function newQuery($excludeDeleted = true) {
-		$builder = new Builder($this->newBaseQueryBuilder());
+		$builder = parent::newQuery();
 		$builder->throwOnFind = static::$throwOnFind;
 
 		// Once we have the query builders, we will set the model instances so the
 		// builder can easily access any information it may need from the model
 		// while it is constructing and executing various queries against it.
 		$builder->setModel($this)->with($this->with);
-
-		if ($excludeDeleted and $this->softDelete)
-		{
-			$builder->whereNull($this->getQualifiedDeletedAtColumn());
-		}
 
 		return $builder;
 	}
