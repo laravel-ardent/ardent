@@ -171,6 +171,8 @@ abstract class Ardent extends Model {
      * @see \Illuminate\Database\Eloquent\Model::morphTo
      * @see \Illuminate\Database\Eloquent\Model::morphOne
      * @see \Illuminate\Database\Eloquent\Model::morphMany
+     * @see \Illuminate\Database\Eloquent\Model::morphToMany
+     * @see \Illuminate\Database\Eloquent\Model::morphedByMany
      *
      * @var array
      */
@@ -190,6 +192,10 @@ abstract class Ardent extends Model {
 
     const MORPH_MANY = 'morphMany';
 
+    const MORPH_TO_MANY = 'morphToMany';
+
+    const MORPHED_BY_MANY = 'morphedByMany';
+
     /**
      * Array of relations used to verify arguments used in the {@link $relationsData}
      *
@@ -198,7 +204,8 @@ abstract class Ardent extends Model {
     protected static $relationTypes = array(
         self::HAS_ONE, self::HAS_MANY,
         self::BELONGS_TO, self::BELONGS_TO_MANY,
-        self::MORPH_TO, self::MORPH_ONE, self::MORPH_MANY
+        self::MORPH_TO, self::MORPH_ONE, self::MORPH_MANY,
+        self::MORPH_TO_MANY, self::MORPHED_BY_MANY
     );
 
     /**
@@ -339,6 +346,8 @@ abstract class Ardent extends Model {
 
             case self::MORPH_ONE:
             case self::MORPH_MANY:
+            case self::MORPH_TO_MANY:
+            case self::MORPHED_BY_MANY:
                 $verifyArgs(array('type', 'id'), array('name'));
                 return $this->$relationType($relation[1], $relation['name'], $relation['type'], $relation['id']);
         }
