@@ -559,7 +559,9 @@ abstract class Ardent extends Model {
 
 			if ($success) {
 				// if the model is valid, unset old errors
-				if ($this->validationErrors->count() > 0) {
+				if($this->validationErrors === null){
+					$this->validationErrors = new MessageBag;
+				}elseif($this->validationErrors->count() > 0) {
 					$this->validationErrors = new MessageBag;
 				}
 			} else {
