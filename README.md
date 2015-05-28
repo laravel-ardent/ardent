@@ -14,6 +14,9 @@ Based on the Aware bundle for Laravel 3 by Colby Rabideau.
 
 Copyright (C) 2013-2015 [Max Ehsan](http://laravelbook.com/) & [Igor Santos](http://www.igorsantos.com.br)
 
+## Changelog
+
+Visit our [Releases list](https://github.com/laravelbook/ardent/releases). The changelog is made there :)
 
 ## Installation
 
