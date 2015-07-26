@@ -46,6 +46,13 @@ abstract class Ardent extends Model {
     public static $customMessages = array();
 
     /**
+     * The array of custom  attributes names in error messages
+     *
+     * @var array
+     */
+    public static $niceNames = array();
+
+    /**
      * The validator object in case you need it externally (say, for a form builder).
      *
      * @see getValidator()
@@ -529,10 +536,11 @@ abstract class Ardent extends Model {
      *
      * @param array $rules          Validation rules
      * @param array $customMessages Custom error messages
+     * @param array $niceNames Custom attributes names on error messages
      * @return bool
      * @throws InvalidModelException
      */
-    public function validate(array $rules = array(), array $customMessages = array()) {
+    public function validate(array $rules = array(), array $customMessages = array(), array $niceNames = array()) {
         if ($this->fireModelEvent('validating') === false) {
             if ($this->throwOnValidation) {
                 throw new InvalidModelException($this);
@@ -562,7 +570,14 @@ abstract class Ardent extends Model {
 
 			// perform validation
 			$this->validator = static::makeValidator($data, $rules, $customMessages);
-			$success   = $this->validator->passes();
+
+            //set custom attribute names
+            if (method_exists($this->validator, 'setAttributeNames')) {
+                $niceNames = (empty($niceNames))? static::$niceNames : $niceNames;
+                $this->validator->setAttributeNames($niceNames);
+            }
+
+            $success   = $this->validator->passes();
 
 			if ($success) {
 				// if the model is valid, unset old errors
