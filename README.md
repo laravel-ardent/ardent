@@ -1,19 +1,31 @@
-#Ardent
+Ardent
+======
 
-Self-validating smart models for Laravel Framework 4's Eloquent O/RM.
+[![Latest Stable Version](https://poser.pugx.org/laravelbook/ardent/v/stable.svg)](https://packagist.org/packages/laravelbook/ardent)
+[![License](https://poser.pugx.org/laravelbook/ardent/license.svg)](https://packagist.org/packages/laravelbook/ardent)
+[![Total Downloads](https://poser.pugx.org/laravelbook/ardent/downloads.svg)](https://packagist.org/packages/laravelbook/ardent)
+[![Monthly Downloads](https://poser.pugx.org/laravelbook/ardent/d/monthly.png)](https://packagist.org/packages/laravelbook/ardent)
+[![Daily Downloads](https://poser.pugx.org/laravelbook/ardent/d/daily.png)](https://packagist.org/packages/laravelbook/ardent)
+
+
+Self-validating smart models for Laravel Framework 4's Eloquent ORM.
 
 Based on the Aware bundle for Laravel 3 by Colby Rabideau.
 
-Copyright (C) 2013 Max Ehsan <[http://laravelbook.com/](http://laravelbook.com/)>
+Copyright (C) 2013-2015 [Max Ehsan](http://laravelbook.com/) & [Igor Santos](http://www.igorsantos.com.br)
+
+## Changelog
+
+Visit our [Releases list](https://github.com/laravelbook/ardent/releases). The changelog is made there :)
 
 ## Installation
 
-Add `laravelbook/ardent` as a requirement to `composer.json`:
+Add `laravelbook/ardent` as a requirement to `composer.json` (see our latest stable version on the badges!):
 
 ```javascript
 {
     "require": {
-        "laravelbook/ardent": "dev-master"
+        "laravelbook/ardent": "2.*"
     }
 }
 ```
@@ -38,26 +50,28 @@ to your database, obviously):
   'password'  => 'h4ckr',
   'charset'   => 'utf8',
   'collation' => 'utf8_unicode_ci'
-));
+), 'en'); //English is the default messages language, may be left empty
 ```
+
+------------------------------------------------------------------------------------------------------------
 
 ## Documentation
 
-* [Introduction](#intro)
-* [Getting Started](#start)
-* [Effortless Validation with Ardent](#validation)
-* [Retrieving Validation Errors](#errors)
-* [Overriding Validation](#override)
-* [Custom Validation Error Messages](#messages)
-* [Custom Validation Rules](#rules)
-* [Model hooks](#modelhooks)
-* [Cleaner definition of relationships](#relations)
-* [Automatically Hydrate Ardent Entities](#hydra)
-* [Automatically Purge Redundant Form Data](#purge)
-* [Automatically Transform Secure-Text Attributes](#secure)
-* [Updates with Unique Rules] (#uniquerules)
+* [Introduction](#introduction)
+* [Getting Started](#getting-started)
+* [Effortless Validation with Ardent](#effortless-validation-with-ardent)
+* [Retrieving Validation Errors](#retrieving-validation-errors)
+* [Overriding Validation](#overriding-validation)
+* [Custom Validation Error Messages](#custom-validation-error-messages)
+* [Custom Validation Rules](#custom-validation-rules)
+* [Model hooks](#model-hooks-since-20)
+* [Cleaner definition of relationships](#cleaner-definition-of-relationships-since-20)
+* [Automatically Hydrate Ardent Entities](#automatically-hydrate-ardent-entities)
+* [Automatically Purge Redundant Form Data](#automatically-purge-redundant-form-data)
+* [Automatically Transform Secure-Text Attributes](#automatically-transform-secure-text-attributes)
+* [Updates with Unique Rules](#updates-with-unique-rules)
 
-<a name="start"></a>
+
 ## Introduction
 
 How often do you find yourself re-creating the same boilerplate code in the applications you build? Does this typical form processing code look all too familiar to you?
@@ -116,7 +130,7 @@ For example, user registration or blog post submission is a common coding requir
 
 **No more repetitive brain strain injury for you!**
 
-<a name="start"></a>
+
 ## Getting Started
 
 `Ardent` aims to extend the `Eloquent` base class without changing its core functionality. Since `Ardent` itself is a descendant of `Illuminate\Database\Eloquent\Model`, all your `Ardent` models are fully compatible with `Eloquent` and can harness the full power of Laravels awesome OR/M.
@@ -131,10 +145,10 @@ class User extends Ardent {}
 
 > **Note:** You can freely *co-mingle* your plain-vanilla Eloquent models with Ardent descendants. If a model object doesn't rely upon user submitted content and therefore doesn't require validation - you may leave the Eloquent model class as it is.
 
-<a name="validation"></a>
+
 ## Effortless Validation with Ardent
 
-Ardent models use Laravel's built-in [Validator class](http://four.laravel.com/docs/validation). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
+Ardent models use Laravel's built-in [Validator class](http://laravel.com/docs/validation). Defining validation rules for a model is simple and is typically done in your model class as a static variable:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
@@ -147,7 +161,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 }
 ```
 
-> **Note**: you're free to use the [array syntax](http://four.laravel.com/docs/validation#basic-usage) for validation rules as well.
+> **Note**: you're free to use the [array syntax](http://laravel.com/docs/validation#basic-usage) for validation rules as well.
 
 Ardent models validate themselves automatically when `Ardent->save()` is called.
 
@@ -162,7 +176,7 @@ $success = $user->save(); // returns false if model is invalid
 
 > **Note:** You can also validate a model at any time using the `Ardent->validate()` method.
 
-<a name="errors"></a>
+
 ## Retrieving Validation Errors
 
 When an Ardent model fails to validate, a `Illuminate\Support\MessageBag` object is attached to the Ardent object which contains validation failure messages.
@@ -171,9 +185,9 @@ Retrieve the validation errors message collection instance with `Ardent->errors(
 
 Retrieve all validation errors with `Ardent->errors()->all()`. Retrieve errors for a *specific* attribute using `Ardent->validationErrors->get('attribute')`.
 
-> **Note:** Ardent leverages Laravel's MessagesBag object which has a [simple and elegant method](http://four.laravel.com/docs/validation#working-with-error-messages) of formatting errors.
+> **Note:** Ardent leverages Laravel's MessagesBag object which has a [simple and elegant method](http://laravel.com/docs/validation#working-with-error-messages) of formatting errors.
 
-<a name="overide"></a>
+
 ## Overriding Validation
 
 There are two ways to override Ardent's validation:
@@ -191,10 +205,10 @@ An array that is **not empty** will override the rules or custom error messages 
 
 > **Note:** the default value for `$rules` and `$customMessages` is empty `array()`; thus, if you pass an `array()` nothing will be overriden.
 
-<a name="messages"></a>
-## Custom Error Messages
 
-Just like the Laravel Validator, Ardent lets you set custom error messages using the [same syntax](http://four.laravel.com/docs/validation#custom-error-messages).
+## Custom Validation Error Messages
+
+Just like the Laravel Validator, Ardent lets you set custom error messages using the [same syntax](http://laravel.com/docs/validation#custom-error-messages).
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
@@ -205,48 +219,12 @@ class User extends \LaravelBook\Ardent\Ardent {
 }
 ```
 
-<a name="rules"></a>
+
 ## Custom Validation Rules
 
-You can create custom validation rules the [same way](http://four.laravel.com/docs/validation#custom-validation-rules) you would for the Laravel Validator.
+You can create custom validation rules the [same way](http://laravel.com/docs/validation#custom-validation-rules) you would for the Laravel Validator.
 
-<a name="hydra"></a>
-## Automatically Hydrate Ardent Entities
 
-Ardent is capable of hydrating your entity model class from the form input submission automatically! 
-
-Let's see it action. Consider this snippet of code:
-
-```php
-$user           = new User;
-$user->name     = Input::get('name');
-$user->email    = Input::get('email');
-$user->password = Hash::make(Input::get('password'));
-$user->save();
-```
-
-Let's invoke the *magick* of Ardent and rewrite the previous snippet:
-
-```php
-$user = new User;
-$user->save();
-```
-
-That's it! All we've done is remove the boring stuff.
-
-Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data. No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!  
-It follows the same [mass assignment rules](http://four.laravel.com/docs/eloquent#mass-assignment) internally, depending on the `$fillable`/`$guarded` properties.
-
-To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class. However, to prevent filling pre-existent properties, if you want auto-hydration also for update scenarios, you should use instead `$forceEntityHydrationFromInput`:
-
-```php
-class User extends \LaravelBook\Ardent\Ardent {
-  public $autoHydrateEntityFromInput = true;    // hydrates on new entries' validation
-  public $forceEntityHydrationFromInput = true; // hydrates whenever validation is called
-}
-```
-
-<a name="modelhooks"></a>
 ## Model Hooks (since [2.0](https://github.com/laravelbook/ardent/tree/v2.0.0))
 
 Ardent provides some syntatic sugar over Eloquent's model events: traditional model hooks. They are an easy way to hook up additional operations to different moments in your model life. They can be used to do additional clean-up work before deleting an entry, doing automatic fixes after validation occurs or updating related models after an update happens.
@@ -295,12 +273,12 @@ $user->save(array(), array(), array(),
 
 > **Note:** the closures should have one parameter as it will be passed a reference to the model being saved.
 
-<a name="relations"></a>
-## Cleaner definition of relationships  (since [2.0](https://github.com/laravelbook/ardent/tree/v2.0.0))
+
+## Cleaner definition of relationships (since [2.0](https://github.com/laravelbook/ardent/tree/v2.0.0))
 
 Have you ever written an Eloquent model with a bunch of relations, just to notice how cluttered your class is, with all those one-liners that have almost the same content as the method name itself?
 
-In Ardent you can cleanly define your relationships in an array with their information, and they will work just like if you had defined they in methods. Here's an example:
+In Ardent you can cleanly define your relationships in an array with their information, and they will work just like if you had defined them in methods. Here's an example:
 
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
@@ -334,10 +312,46 @@ or one of the related constants (`Ardent::HAS_MANY` or `Ardent::MORPH_ONE` for e
     
 > **Note:** This feature was based on the easy [relations on Yii 1.1 ActiveRecord](http://www.yiiframework.com/doc/guide/1.1/en/database.arr#declaring-relationship).
 
-<a name="purge"></a>
+
+## Automatically Hydrate Ardent Entities
+
+Ardent is capable of hydrating your entity model class from the form input submission automatically! 
+
+Let's see it action. Consider this snippet of code:
+
+```php
+$user           = new User;
+$user->name     = Input::get('name');
+$user->email    = Input::get('email');
+$user->password = Hash::make(Input::get('password'));
+$user->save();
+```
+
+Let's invoke the *magick* of Ardent and rewrite the previous snippet:
+
+```php
+$user = new User;
+$user->save();
+```
+
+That's it! All we've done is remove the boring stuff.
+
+Believe it or not, the code above performs essentially the same task as its older, albeit rather verbose sibling. Ardent populates the model object with attributes from user submitted form data. No more hair-pulling trying to find out which Eloquent property you've forgotten to populate. Let Ardent take care of the boring stuff, while you get on with the fun stuffs!  
+It follows the same [mass assignment rules](http://laravel.com/docs/eloquent#mass-assignment) internally, depending on the `$fillable`/`$guarded` properties.
+
+To enable the auto-hydration feature, simply set the `$autoHydrateEntityFromInput` instance variable to `true` in your model class. However, to prevent filling pre-existent properties, if you want auto-hydration also for update scenarios, you should use instead `$forceEntityHydrationFromInput`:
+
+```php
+class User extends \LaravelBook\Ardent\Ardent {
+  public $autoHydrateEntityFromInput = true;    // hydrates on new entries' validation
+  public $forceEntityHydrationFromInput = true; // hydrates whenever validation is called
+}
+```
+
+
 ## Automatically Purge Redundant Form Data
 
-Ardent models can *auto-magically* purge redundant input data (such as *password confirmation* fields) - so that the extra data is never saved to database. Ardent will use the confirmation fields to validate form input, then prudently discard these attributes before saving the model instance to database!
+Ardent models can *auto-magically* purge redundant input data (such as *password confirmation*, hidden CSRF `_token` or custom HTTP `_method` fields) - so that the extra data is never saved to database. Ardent will use the confirmation fields to validate form input, then prudently discard these attributes before saving the model instance to database!
 
 To enable this feature, simply set the `$autoPurgeRedundantAttributes` instance variable to `true` in your model class:
 
@@ -359,7 +373,8 @@ function __construct($attributes = array()) {
   };
 }
 ```
-<a name="secure"></a>
+
+
 ## Automatically Transform Secure-Text Attributes
 
 Suppose you have an attribute named `password` in your model class, but don't want to store the plain-text version in the database. The pragmatic thing to do would be to store the hash of the original content. Worry not, Ardent is fully capable of transmogrifying any number of secure fields automatically for you!
@@ -375,7 +390,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 
 Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel `Hash::make()` method internally to generate hash.
 
-<a name="uniquerules"></a>
+
 ## Updates with Unique Rules
 
 Ardent can assist you with unique updates. According to the Laravel Documentation, when you update (and therefore validate) a field with a unique rule, you have to pass in the unique ID of the record you are updating. Without passing this ID, validation will fail because Laravel's Validator will think this record is a duplicate.

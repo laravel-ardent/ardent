@@ -7,12 +7,6 @@
     "license": "BSD-3-Clause",
     "authors": [
         {
-            "name": "Max Ehsan",
-            "homepage": "http://laravelbook.com/",
-            "email": "contact@laravelbook.com",
-            "role": "Developer"
-        },
-        {
             "name": "Igor Santos",
             "homepage": "http://www.igorsantos.com.br",
             "email": "igorsantos07@gmail.com",
