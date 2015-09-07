@@ -46,6 +46,13 @@ abstract class Ardent extends Model {
     public static $customMessages = array();
 
     /**
+     * The array of custom attributes.
+     *
+     * @var array
+     */
+    public static $customAttributes = array();
+
+	/**
      * The validator object in case you need it externally (say, for a form builder).
      *
      * @see getValidator()
@@ -513,26 +520,28 @@ abstract class Ardent extends Model {
      * @param $data
      * @param $rules
      * @param $customMessages
+     * @param $customAttributes
      * @return \Illuminate\Validation\Validator
      * @see Ardent::$externalValidator
      */
-    protected static function makeValidator($data, $rules, $customMessages) {
+    protected static function makeValidator($data, $rules, $customMessages, $customAttributes) {
         if (self::$externalValidator) {
-            return self::$validationFactory->make($data, $rules, $customMessages);
+            return self::$validationFactory->make($data, $rules, $customMessages, $customAttributes);
         } else {
-            return Validator::make($data, $rules, $customMessages);
+            return Validator::make($data, $rules, $customMessages, $customAttributes);
         }
     }
 
     /**
      * Validate the model instance
      *
-     * @param array $rules          Validation rules
-     * @param array $customMessages Custom error messages
+     * @param array $rules            Validation rules
+     * @param array $customMessages   Custom error messages
+     * @param array $customAttributes Custom attributes
      * @return bool
      * @throws InvalidModelException
      */
-    public function validate(array $rules = array(), array $customMessages = array()) {
+    public function validate(array $rules = array(), array $customMessages = array(), array $customAttributes = array()) {
         if ($this->fireModelEvent('validating') === false) {
             if ($this->throwOnValidation) {
                 throw new InvalidModelException($this);
@@ -553,6 +562,7 @@ abstract class Ardent extends Model {
             $success = true;
         } else {
 			$customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
+			$customAttributes = (empty($customAttributes))? static::$customAttributes : $customAttributes;
 
 			if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
 				$this->fill(Input::all());
@@ -561,7 +571,7 @@ abstract class Ardent extends Model {
 			$data = $this->getAttributes(); // the data under validation
 
 			// perform validation
-			$this->validator = static::makeValidator($data, $rules, $customMessages);
+			$this->validator = static::makeValidator($data, $rules, $customMessages, $customAttributes);
 			$success   = $this->validator->passes();
 
 			if ($success) {
