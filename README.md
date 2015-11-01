@@ -79,10 +79,10 @@ How often do you find yourself re-creating the same boilerplate code in the appl
 ```php
 Route::post('register', function() {
         $rules = array(
-            'name'                  => 'required|min:3|max:80|alpha_dash',
-            'email'                 => 'required|between:3,64|email|unique:users',
-            'password'              => 'required|alpha_num|between:4,8|confirmed',
-            'password_confirmation' => 'required|alpha_num|between:4,8'
+            'name'                  => 'required|between:3,80|alpha_dash',
+            'email'                 => 'required|between:5,64|email|unique:users',
+            'password'              => 'required|min:6|confirmed',
+            'password_confirmation' => 'required|min:6'
         );
 
         $validator = Validator::make(Input::all(), $rules);
@@ -153,10 +153,10 @@ Ardent models use Laravel's built-in [Validator class](http://laravel.com/docs/v
 ```php
 class User extends \LaravelBook\Ardent\Ardent {
   public static $rules = array(
-    'name'                  => 'required|between:4,16',
-    'email'                 => 'required|email',
-    'password'              => 'required|alpha_num|between:4,8|confirmed',
-    'password_confirmation' => 'required|alpha_num|between:4,8',
+    'name'                  => 'required|between:3,80|alpha_dash',
+    'email'                 => 'required|between:5,64|email|unique:users',
+    'password'              => 'required|min:6|confirmed',
+    'password_confirmation' => 'required|min:6',
   );
 }
 ```
