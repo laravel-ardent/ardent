@@ -161,7 +161,7 @@ class User extends \LaravelBook\Ardent\Ardent {
 }
 ```
 
-> **Note**: you're free to use the [array syntax](http://laravel.com/docs/validation#basic-usage) for validation rules as well.
+> **Note**: you're free to use the [array syntax](http://laravel.com/docs/5.0/validation#basic-usage) for validation rules as well. _I hope you don't mind the old Laravel docs link, but as good as Laravel documentation is, clear reference on pipe/array syntaxes for Validation rules is unfortunately gone since 5.1._
 
 Ardent models validate themselves automatically when `Ardent->save()` is called.
 
