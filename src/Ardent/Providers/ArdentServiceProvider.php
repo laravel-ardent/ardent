@@ -1,16 +1,16 @@
-<?php namespace LaravelBook\Ardent\Providers;
+<?php namespace LaravelArdent\Ardent\Providers;
 
 /*
  * This file is part of the Ardent package.
  *
- * (c) Max Ehsan <contact@laravelbook.com>
+ * (c) Max Ehsan <contact@LaravelArdent.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 use Illuminate\Support\ServiceProvider;
-use LaravelBook\Ardent\Ardent;
+use LaravelArdent\Ardent\Ardent;
 
 class ArdentServiceProvider extends ServiceProvider {
 
@@ -28,7 +28,7 @@ class ArdentServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('laravelbook/ardent');
+		$this->package('LaravelArdent/ardent');
 	}
 
 	/**

@@ -1,5 +1,5 @@
 <?php
-namespace LaravelBook\Ardent;
+namespace LaravelArdent\Ardent;
 
 class Builder extends \Illuminate\Database\Eloquent\Builder {
 

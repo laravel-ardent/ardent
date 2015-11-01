@@ -1,31 +1,33 @@
 {
-    "name": "laravelbook/ardent",
-    "description": "Self-validating smart models for Laravel 4's Eloquent O/RM",
+    "name": "laravel-ardent/ardent",
+    "description": "Self-validating smart models for Laravel 5's Eloquent ORM",
     "keywords": ["validation", "laravel", "framework", "eloquent", "database", "sql", "orm", "activerecord", "active record"],
     "type": "library",
-    "homepage": "http://laravelbook.com/",
     "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Igor Santos",
-            "homepage": "http://www.igorsantos.com.br",
+            "homepage": "http://igorsantos.com.br",
             "email": "igorsantos07@gmail.com",
-            "role": "Developer"
+            "role": "Maintainer"
+        },
+        {
+            "name": "Max Ehsan",
+            "role": "Original developer"
         }
     ],
     "support": {
-        "issues": "https://github.com/laravelbook/ardent/issues",
-        "email": "contact@laravelbook.com"
+        "issues": "https://github.com/laravelbook/ardent/issues"
     },
     "require": {
-        "php": ">=5.3.0",
-        "illuminate/support": "~4.1",
-        "illuminate/database": "~4.1",
-        "illuminate/validation": "~4.1"
+        "illuminate/support": "~5.1",
+        "illuminate/database": "~5.1",
+        "illuminate/validation": "~5.1",
+        "illuminate/events": "~5.1"
     },
     "autoload": {
-        "psr-0": {
-            "LaravelBook\\Ardent": "src/"
+        "psr-4": {
+            "LaravelArdent\\Ardent": "src/"
         }
     },
     "minimum-stability": "dev"

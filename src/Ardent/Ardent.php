@@ -1,9 +1,9 @@
-<?php namespace LaravelBook\Ardent;
+<?php namespace LaravelArdent\Ardent;
 
 /*
  * This file is part of the Ardent package.
  *
- * (c) Max Ehsan <contact@laravelbook.com>
+ * (c) Max Ehsan <contact@LaravelArdent.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -222,7 +222,7 @@ abstract class Ardent extends Model {
      * Create a new Ardent model instance.
      *
      * @param array $attributes
-     * @return \LaravelBook\Ardent\Ardent
+     * @return \LaravelArdent\Ardent\Ardent
      */
     public function __construct(array $attributes = array()) {
         parent::__construct($attributes);
