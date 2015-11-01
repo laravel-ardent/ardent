@@ -8,7 +8,7 @@ Ardent
 [![Daily Downloads](https://poser.pugx.org/laravelbook/ardent/d/daily.png)](https://packagist.org/packages/laravelbook/ardent)
 
 
-Self-validating smart models for Laravel Framework 4's Eloquent ORM.
+Self-validating smart models for Laravel Framework 5's Eloquent ORM.
 
 Based on the Aware bundle for Laravel 3 by Colby Rabideau.
 
@@ -25,7 +25,7 @@ Add `laravelbook/ardent` as a requirement to `composer.json` (see our latest sta
 ```javascript
 {
     "require": {
-        "laravelbook/ardent": "2.*"
+        "laravelbook/ardent": "3.*"
     }
 }
 ```
@@ -36,8 +36,8 @@ You can also add the package using `composer require laravelbook/ardent` and lat
 
 ### Usage outside of Laravel (since [1.1](https://github.com/laravelbook/ardent/tree/v1.1.0))
 
-If you're willing to use Ardent as a standalone ORM package you're invited to do so by using the
-following configuration line in your project's boot/startup file (changing the properties according
+If you're want to use Ardent as a standalone ORM package you're invited to do so by using the
+following configuration in your project's boot/startup file (changing the properties according
 to your database, obviously):
 
 ```php
