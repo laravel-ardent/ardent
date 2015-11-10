@@ -401,9 +401,12 @@ abstract class Ardent extends Model {
 		// foreign key name by using the name of the relationship function, which
 		// when combined with an "_id" should conventionally match the columns.
 		if (is_null($relation)) {
-			$backtrace = debug_backtrace(false);
-			$caller = ($backtrace[1]['function'] == 'handleRelationalArray')? $backtrace[3] : $backtrace[1];
-			$relation = $caller['function'];
+			$backtrace = debug_backtrace(false, 4);
+			if ($backtrace[1]['function'] == 'handleRelationalArray') {
+				$relation = $backtrace[1]['args'][0];
+			} else {
+				$relation = $backtrace[3]['function'];
+			}
 		}
 
 		if (is_null($foreignKey)) {
