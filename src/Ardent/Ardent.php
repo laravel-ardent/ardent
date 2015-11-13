@@ -177,12 +177,15 @@ abstract class Ardent extends Model {
      */
     protected static $relationsData = array();
 
+    /** This class "has one model" if its ID is an FK in that model */
     const HAS_ONE = 'hasOne';
 
+    /** This class "has many models" if its ID is an FK in those models */
     const HAS_MANY = 'hasMany';
 
     const HAS_MANY_THROUGH = 'hasManyThrough';
 
+    /** This class "belongs to a model" if it has a FK from that model */
     const BELONGS_TO = 'belongsTo';
 
     const BELONGS_TO_MANY = 'belongsToMany';
