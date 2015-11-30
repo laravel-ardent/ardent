@@ -334,8 +334,8 @@ abstract class Ardent extends Model {
                 return $this->$relationType($relation[1], $relation['foreignKey'], $relation['localKey']);
 
             case self::HAS_MANY_THROUGH:
-                $verifyArgs(['firstKey', 'secondKey'], ['through']);
-                return $this->$relationType($relation[1], $relation['through'], $relation['firstKey'], $relation['secondKey']);
+                $verifyArgs(['firstKey', 'secondKey', 'localKey'], ['through']);
+                return $this->$relationType($relation[1], $relation['through'], $relation['firstKey'], $relation['secondKey'], $relation['localKey']);
 
             case self::BELONGS_TO:
                 $verifyArgs(['foreignKey', 'otherKey', 'relation']);
