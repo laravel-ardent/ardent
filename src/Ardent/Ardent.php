@@ -624,7 +624,7 @@ abstract class Ardent extends Model {
             self::saved($afterSave);
         }
 
-        $valid = $this->validate($rules, $customMessages);
+        $valid = $this->validateUniques($rules, $customMessages);
 
         if ($force || $valid) {
             return $this->performSave($options);
