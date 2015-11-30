@@ -908,7 +908,8 @@ abstract class Ardent extends Model {
         if (static::$throwOnFind && $debug[1]['function'] != 'findOrFail') {
             return self::findOrFail($id, $columns);
         } else {
-            return parent::find($id, $columns);
+            //mimicking Eloquent's __callStatic() + __call() behaviour so we don't loop forever
+            return (new static)->__call('find', [$id, $columns]);
         }
     }
 
