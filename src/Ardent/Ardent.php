@@ -800,18 +800,16 @@ abstract class Ardent extends Model {
     }
 
     /**
-     * When given an ID and a Laravel validation rules array, this function
-     * appends the ID to the 'unique' rules given. The resulting array can
-     * then be fed to a Ardent save so that unchanged values
-     * don't flag a validation issue. Rules can be in either strings
-     * with pipes or arrays, but the returned rules are in arrays.
-     *
-     * @param int   $id
+     * Appends the model ID to the 'unique' rules given. The resulting array can
+     * then be fed to a Ardent save so that unchanged values don't flag a validation
+     * issue. It can also be used with {@link Illuminate\Foundation\Http\FormRequest}
+     * to painlessly validate model requests.
+     * Rules can be in either strings with pipes or arrays, but the returned rules
+     * are in arrays.
      * @param array $rules
-     *
      * @return array Rules with exclusions applied
      */
-    protected function buildUniqueExclusionRules(array $rules = array()) {
+    public function buildUniqueExclusionRules(array $rules = array()) {
       
         if (!count($rules))
           $rules = static::$rules;
