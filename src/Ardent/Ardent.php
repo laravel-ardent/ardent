@@ -5,6 +5,7 @@ use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DatabaseCapsule;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Hashing\BcryptHasher;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Hash;
@@ -114,7 +115,7 @@ abstract class Ardent extends Model {
      *
      * @var array
      */
-    public static $passwordAttributes = array();
+    public static $passwordAttributes = array('password');
 
     /**
      * If set to true, the model will automatically replace all plain-text passwords
@@ -125,11 +126,11 @@ abstract class Ardent extends Model {
     public $autoHashPasswordAttributes = false;
 
     /**
-     * If set to true will try to instantiate the validator as if it was outside Laravel.
+     * If set to true will try to instantiate other components as if it was outside Laravel.
      *
      * @var bool
      */
-    protected static $externalValidator = false;
+    protected static $external = false;
 
     /**
      * A Validation Factory instance, to be used by standalone Ardent instances with the Translator.
@@ -137,6 +138,14 @@ abstract class Ardent extends Model {
      * @var \Illuminate\Validation\Factory
      */
     protected static $validationFactory;
+
+    /**
+     * An instance of a Hasher object, to be used by standalone Ardent instances. Will be null if not external.
+     *
+     * @var \Illuminate\Contracts\Hashing\Hasher
+     * @see LaravelArdent\Ardent\Ardent::configureAsExternal()
+     */
+    public static $hasher;
 
     /**
      * Can be used to ease declaration of relationships in Ardent models.
@@ -505,9 +514,11 @@ abstract class Ardent extends Model {
             dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.$lang.
             DIRECTORY_SEPARATOR.'validation.php', $lang);
 
-        self::$externalValidator = true;
+        self::$external = true;
         self::$validationFactory = new ValidationFactory($translator);
         self::$validationFactory->setPresenceVerifier(new DatabasePresenceVerifier($db->getDatabaseManager()));
+
+        self::$hasher = new BcryptHasher();
     }
 
     /**
@@ -522,11 +533,9 @@ abstract class Ardent extends Model {
      * @see Ardent::$externalValidator
      */
     protected static function makeValidator($data, $rules, $customMessages, $customAttributes) {
-        if (self::$externalValidator) {
-            return self::$validationFactory->make($data, $rules, $customMessages, $customAttributes);
-        } else {
-            return Validator::make($data, $rules, $customMessages, $customAttributes);
-        }
+        return self::$external?
+            self::$validationFactory->make($data, $rules, $customMessages, $customAttributes) :
+            Validator::make($data, $rules, $customMessages, $customAttributes);
     }
 
     /**
@@ -771,6 +780,15 @@ abstract class Ardent extends Model {
     }
 
     /**
+     * Hashes the password, working without the Hash facade if this is an instance outside of Laravel.
+     * @param $value
+     * @return string
+     */
+    protected function hashPassword($value) {
+        return self::$external? self::$hasher->make($value) : Hash::make($value);
+    }
+
+    /**
      * Automatically replaces all plain-text password attributes (listed in $passwordAttributes)
      * with hash checksum.
      *
@@ -789,7 +807,7 @@ abstract class Ardent extends Model {
 
             if (in_array($key, $passwordAttributes) && !is_null($value)) {
                 if ($value != $this->getOriginal($key)) {
-                    $result[$key] = Hash::make($value);
+                    $result[$key] = $this->hashPassword($value);
                 }
             } else {
                 $result[$key] = $value;
