@@ -590,7 +590,7 @@ abstract class Ardent extends Model {
 				$this->validationErrors = $this->validator->messages();
 
 				// stash the input to the current session
-				if (!self::$externalValidator && Input::hasSession()) {
+				if (!self::$external && Input::hasSession()) {
 					Input::flash();
 				}
 			}
