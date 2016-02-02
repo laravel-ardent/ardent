@@ -4,6 +4,7 @@ use Closure;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as DatabaseCapsule;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Hashing\BcryptHasher;
 use Illuminate\Support\MessageBag;
@@ -386,7 +387,7 @@ abstract class Ardent extends Model {
      *
      * @param  string $method
      * @param  array  $parameters
-     * @return mixed
+     * @return Relation|Builder|mixed
      */
     public function __call($method, $parameters) {
         if (array_key_exists($method, static::$relationsData)) {
@@ -935,21 +936,16 @@ abstract class Ardent extends Model {
 
 	/**
 	 * Get a new query builder for the model's table.
-	 * Overriden from {@link \Model\Eloquent} to allow for usage of {@link throwOnFind}.
+	 * Overriden from {@link \Model\Eloquent} to allow for usage of {@link throwOnFind} in our {@link Builder}.
 	 *
-	 * @param  bool  $excludeDeleted
+	 * @see Model::newQueryWithoutScopes()
 	 * @return \Illuminate\Database\Eloquent\Builder
 	 */
-	public function newQuery($excludeDeleted = true) {
+	public function newQueryWithoutScopes() {
 		$builder = new Builder($this->newBaseQueryBuilder());
 		$builder->throwOnFind = static::$throwOnFind;
 
-		// Once we have the query builders, we will set the model instances so the
-		// builder can easily access any information it may need from the model
-		// while it is constructing and executing various queries against it.
-		$builder->setModel($this)->with($this->with);
-
-		return $this->applyGlobalScopes($builder);
+		return $builder->setModel($this)->with($this->with);
 	}
 
     /**
