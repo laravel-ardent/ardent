@@ -239,7 +239,7 @@ Here's the complete list of available hooks:
 - `before`/`afterDelete()`
 - `before`/`afterValidate()` - when returning false will halt validation, thus making `save()` operations fail as well since the validation was a failure.
 
-For example, you may use `beforeSave` to hash a users password:
+For example, you may use `beforeSave` to hash a users password (actually, it would be a better idea to use [auto-hashing](#automatically-transform-secure-text-attributes)!):
 
 ```php
 class User extends \LaravelArdent\Ardent\Ardent {
@@ -388,7 +388,9 @@ class User extends \LaravelArdent\Ardent\Ardent {
 }
 ```
 
-Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel `Hash::make()` method internally to generate hash.
+Ardent will automatically replace the plain-text password attribute with secure hash checksum and save it to database. It uses the Laravel `Hash::make()` method internally to generate hash. _Note: It's advised to use Eloquent's [`$hidden`](https://laravel.com/docs/5.2/eloquent-serialization#hiding-attributes-from-json) attribute so the password, even hashed, won't come out that easily if you're building an API or similar :)_
+
+In case you're using Ardent standalone, you can use `Ardent::$hasher` to verify the field value, using something like `User::$hasher->check($given_password, $user->password)`.
 
 
 ## Updates with Unique Rules
