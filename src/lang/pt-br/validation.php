@@ -1,7 +1,7 @@
 <?php
 
 return array(
-	'validation' => array(
+	'validation' => [
 		/*
 		|--------------------------------------------------------------------------
 		| Validation Language Lines
@@ -20,11 +20,11 @@ return array(
 		"alpha_dash"       => "O campo :attribute só pode conter letras, números e hífens..",
 		"alpha_num"        => "O campo :attribute só pode conter letras e números",
 		"before"           => "O campo :attribute só pode conter uma data antes de :date.",
-		"between"          => array(
+		"between"          => [
 			"numeric" => "O campo :attribute deve conter valores entre :min - :max.",
 			"file"    => "O campo :attribute deve ter o tamanho entre :min - :max kilobytes.",
 			"string"  => "O campo :attribute deve ter entre :min - :max caracteres.",
-		),
+		],
 		"confirmed"        => "A confirmação do campo :attribute não corresponde.",
 		"date"             => "O campo :attribute contém uma data inválida.",
 		"date_format"      => "O campo :attribute não conrrespode ao formato :format.",
@@ -37,17 +37,17 @@ return array(
 		"in"               => "O valor selecionado em :attribute é invalido.",
 		"integer"          => "O campo :attribute deve conter um valor númerico.",
 		"ip"               => "O campo :attribute deve conter um endereço de IP válido.",
-		"max"              => array(
+		"max"              => [
 			"numeric" => "O campo :attribute não pode ser maior que :max.",
 			"file"    => "O campo :attribute não pode ser maior que :max kilobytes.",
 			"string"  => "O campo :attribute não pode ser maior que  :max caracteres.",
 		),
 		"mimes"            => "O campo :attribute deve conter um arquivo do  tipo: :values.",
-		"min"              => array(
+		"min"              => [
 			"numeric" => "O campo :attribute deve ser no mínimo :min.",
 			"file"    => "O campo :attribute deve ser no mínimo :min kilobytes.",
 			"string"  => "O campo :attribute deve ser no mínimo :min caracteres.",
-		),
+		],
 		"not_in"           => "O campo :attribute selecionado é inválido.",
 		"numeric"          => "O campo :attribute deve ser númerico.",
 		"regex"            => "O campo :attribute é inválido.",
@@ -56,11 +56,11 @@ return array(
 		"required_with"    => "O campo :attribute é obrigatório quando :values está presente.",
 		"required_without" => "O campo :attribute é obrigatório quando :values não está presente.",
 		"same"             => "Os campos :attribute e :other devem conrrespoder.",
-		"size"             => array(
+		"size"             => [
 			"numeric" => "O campo :attribute deve ser :size.",
 			"file"    => "O campo :attribute deve ser de :size kilobytes.",
 			"string"  => "O campo :attribute deve ser de :size caracteres.",
-		),
+		],
 		"unique"           => "O campo :attribute já existe.",
 		"url"              => "O campo :attribute tem formato inválido.",
 
@@ -75,7 +75,7 @@ return array(
 		|
 		*/
 
-		'custom'           => array(),
+		'custom'           => [],
 
 		/*
 		|--------------------------------------------------------------------------
@@ -88,6 +88,6 @@ return array(
 		|
 		*/
 
-		'attributes'       => array(),
+		'attributes'       => [],
 	)
 );
