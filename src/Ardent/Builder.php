@@ -11,11 +11,11 @@ class Builder extends \Illuminate\Database\Eloquent\Builder {
 	 */
 	public $throwOnFind = false;
 
-	public function find($id, $columns = array('*')) {
+	public function find($id, $columns = ['*']) {
 		return $this->maybeFail('find', func_get_args());
 	}
 
-	public function first($columns = array('*')) {
+	public function first($columns = ['*']) {
 		return $this->maybeFail('first', func_get_args());
 	}
 
@@ -28,7 +28,7 @@ class Builder extends \Illuminate\Database\Eloquent\Builder {
 	protected function maybeFail($method, $args) {
 		$debug  = debug_backtrace(false);
 		$orFail = $method.'OrFail';
-		$func   = ($this->throwOnFind && $debug[2]['function'] != $orFail)? array($this, $orFail) : "parent::$method";
+		$func   = ($this->throwOnFind && $debug[2]['function'] != $orFail)? [$this, $orFail] : "parent::$method";
 		return call_user_func_array($func, $args);
 	}
 }

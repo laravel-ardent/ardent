@@ -39,7 +39,7 @@ class ArdentServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('ardent');
+		return ['ardent'];
 	}
 
 }
