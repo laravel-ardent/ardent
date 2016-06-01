@@ -838,7 +838,7 @@ abstract class Ardent extends Model {
             $ruleset = (is_string($ruleset))? explode('|', $ruleset) : $ruleset;
 
             foreach ($ruleset as &$rule) {
-                if (strpos($rule, 'unique:') === 0) {
+                if (strpos($rule, 'unique') === 0) {
                     // Stop splitting at 4 so final param will hold optional where clause
                     $params = explode(',', $rule, 4);
 
