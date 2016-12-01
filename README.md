@@ -95,9 +95,9 @@ Route::post('register', function() {
                 ));
 
             return Redirect::to('/')->with('message', 'Thanks for registering!');
-        } else {
-            return Redirect::to('/')->withErrors($validator->getMessages());
         }
+        
+        return Redirect::to('/')->withErrors($validator->getMessages());
     }
 );
 ```
@@ -111,9 +111,9 @@ Route::post('register', function() {
         $user = new User;
         if ($user->save()) {
             return Redirect::to('/')->with('message', 'Thanks for registering!');
-        } else {
-            return Redirect::to('/')->withErrors($user->errors());
         }
+        
+        return Redirect::to('/')->withErrors($user->errors());
     }
 );
 ```
