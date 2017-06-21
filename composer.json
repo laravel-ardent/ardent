@@ -31,5 +31,15 @@
             "LaravelArdent\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelArdent\\Ardent\\Providers\\ArdentServiceProvider"
+            ],
+            "aliases": {
+                "Ardent": "LaravelArdent\\Ardent\\Facades\\Ardent"
+            }
+        }
+    },
     "minimum-stability": "dev"
 }
