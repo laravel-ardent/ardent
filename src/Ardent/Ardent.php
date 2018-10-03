@@ -29,21 +29,21 @@ abstract class Ardent extends Model {
      *
      * @var array
      */
-    public static $rules = array();
+    public static $rules = [];
 
     /**
      * The array of custom error messages.
      *
      * @var array
      */
-    public static $customMessages = array();
+    public static $customMessages = [];
 
     /**
      * The array of custom attributes.
      *
      * @var array
      */
-    public static $customAttributes = array();
+    public static $customAttributes = [];
 
 	/**
      * The validator object in case you need it externally (say, for a form builder).
@@ -107,7 +107,7 @@ abstract class Ardent extends Model {
      *
      * @var array
      */
-    protected $purgeFilters = array();
+    protected $purgeFilters = [];
 
     protected $purgeFiltersInitialized = false;
 
@@ -116,7 +116,7 @@ abstract class Ardent extends Model {
      *
      * @var array
      */
-    public static $passwordAttributes = array('password');
+    public static $passwordAttributes = ['password'];
 
     /**
      * If set to true, the model will automatically replace all plain-text passwords
@@ -185,7 +185,7 @@ abstract class Ardent extends Model {
      *
      * @var array
      */
-    protected static $relationsData = array();
+    protected static $relationsData = [];
 
     /** This class "has one model" if its ID is an FK in that model */
     const HAS_ONE = 'hasOne';
@@ -215,12 +215,12 @@ abstract class Ardent extends Model {
      *
      * @var array
      */
-    protected static $relationTypes = array(
+    protected static $relationTypes = [
         self::HAS_ONE, self::HAS_MANY, self::HAS_MANY_THROUGH,
         self::BELONGS_TO, self::BELONGS_TO_MANY,
         self::MORPH_TO, self::MORPH_ONE, self::MORPH_MANY,
         self::MORPH_TO_MANY, self::MORPHED_BY_MANY
-    );
+    ];
 
     /**
      * Create a new Ardent model instance.
@@ -228,7 +228,7 @@ abstract class Ardent extends Model {
      * @param array $attributes
      * @return \LaravelArdent\Ardent\Ardent
      */
-    public function __construct(array $attributes = array()) {
+    public function __construct(array $attributes = []) {
         parent::__construct($attributes);
         $this->validationErrors = new MessageBag;
     }
@@ -244,8 +244,8 @@ abstract class Ardent extends Model {
         parent::boot();
 
         $myself   = get_called_class();
-        $hooks    = array('before' => 'ing', 'after' => 'ed');
-        $radicals = array('sav', 'validat', 'creat', 'updat', 'delet');
+        $hooks    = ['before' => 'ing', 'after' => 'ed'];
+        $radicals = ['sav', 'validat', 'creat', 'updat', 'delet'];
 
         foreach ($radicals as $rad) {
             foreach ($hooks as $hook => $event) {
@@ -263,7 +263,7 @@ abstract class Ardent extends Model {
 	public function getObservableEvents() {
 		return array_merge(
 			parent::getObservableEvents(),
-			array('validating', 'validated')
+			['validating', 'validated']
 		);
 	}
 
@@ -315,10 +315,10 @@ abstract class Ardent extends Model {
             ' is a morphTo relation and should not contain additional arguments.');
         }
 
-        $verifyArgs = function (array $opt, array $req = array()) use ($relationName, &$relation, $errorHeader) {
-            $missing = array('req' => array(), 'opt' => array());
+        $verifyArgs = function (array $opt, array $req = []) use ($relationName, &$relation, $errorHeader) {
+            $missing = ['req' => [], 'opt' => []];
 
-            foreach (array('req', 'opt') as $keyType) {
+            foreach (['req', 'opt'] as $keyType) {
                 foreach ($$keyType as $key) {
                     if (!array_key_exists($key, $relation)) {
                         $missing[$keyType][] = $key;
@@ -548,7 +548,7 @@ abstract class Ardent extends Model {
      * @return bool
      * @throws InvalidModelException
      */
-    public function validate(array $rules = array(), array $customMessages = array(), array $customAttributes = array()) {
+    public function validate(array $rules = [], array $customMessages = [], array $customAttributes = []) {
         if ($this->fireModelEvent('validating') === false) {
             if ($this->throwOnValidation) {
                 throw new InvalidModelException($this);
@@ -620,9 +620,9 @@ abstract class Ardent extends Model {
      * @see Ardent::save()
      * @see Ardent::forceSave()
      */
-    protected function internalSave(array $rules = array(),
-        array $customMessages = array(),
-        array $options = array(),
+    protected function internalSave(array $rules = [],
+        array $customMessages = [],
+        array $options = [],
         Closure $beforeSave = null,
         Closure $afterSave = null,
         $force = false
@@ -655,9 +655,9 @@ abstract class Ardent extends Model {
      * @return bool
      * @see Ardent::forceSave()
      */
-    public function save(array $rules = array(),
-        array $customMessages = array(),
-        array $options = array(),
+    public function save(array $rules = [],
+        array $customMessages = [],
+        array $options = [],
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
@@ -675,9 +675,9 @@ abstract class Ardent extends Model {
      * @return bool
      * @see Ardent::save()
      */
-    public function forceSave(array $rules = array(),
-        array $customMessages = array(),
-        array $options = array(),
+    public function forceSave(array $rules = [],
+        array $customMessages = [],
+        array $options = [],
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
@@ -723,9 +723,9 @@ abstract class Ardent extends Model {
      * @param array $array Input array
      * @return array
      */
-    protected function purgeArray(array $array = array()) {
+    protected function purgeArray(array $array = []) {
 
-        $result = array();
+        $result = [];
         $keys   = array_keys($array);
 
         $this->addBasicPurgeFilters();
@@ -797,13 +797,13 @@ abstract class Ardent extends Model {
      * @param array $passwordAttributes
      * @return array
      */
-    protected function hashPasswordAttributes(array $attributes = array(), array $passwordAttributes = array()) {
+    protected function hashPasswordAttributes(array $attributes = [], array $passwordAttributes = [])) {
 
         if (empty($passwordAttributes) || empty($attributes)) {
             return $attributes;
         }
 
-        $result = array();
+        $result = [];
         foreach ($attributes as $key => $value) {
 
             if (in_array($key, $passwordAttributes) && !is_null($value)) {
@@ -828,7 +828,7 @@ abstract class Ardent extends Model {
      * @param array $rules
      * @return array Rules with exclusions applied
      */
-    public function buildUniqueExclusionRules(array $rules = array()) {
+    public function buildUniqueExclusionRules(array $rules = []) {
       
         if (!count($rules))
           $rules = static::$rules;
@@ -842,7 +842,7 @@ abstract class Ardent extends Model {
                     // Stop splitting at 4 so final param will hold optional where clause
                     $params = explode(',', $rule, 4);
 
-                    $uniqueRules = array();
+                    $uniqueRules = [];
 
                     // Append table name if needed
                     $table = explode(':', $params[0]);
@@ -891,9 +891,9 @@ abstract class Ardent extends Model {
      * @param Closure $afterSave
      * @return bool
      */
-    public function updateUniques(array $rules = array(),
-        array $customMessages = array(),
-        array $options = array(),
+    public function updateUniques(array $rules = [],
+        array $customMessages = [],
+        array $options = [],
         Closure $beforeSave = null,
         Closure $afterSave = null
     ) {
@@ -910,7 +910,7 @@ abstract class Ardent extends Model {
 	 * @return bool
 	 * @see Ardent::validate()
 	 */
-	public function validateUniques(array $rules = array(), array $customMessages = array()) {
+	public function validateUniques(array $rules = [], array $customMessages = []) {
 		$rules = $this->buildUniqueExclusionRules($rules);
 		return $this->validate($rules, $customMessages);
 	}
@@ -923,7 +923,7 @@ abstract class Ardent extends Model {
      * @param  array $columns
      * @return Ardent|Collection
      */
-    public static function find($id, $columns = array('*')) {
+    public static function find($id, $columns = ['*']) {
         $debug = debug_backtrace(false);
 
         if (static::$throwOnFind && $debug[1]['function'] != 'findOrFail') {
