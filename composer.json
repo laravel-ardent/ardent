@@ -33,9 +33,6 @@
     },
     "extra": {
         "laravel": {
-            "providers": [
-                "LaravelArdent\\Ardent\\Providers\\ArdentServiceProvider"
-            ],
             "aliases": {
                 "Ardent": "LaravelArdent\\Ardent\\Facades\\Ardent"
             }
