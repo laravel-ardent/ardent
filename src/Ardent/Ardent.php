@@ -418,7 +418,7 @@ abstract class Ardent extends Model {
 			if ($backtrace[1]['function'] == 'handleRelationalArray') {
 				$relation = $backtrace[1]['args'][0];
 			} else {
-				$relation = $backtrace[3]['function'];
+				$relation = $backtrace[1]['function'];
 			}
 		}
 
@@ -430,9 +430,9 @@ abstract class Ardent extends Model {
 		// for the related models and returns the relationship instance which will
 		// actually be responsible for retrieving and hydrating every relations.
 		$instance = new $related;
-		
+
 		$otherKey = $otherKey ?: $instance->getKeyName();
-		
+
 		$query = $instance->newQuery();
 
 		return new BelongsTo($query, $this, $foreignKey, $otherKey, $relation);
@@ -506,7 +506,7 @@ abstract class Ardent extends Model {
 
         // Make this Capsule instance available globally via static methods
         $db->setAsGlobal();
-        
+
         $db->bootEloquent();
 
         $translator = new Translator($lang);
@@ -615,7 +615,7 @@ abstract class Ardent extends Model {
      * @param Closure $beforeSave
      * @param Closure $afterSave
      * @param bool    $force          Forces saving invalid data.
-     * 
+     *
      * @return bool
      * @see Ardent::save()
      * @see Ardent::forceSave()
@@ -829,7 +829,7 @@ abstract class Ardent extends Model {
      * @return array Rules with exclusions applied
      */
     public function buildUniqueExclusionRules(array $rules = array()) {
-      
+
         if (!count($rules))
           $rules = static::$rules;
 
@@ -876,7 +876,7 @@ abstract class Ardent extends Model {
                 }
             }
         }
-        
+
         return $rules;
     }
 
@@ -898,7 +898,7 @@ abstract class Ardent extends Model {
         Closure $afterSave = null
     ) {
         $rules = $this->buildUniqueExclusionRules($rules);
-        
+
         return $this->save($rules, $customMessages, $options, $beforeSave, $afterSave);
     }
 
