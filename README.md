@@ -85,13 +85,13 @@ Route::post('register', function() {
             'password_confirmation' => 'required|min:6'
         );
 
-        $validator = Validator::make(Input::all(), $rules);
+        $validator = Validator::make(request()->all(), $rules);
 
         if ($validator->passes()) {
             User::create(array(
-                    'name'     => Input::get('name'),
-                    'email'    => Input::get('email'),
-                    'password' => Hash::make(Input::get('password'))
+                    'name'     => request()->get('name'),
+                    'email'    => request()->get('email'),
+                    'password' => Hash::make(request()->get('password'))
                 ));
 
             return Redirect::to('/')->with('message', 'Thanks for registering!');
@@ -321,9 +321,9 @@ Let's see it action. Consider this snippet of code:
 
 ```php
 $user           = new User;
-$user->name     = Input::get('name');
-$user->email    = Input::get('email');
-$user->password = Hash::make(Input::get('password'));
+$user->name     = request()->get('name');
+$user->email    = request()->get('email');
+$user->password = Hash::make(request()->get('password'));
 $user->save();
 ```
 

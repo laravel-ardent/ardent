@@ -19,12 +19,12 @@
     "support": {
         "issues": "https://github.com/laravelbook/ardent/issues"
     },
-    "require": {
-        "illuminate/support": "~5.1",
-        "illuminate/database": "~5.1",
-        "illuminate/validation": "~5.1",
-        "illuminate/events": "~5.1",
-        "illuminate/hashing": "~5.1"
+   "require": {
+        "illuminate/support": ">5.1",
+        "illuminate/database": ">5.1",
+        "illuminate/validation": ">5.1",
+        "illuminate/events": ">5.1",
+        "illuminate/hashing": ">5.1"
     },
     "autoload": {
         "psr-4": {
